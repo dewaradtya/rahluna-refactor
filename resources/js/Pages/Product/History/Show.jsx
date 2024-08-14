@@ -26,11 +26,6 @@ const Show = ({ history }) => {
                 renderCell: () => (history.first_create)
             },
             {
-                label: 'Nama Produk',
-                name: 'product.name',
-                renderCell: () => (history.product ? history.product.name : 'N/A')
-            },
-            {
                 label: 'QTY',
                 name: 'qty',
                 renderCell: () => history.qty
@@ -82,6 +77,7 @@ const Show = ({ history }) => {
         <Card>
             <Card.CardHeader
                 titleText="Table History Produk"
+                additionalInfo={history.product ? `${history.product.name}` : 'No Poduct Selected'}
                 rightComponent={
                     <SplitButton
                         color="danger"

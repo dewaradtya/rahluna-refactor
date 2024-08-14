@@ -6,12 +6,12 @@ import LoadingButton from '../../../../Components/Button/LoadingButton';
 
 const Create = ({ showModal, setShowModal, products, productPackageId }) => {
     const options = useMemo(
-        () => products.map((product) => ({ value: product.id, label: `${product.model_number} - ${product.name}` })),
-        [products]
+        () => products?.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
+        [products] 
     );
 
     const { setData, post, processing, errors, recentlySuccessful } = useForm({
-        product_id: null,
+        product_id: '',
         product_package_id: productPackageId,
         stock: 0
     });
@@ -34,9 +34,9 @@ const Create = ({ showModal, setShowModal, products, productPackageId }) => {
                     <input type="hidden" name="product_package_id" value={productPackageId} />
                     <Select
                         label="Product"
-                        id="product-change"
+                        id="product-create"
                         error={errors?.product_id}
-                        onChange={(option) => setData('product_id', option ? option.value : null)}
+                        onChange={(option) => setData('product_id', option ? option.value : '')}
                         options={options}
                         required
                     />
