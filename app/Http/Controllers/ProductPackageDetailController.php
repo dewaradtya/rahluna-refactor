@@ -22,20 +22,18 @@ class ProductPackageDetailController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
-    
+
             $product = Product::findOrFail($validatedData['product_id']);
-    
             $validatedData['purchase_price'] = $product->purchase_price;
             $validatedData['price'] = $product->price;
-            $validatedData['user_id'] = 1;
-    
+
             ProductPackageDetail::create($validatedData);
-    
+
             DB::commit();
             return Redirect::back()->with('success', 'Produk berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error storing product package detail: ', ['exception' => $e]);
+            Log::error('Error storing product package detail: ' . $e->getMessage(), ['exception' => $e]);
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah produk. Silahkan coba lagi.');
         }
     }
@@ -46,15 +44,15 @@ class ProductPackageDetailController extends Controller
 
         $productPackage = ProductPackage::findOrFail($id);
 
-        $productPackageDetail = ProductPackageDetail::paginate($perPage)
-            ->appends($request->query());
+        $productPackageDetail = ProductPackageDetail::with('product')->where('product_package_id', $id)->paginate($perPage)->appends($request->query());
+
 
         $products = Product::all();
 
         return Inertia::render('Product/Package/Detail/Index', [
             'productPackage' => $productPackage,
             'productPackageDetail' => $productPackageDetail,
-            'products' => $products
+            'products' => $products,
         ]);
     }
 

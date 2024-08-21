@@ -4,21 +4,21 @@ import { useEffect, useMemo } from 'react';
 import Modal from '../../Components/Modal';
 import LoadingButton from '../../Components/Button/LoadingButton';
 
-const Create = ({ showModal, setShowModal, products }) => {
+const UpdateStock = ({ showModal, setShowModal, products }) => {
     const options = useMemo(
         () => products.map((product) => ({ value: product.id, label: `${product.model_number} - ${product.name}` })),
-        [products] 
+        []
     );
 
-    const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
-        product_id: '',
-        qty: 0,
+    const { setData, post, processing, errors, recentlySuccessful, hasErrors } = useForm({
+        product_id: null,
+        stock: 0
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/products/package/detail', {
-            preserveScroll: true,
+        post(`/products/change-stock`, {
+            preserveScroll: true
         });
     };
 
@@ -27,24 +27,23 @@ const Create = ({ showModal, setShowModal, products }) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Tambah Paket Produk" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Tambah Stok" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <Select
                         label="Product"
-                        id="product-create"
+                        id="product-change"
                         error={errors?.product_id}
-                        onChange={(option) => setData('product_id', option ? option.value : '')}
+                        onChange={(option) => setData('product_id', option ? option.value : null)}
                         options={options}
                         required
                     />
                     <InputField
                         type="number"
-                        label="Qty"
-                        id="qty-create"
-                        error={errors?.qty}
-                        value={data.qty}
-                        onChange={(e) => setData('qty', e.target.value)}
+                        label="Stok"
+                        id="stock-change"
+                        error={errors?.stock}
+                        onChange={(e) => setData('stock', e.target.value)}
                         required
                     />
                     <Modal.Footer>
@@ -61,4 +60,4 @@ const Create = ({ showModal, setShowModal, products }) => {
     );
 };
 
-export default Create;
+export default UpdateStock;

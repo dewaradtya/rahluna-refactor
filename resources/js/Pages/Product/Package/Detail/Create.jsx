@@ -6,14 +6,14 @@ import LoadingButton from '../../../../Components/Button/LoadingButton';
 
 const Create = ({ showModal, setShowModal, products, productPackageId }) => {
     const options = useMemo(
-        () => products?.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
-        [products] 
+        () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
+        [products]
     );
 
     const { setData, post, processing, errors, recentlySuccessful } = useForm({
         product_id: '',
         product_package_id: productPackageId,
-        stock: 0
+        qty: 0
     });
 
     const handleSubmit = (e) => {
@@ -42,10 +42,10 @@ const Create = ({ showModal, setShowModal, products, productPackageId }) => {
                     />
                     <InputField
                         type="number"
-                        label="Stok"
-                        id="stock-change"
-                        error={errors?.stock}
-                        onChange={(e) => setData('stock', e.target.value)}
+                        label="Qty"
+                        id="qty-create"
+                        error={errors?.qty}
+                        onChange={(e) => setData('qty', e.target.value)}
                         required
                     />
                     <Modal.Footer>

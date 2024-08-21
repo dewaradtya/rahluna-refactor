@@ -85,7 +85,7 @@ const Index = ({ productPackages, units }) => {
                         <BadgeButton
                             onClick={() => handleLihatButton(row.id)}
                             text="lihat"
-                            color="dark"
+                            color="info"
                             disabled={loadingButton !== null}
                         />
                     </>

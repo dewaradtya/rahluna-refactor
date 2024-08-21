@@ -15,6 +15,8 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, productPackageDetail: null });
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleEditButton = (productPackageDetail) => {
         setShowUpdateModal({ modal: true, productPackageDetail });
@@ -32,11 +34,19 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
         router.get('/products/package');
     };
 
+    const filteredProductPackageDetail = productPackageDetail.data.filter(
+        (detail) =>
+            detail.product?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            rupiah(productPackageDetail.price).toLowerCase().includes(searchTerm.toLowerCase()) ||
+            rupiah(productPackageDetail.purchase_price).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const columns = useMemo(
         () => [
             {
                 label: 'Nama Produk',
-                name: 'name'
+                name: 'name',
+                renderCell: (row) => row.product?.name || 'N/A'
             },
             {
                 label: 'Qty',
@@ -76,6 +86,19 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
         [loadingButton]
     );
 
+    const footer = useMemo(
+        () => ({
+            price: rupiah(productPackageDetail.data.reduce((total, row) => total + row.price * row.qty, 0)),
+            purchase_price: rupiah(productPackageDetail.data.reduce((total, row) => total + row.purchase_price * row.qty, 0)),
+        }),
+        [productPackageDetail]
+    );
+    
+    const footerColumns = [
+        { key: 'purchase_price', label: 'Total harga beli' },
+        { key: 'price', label: 'Total harga jual' },
+    ];
+
     return (
         <Card>
             <Card.CardHeader
@@ -92,11 +115,24 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
                         <SplitButton color="primary" text="Baru" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
                     </div>
                 </div>
-                <Table columns={columns} rows={productPackageDetail.data} />
+                <Card.CardFilter
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    entriesPerPage={entriesPerPage}
+                    setEntriesPerPage={setEntriesPerPage}
+                />
+                <Table columns={columns} rows={filteredProductPackageDetail.slice(0, entriesPerPage)} footer={footer} footerColumns={footerColumns}/>
                 <Pagination links={productPackageDetail.links} />
             </Card.CardBody>
 
-            {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} options={products} />}
+            {showCreateModal && (
+                <Create
+                    showModal={showCreateModal}
+                    setShowModal={setShowCreateModal}
+                    products={products}
+                    productPackageId={productPackage.id}
+                />
+            )}
             {showUpdateModal.modal && (
                 <Update
                     showModal={showUpdateModal.modal}

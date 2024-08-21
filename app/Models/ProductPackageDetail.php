@@ -12,4 +12,9 @@ class ProductPackageDetail extends Model
     public $timestamps = false;
 
     protected $fillable = ['product_package_id', 'product_id', 'purchase_price', 'price', 'qty'];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
 }
