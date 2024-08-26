@@ -6,8 +6,6 @@ import Pagination from '../../../Components/Pagination';
 import Card from '../../../Components/Card';
 
 const Index = ({ customers }) => {
-    const [showModalCreate, setShowModalCreate] = useState(false);
-    const [showModalUpdate, setShowModalUpdate] = useState({ modal: false, customer: null });
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
 
@@ -45,11 +43,6 @@ const Index = ({ customers }) => {
                 <Table columns={columns} rows={filteredCustomers.slice(0, entriesPerPage)} />
                 <Pagination links={customers.links} />
             </Card.CardBody>
-
-            {showModalCreate && <Create showModal={showModalCreate} setShowModal={setShowModalCreate} />}
-            {showModalUpdate.modal && (
-                <Update showModal={showModalUpdate.modal} setShowModal={setShowModalUpdate} customer={showModalUpdate.customer} />
-            )}
         </Card>
     );
 };

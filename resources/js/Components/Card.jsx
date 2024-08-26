@@ -9,7 +9,11 @@ const CardHeader = ({ className = '', titleText, additionalInfo, children, right
         <div className={`card-header py-3 d-flex justify-content-between align-items-center ${className}`}>
             <div>
                 <h6 className="m-0 font-weight-bold text-primary">{titleText}</h6>
-                {additionalInfo && <p className="m-0 text-secondary">{additionalInfo}</p>}
+                {additionalInfo && (
+                    <p className="m-0 text-sm text-secondary" style={{ fontSize: '0.85rem' }}>
+                        {additionalInfo}
+                    </p>
+                )}
             </div>
             {rightComponent}
             {children}
@@ -23,7 +27,23 @@ const CardBody = ({ children }) => {
 
 const CardFilter = ({ searchTerm, setSearchTerm, entriesPerPage, setEntriesPerPage }) => {
     return (
-        <div className="my-2 flex items-center space-x-4">
+        <div className="my-2 d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+                <select
+                    value={entriesPerPage}
+                    onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+                    className="p-2 border rounded me-2"
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                    <option value={200}>200</option>
+                </select>
+                <p className="mb-0 text-muted">Entries per page</p>
+            </div>
             <input
                 type="text"
                 placeholder="Search..."
@@ -31,19 +51,6 @@ const CardFilter = ({ searchTerm, setSearchTerm, entriesPerPage, setEntriesPerPa
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="p-2 border rounded"
             />
-            <select
-                value={entriesPerPage}
-                onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-                className="p-2 border rounded"
-            >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-                <option value={200}>200</option>
-            </select>
         </div>
     );
 };

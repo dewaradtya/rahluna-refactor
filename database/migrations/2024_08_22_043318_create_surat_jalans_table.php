@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('surat_jalans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('invoice_id')->constrained('invoices');
+            $table->foreignId('surat_jalan_new_id')->constrained('surat_jalan_news');
             $table->foreignId('customer_id')->constrained('customers');
-            $table->integer('no_surat')->default(0);
-            $table->date('tanggal_kirim');
+            $table->foreignId('product_id')->constrained('products');
+            $table->decimal('purchase_price', 11)->default(0);
+            $table->decimal('price', 11)->default(0);
+            $table->integer('qty')->default(0);
+            $table->text('note')->nullable();
+            $table->string('kategori', 50);
             $table->timestamp('first_create')->useCurrent();
             $table->timestamp('last_update')->useCurrent()->useCurrentOnUpdate();
-            // $table->timestamps();
         });
     }
 

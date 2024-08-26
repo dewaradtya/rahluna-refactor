@@ -1,0 +1,146 @@
+import MainLayout from '../../../Layouts/MainLayout';
+import { useMemo, useState } from 'react';
+import Table from '../../../Components/Table';
+import Pagination from '../../../Components/Pagination';
+import SplitButton from '../../../Components/Button/SplitButton';
+import BadgeButton from '../../../Components/Button/BadgeButton';
+import BadgeLink from '../../../Components/Link/BadgeLink';
+import { FaPlus } from 'react-icons/fa';
+import { router } from '@inertiajs/react';
+import { formatDate, rupiah } from '../../../utils';
+import Card from '../../../Components/Card';
+import Create from './Create';
+import Update from './Update';
+
+const Index = ({ debtinvoices }) => {
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, debtinvoice: null });
+    const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
+
+    const handleEditButton = (debtinvoice) => {
+        setShowUpdateModal({ modal: true, debtinvoice: debtinvoice });
+    };
+
+    const handleDeleteButton = (id) => {
+        router.delete(`/transaksi/invoiceHutang/${id}`, {
+            preserveScroll: true,
+            onStart: () => setLoadingButton(id),
+            onFinish: () => setLoadingButton(null)
+        });
+    };
+
+    const filteredDebtInvoices = debtinvoices.data.filter(
+        (debtinvoice) =>
+            debtinvoice.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            debtinvoice.amount.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const columns = useMemo(
+        () => [
+            {
+                label: 'Supplier',
+                name: 'origin'
+            },
+            {
+                label: 'Nilai Hutang',
+                name: 'amount',
+                renderCell: (row) => rupiah(row.amount)
+            },
+            {
+                label: 'Jumlah Bayar',
+                name: 'total_payment',
+                renderCell: (row) => rupiah(row.total_payment)
+            },
+            {
+                label: 'Sisa Hutang',
+                name: 'remaining',
+                renderCell: (row) => rupiah(row.remaining)
+            },
+            {
+                label: 'Jatuh Tempo',
+                name: 'date',
+                renderCell: (row) => formatDate(row.date)
+            },
+            {
+                label: 'Status',
+                name: 'status',
+                renderCell: (row) => {
+                    const dueDate = new Date(row.date);
+                    const today = new Date();
+                    const status = today > dueDate ? 'over time' : 'process';
+                    const color = status === 'over time' ? 'danger' : 'warning';
+
+                    return (
+                        <BadgeButton
+                            text={status}
+                            color={color}
+                        />
+                    );
+                }
+            },
+            {
+                label: 'Aksi',
+                name: 'aksi',
+                renderCell: (row) => (
+                    <>
+                        <BadgeButton
+                            onClick={() => handleDeleteButton(row.id)}
+                            text={`${loadingButton === row.id ? 'loading...' : 'hapus'}`}
+                            color="danger"
+                            disabled={loadingButton !== null}
+                        />
+                        <BadgeButton
+                            onClick={() => handleEditButton(row)}
+                            text="edit"
+                            color="warning"
+                            disabled={loadingButton !== null}
+                        />
+                        <BadgeLink href={`/transaksi/invoiceHutang/${row.id}`} text="lihat detail" color="info" />
+                    </>
+                )
+            }
+        ],
+        [loadingButton]
+    );
+
+    return (
+        <>
+            <Card>
+                <Card.CardHeader titleText="Table Hutang Invoice Beli" />
+
+                <Card.CardBody>
+                    <div className="d-sm-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex column-gap-1 align-items-start flex-wrap">
+                            <SplitButton color="primary" text="Hutang Inv Baru" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
+                        </div>
+                    </div>
+                    {/* Input pencarian dan dropdown entri per halaman */}
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
+
+                    <Table columns={columns} rows={filteredDebtInvoices.slice(0, entriesPerPage)} />
+                    <Pagination links={debtinvoices.links} />
+                </Card.CardBody>
+
+                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
+                {showUpdateModal.modal && (
+                    <Update
+                        showModal={showUpdateModal.modal}
+                        setShowModal={setShowUpdateModal}
+                        debtinvoice={showUpdateModal.debtinvoice}
+                    />
+                )}
+            </Card>
+        </>
+    );
+};
+
+Index.layout = (page) => <MainLayout children={page} title="Hutang Invoice Beli Page" />;
+
+export default Index;

@@ -21,7 +21,7 @@ class Oprasional extends Model
     protected static function booted(): void
     {
         static::addGlobalScope('funding', function (Builder $builder) {
-            $builder->whereNotIn('funding', ['Modal', 'Hutang', 'Piutang']);
+            $builder->whereNotIn('funding', ['Modal', 'Hutang', 'Piutang', 'Invoice Hutang']);
         });
     }
 

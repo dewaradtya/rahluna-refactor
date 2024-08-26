@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\UserAccessMenu;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Menu;
 
 class UserAccessMenuSeeder extends Seeder
 {
@@ -13,10 +13,12 @@ class UserAccessMenuSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 1; $i <= 19; $i++) {
+        $menuIds = Menu::pluck('id')->toArray();
+
+        foreach ($menuIds as $id) {
             UserAccessMenu::create([
                 'user_role_id' => 1,
-                'menu_id' => $i
+                'menu_id' => $id
             ]);
         }
     }

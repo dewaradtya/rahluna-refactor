@@ -28,27 +28,6 @@ class MenuSeeder extends Seeder
             'is_active' => true,
         ]);
         Menu::create([
-            'menu' => 'Project',
-            'url' => '-',
-            'group_menu' => 'Sales',
-            'icon' => 'fa fa-briefcase',
-            'is_active' => true,
-        ]);
-        Menu::create([
-            'menu' => 'Berlangsung',
-            'url' => '/project',
-            'group_menu' => 'Sales',
-            'main_menu' => 3,
-            'is_active' => true,
-        ]);
-        Menu::create([
-            'menu' => 'Selesai',
-            'url' => '/project/selesai',
-            'group_menu' => 'Sales',
-            'main_menu' => 3,
-            'is_active' => true,
-        ]);
-        Menu::create([
             'menu' => 'Oprasional',
             'url' => '/oprasional',
             'group_menu' => 'Sales',
@@ -66,21 +45,21 @@ class MenuSeeder extends Seeder
             'menu' => 'Product',
             'url' => '/products',
             'group_menu' => 'Sales',
-            'main_menu' => 7,
+            'main_menu' => 4,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'History',
             'url' => '/products/history',
             'group_menu' => 'Sales',
-            'main_menu' => 7,
+            'main_menu' => 4,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Unit',
             'url' => '/units',
             'group_menu' => 'Sales',
-            'main_menu' => 7,
+            'main_menu' => 4,
             'is_active' => true,
         ]);
         
@@ -96,23 +75,23 @@ class MenuSeeder extends Seeder
             'menu' => 'Surat Jalan',
             'url' => '/transaksi/suratJalan',
             'group_menu' => 'Sales',
-            'main_menu' => 11,
+            'main_menu' => 8,
             'is_active' => true,
         ]);
 
         Menu::create([
             'menu' => 'Invoice Jual',
-            'url' => '/invoice',
+            'url' => '/transaksi/invoiceJual',
             'group_menu' => 'Sales',
-            'main_menu' => 11,
+            'main_menu' => 8,
             'is_active' => true,
         ]);
 
         Menu::create([
             'menu' => 'Invoice Hutang Beli',
-            'url' => '/invoice/hutang',
+            'url' => '/transaksi/invoiceHutang',
             'group_menu' => 'Sales',
-            'main_menu' => 11,
+            'main_menu' => 8,
             'is_active' => true,
         ]);
 
@@ -134,21 +113,21 @@ class MenuSeeder extends Seeder
             'menu' => 'Modal',
             'url' => '/modal',
             'group_menu' => 'General',
-            'main_menu' => 16,
+            'main_menu' => 12,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Hutang',
             'url' => '/hutang',
             'group_menu' => 'General',
-            'main_menu' => 16,
+            'main_menu' => 12,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Piutang',
             'url' => '/piutang',
             'group_menu' => 'General',
-            'main_menu' => 16,
+            'main_menu' => 12,
             'is_active' => true,
         ]);
     }

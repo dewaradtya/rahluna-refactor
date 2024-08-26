@@ -1,24 +1,26 @@
 import { useForm } from '@inertiajs/react';
-import { InputField, Select } from '../../../../Components/FieldInput';
+import { InputField, InputTextarea, Select } from '../../../Components/FieldInput';
 import { useEffect, useMemo } from 'react';
-import Modal from '../../../../Components/Modal';
-import LoadingButton from '../../../../Components/Button/LoadingButton';
+import Modal from '../../../Components/Modal';
+import LoadingButton from '../../../Components/Button/LoadingButton';
 
-const Create = ({ showModal, setShowModal, products, productPackageId }) => {
+const Create = ({ showModal, setShowModal, products, customerId }) => {
     const options = useMemo(
         () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
         [products]
     );
 
-    const { setData, post, processing, errors, recentlySuccessful } = useForm({
+    const { data, setData, post, processing, errors, recentlySuccessful, hasErrors } = useForm({
         product_id: null,
-        product_package_id: productPackageId,
-        qty: 0
+        qty: 0,
+        note: '',
+        customer_id: customerId || null
     });
+    
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(`/products/package/detail`, {
+        post(`/transaksi/suratJalan`, {
             preserveScroll: true
         });
     };
@@ -28,10 +30,9 @@ const Create = ({ showModal, setShowModal, products, productPackageId }) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Tambah Produk Paket" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Tambah Produk Surat Jalan" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
-                    <input type="hidden" name="product_package_id" value={productPackageId} />
                     <Select
                         label="Product"
                         id="product-create"
@@ -46,6 +47,14 @@ const Create = ({ showModal, setShowModal, products, productPackageId }) => {
                         id="qty-create"
                         error={errors?.qty}
                         onChange={(e) => setData('qty', e.target.value)}
+                        required
+                    />
+                    <InputTextarea
+                        label="Keterangan"
+                        id="note-create"
+                        error={errors?.note}
+                        value={data.note}
+                        onChange={(e) => setData('note', e.target.value)}
                         required
                     />
                     <Modal.Footer>

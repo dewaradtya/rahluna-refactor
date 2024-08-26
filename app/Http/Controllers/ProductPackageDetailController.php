@@ -46,7 +46,6 @@ class ProductPackageDetailController extends Controller
 
         $productPackageDetail = ProductPackageDetail::with('product')->where('product_package_id', $id)->paginate($perPage)->appends($request->query());
 
-
         $products = Product::all();
 
         return Inertia::render('Product/Package/Detail/Index', [

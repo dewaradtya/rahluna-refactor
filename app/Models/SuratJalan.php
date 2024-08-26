@@ -11,11 +11,16 @@ class SuratJalan extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['invoice_id', 'customer_id', 'no_surat', 'tanggal_kirim'];
+    protected $fillable = ['surat_jalan_new_id', 'customer_id', 'product_id', 'purchase_price', 'price', 'qty', 'note', 'kategori'];
 
-    public function invoice()
+    public function product()
     {
-        return $this->belongsTo(Invoice::class, 'invoice_id');
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function suratJalanNew()
+    {
+        return $this->belongsTo(SuratJalanNew::class, 'surat_jalan_new_id');
     }
 
     public function customer()

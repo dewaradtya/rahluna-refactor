@@ -120,6 +120,9 @@ const Index = ({ oprasionals }) => {
         const totalBayarPajak = oprasionals.data
             .filter(row => row.funding === 'Bayar Pajak')
             .reduce((total, row) => total + (Number(row.amount) || 0), 0);
+        const totalEntertaintCost = oprasionals.data
+            .filter(row => row.funding === 'Entertaint Cost')
+            .reduce((total, row) => total + (Number(row.amount) || 0), 0);
         const totalPajakMasukan = oprasionals.data.reduce((total, row) => {
             const taxValue = row.tax && row.tax.tax_value ? Number(row.tax.tax_value) : 0;
             return total + taxValue;
@@ -130,6 +133,7 @@ const Index = ({ oprasionals }) => {
             totalGaji: rupiah(totalGaji),
             totalFee: rupiah(totalFee),
             totalBayarPajak: rupiah(totalBayarPajak),
+            totalEntertaintCost: rupiah(totalEntertaintCost),
             totalPajakMasukan: rupiah(totalPajakMasukan)
         };
     }, [oprasionals]);    
@@ -140,6 +144,7 @@ const Index = ({ oprasionals }) => {
         { key: 'totalGaji', label: 'Total Gaji' },
         { key: 'totalFee', label: 'Total Fee' },
         { key: 'totalBayarPajak', label: 'Total Bayar Pajak' },
+        { key: 'totalEntertaintCost', label: 'Total Enetrtaint Cost' },
         { key: 'totalPajakMasukan', label: 'Total Pajak Masukan' }
     ];
 

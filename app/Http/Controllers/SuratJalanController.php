@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SuratJalanStoreRequest;
 use App\Models\Customer;
+use App\Models\Product;
 use App\Models\SuratJalan;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -36,27 +40,46 @@ class SuratJalanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SuratJalanStoreRequest $request): RedirectResponse
     {
-        //
+        DB::beginTransaction();
+        try {
+            $validatedData = $request->validated();
+            Log::info('Validated Data:', $validatedData);
+
+            $product = Product::findOrFail($validatedData['product_id']);
+            $validatedData['purchase_price'] = $product->purchase_price;
+            $validatedData['price'] = $product->price;
+            $validatedData['kategori'] = 0;
+            $validatedData['surat_jalan_new_id'] = 0;
+
+            $suratJalan = SuratJalan::create($validatedData);
+            Log::info('Surat Jalan Created:', $suratJalan);
+            
+            DB::commit();
+            return Redirect::back()->with('success', 'Surat Jalan berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error storing Surat Jalan: ', ['exception' => $e]);
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah Surat Jalan. Silahkan coba lagi.');
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Request $request, $id): Response
     {
-        try {
-            Log::info("Fetching data for suratJalan ID: $id");
-            $suratJalan = SuratJalan::with('customers')->findOrFail($id);
-            return Inertia::render('Transaction/SuratJalan/Show', [
-                'suratJalan' => $suratJalan,
-                'customers' => $suratJalan->customers
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error showing suratJalan data: ' . $e->getMessage());
-            return Redirect::back()->with('error', 'Terjadi kesalahan. Silahkan coba lagi.');
-        }
+        $perPage = $request->query('perPage', 100);
+        $customers = Customer::findOrFail($id);
+        $suratJalan = SuratJalan::with(['product', 'surat_jalan_new'])->where('customer_id', $id)->paginate($perPage)->appends($request->query());
+        $products = Product::all();
+
+        return Inertia::render('Transaction/SuratJalan/Show', [
+            'suratJalan' => $suratJalan,
+            'customers' => $customers,
+            'products' => $products,
+        ]);
     }
 
     /**
