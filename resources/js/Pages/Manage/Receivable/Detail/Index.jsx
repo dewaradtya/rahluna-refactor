@@ -6,14 +6,17 @@ import Table from '../../../../Components/Table';
 import Pagination from '../../../../Components/Pagination';
 import SplitButton from '../../../../Components/Button/SplitButton';
 import BadgeButton from '../../../../Components/Button/BadgeButton';
-import { FaPlus } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../../utils';
+import Card from '../../../../Components/Card';
 
 const Index = ({ receivable, receivableDetails }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, receivableDetail: null });
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleEditButton = (receivableDetail) => {
         setShowUpdateModal({ modal: true, receivableDetail: receivableDetail });
@@ -27,6 +30,13 @@ const Index = ({ receivable, receivableDetails }) => {
         });
     };
 
+    const handleBackButton = () => {
+        router.get('/piutang');
+    };
+
+    const filteredReceivableDetail = receivableDetails.data.filter((receivableDetail) =>
+        receivableDetail.amount.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
     const columns = useMemo(
         () => [
             {
@@ -75,25 +85,72 @@ const Index = ({ receivable, receivableDetails }) => {
         [loadingButton]
     );
 
+    const totals = useMemo(() => {
+        const TotalHutang = receivableDetails.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
+        const TotalBayar = receivableDetails.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
+        const TotalKurang = receivableDetails.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
+
+        return {
+            TotalHutang: rupiah(TotalHutang),
+            TotalBayar: rupiah(TotalBayar),
+            TotalKurang: rupiah(TotalKurang)
+        };
+    }, [receivableDetails]);
+
+    const footerColumns = [
+        { key: 'TotalHutang', label: 'Total Hutang' },
+        { key: 'TotalBayar', label: 'Total Bayar' },
+        { key: 'TotalKurang', label: 'Total Kurang' }
+    ];
+
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Piutang Detail</h1>
-
-                <SplitButton color="primary" text="Tambah" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-            </div>
-
-            <Table columns={columns} rows={receivableDetails.data} />
-            <Pagination links={receivableDetails.links} />
-
-            {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} receivableId={receivable.id} />}
-            {showUpdateModal.modal && (
-                <Update
-                    showModal={showUpdateModal.modal}
-                    setShowModal={setShowUpdateModal}
-                    receivableDetail={showUpdateModal.receivableDetail}
+            <Card>
+                <Card.CardHeader
+                    titleText="Table Piutang Detail"
+                    rightComponent={
+                        <SplitButton color="danger" text="Piutang" icon={<FaArrowLeft />} onClick={() => handleBackButton(true)} />
+                    }
                 />
-            )}
+
+                <Card.CardBody>
+                    <div className="d-sm-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex column-gap-1 align-items-start flex-wrap">
+                            <SplitButton
+                                color="success"
+                                text="Bayar Piutang"
+                                icon={<FaPlus />}
+                                onClick={() => setShowCreateModal(true)}
+                            />
+                        </div>
+                    </div>
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
+
+                    <Table
+                        columns={columns}
+                        rows={filteredReceivableDetail.slice(0, entriesPerPage)}
+                        footer={totals}
+                        footerColumns={footerColumns}
+                    />
+                    <Pagination links={receivableDetails.links} />
+                </Card.CardBody>
+
+                {showCreateModal && (
+                    <Create showModal={showCreateModal} setShowModal={setShowCreateModal} receivableId={receivable.id} />
+                )}
+                {showUpdateModal.modal && (
+                    <Update
+                        showModal={showUpdateModal.modal}
+                        setShowModal={setShowUpdateModal}
+                        receivableDetail={showUpdateModal.receivableDetail}
+                    />
+                )}
+            </Card>
         </>
     );
 };

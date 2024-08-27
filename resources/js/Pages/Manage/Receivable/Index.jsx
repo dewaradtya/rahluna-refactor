@@ -10,11 +10,14 @@ import BadgeLink from '../../../Components/Link/BadgeLink';
 import { FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../utils';
+import Card from '../../../Components/Card';
 
 const Index = ({ receivables }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, receivable: null });
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleEditButton = (receivable) => {
         setShowUpdateModal({ modal: true, receivable: receivable });
@@ -27,6 +30,12 @@ const Index = ({ receivables }) => {
             onFinish: () => setLoadingButton(null)
         });
     };
+
+    const filteredReceivable = receivables.data.filter(
+        (receivable) =>
+            receivable.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            receivable.amount.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const columns = useMemo(
         () => [
@@ -83,25 +92,57 @@ const Index = ({ receivables }) => {
         [loadingButton]
     );
 
+    const totals = useMemo(() => {
+        const TotalSisaHutang = receivables.data.reduce((total, row) => total + (Number(row.remaining) || 0), 0);
+
+        return {
+            TotalSisaHutang: rupiah(TotalSisaHutang)
+        };
+    }, [receivables]);
+
+    const footerColumns = [{ key: 'TotalSisaHutang', label: 'Total Sisa Hutang' }];
+
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Piutang</h1>
+             <Card>
+                <Card.CardHeader titleText="Table Piutang" />
 
-                <SplitButton color="primary" text="Tambah" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-            </div>
+                <Card.CardBody>
+                    <div className="d-sm-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex column-gap-1 align-items-start flex-wrap">
+                            <SplitButton
+                                color="primary"
+                                text="Piutang Baru"
+                                icon={<FaPlus />}
+                                onClick={() => setShowCreateModal(true)}
+                            />
+                        </div>
+                    </div>
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
 
-            <Table columns={columns} rows={receivables.data} />
-            <Pagination links={receivables.links} />
+                    <Table
+                        columns={columns}
+                        rows={filteredReceivable.slice(0, entriesPerPage)}
+                        footer={totals}
+                        footerColumns={footerColumns}
+                    />
+                    <Pagination links={receivables.links} />
+                </Card.CardBody>
 
-            {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
-            {showUpdateModal.modal && (
-                <Update
-                    showModal={showUpdateModal.modal}
-                    setShowModal={setShowUpdateModal}
-                    receivable={showUpdateModal.receivable}
-                />
-            )}
+                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
+                {showUpdateModal.modal && (
+                    <Update
+                        showModal={showUpdateModal.modal}
+                        setShowModal={setShowUpdateModal}
+                        receivable={showUpdateModal.receivable}
+                    />
+                )}
+            </Card>
         </>
     );
 };

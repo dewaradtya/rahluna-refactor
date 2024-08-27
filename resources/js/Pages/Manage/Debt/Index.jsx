@@ -10,11 +10,14 @@ import BadgeLink from '../../../Components/Link/BadgeLink';
 import { FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../utils';
+import Card from '../../../Components/Card';
 
 const Index = ({ debts }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, debt: null });
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleEditButton = (debt) => {
         setShowUpdateModal({ modal: true, debt: debt });
@@ -27,6 +30,12 @@ const Index = ({ debts }) => {
             onFinish: () => setLoadingButton(null)
         });
     };
+
+    const filteredDebt = debts.data.filter(
+        (debt) =>
+            debt.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            debt.amount.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const columns = useMemo(
         () => [
@@ -84,21 +93,57 @@ const Index = ({ debts }) => {
         [loadingButton]
     );
 
+    const totals = useMemo(() => {
+        const TotalSisaHutang = debts.data.reduce((total, row) => total + (Number(row.remaining) || 0), 0);
+
+        return {
+            TotalSisaHutang: rupiah(TotalSisaHutang)
+        };
+    }, [debts]);
+
+    const footerColumns = [{ key: 'TotalSisaHutang', label: 'Total Sisa Hutang' }];
+
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Hutang</h1>
+            <Card>
+                <Card.CardHeader titleText="Table Hutang" />
 
-                <SplitButton color="primary" text="Tambah" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-            </div>
+                <Card.CardBody>
+                    <div className="d-sm-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex column-gap-1 align-items-start flex-wrap">
+                            <SplitButton
+                                color="primary"
+                                text="Hutang Baru"
+                                icon={<FaPlus />}
+                                onClick={() => setShowCreateModal(true)}
+                            />
+                        </div>
+                    </div>
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
 
-            <Table columns={columns} rows={debts.data} />
-            <Pagination links={debts.links} />
+                    <Table
+                        columns={columns}
+                        rows={filteredDebt.slice(0, entriesPerPage)}
+                        footer={totals}
+                        footerColumns={footerColumns}
+                    />
+                    <Pagination links={debts.links} />
+                </Card.CardBody>
 
-            {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
-            {showUpdateModal.modal && (
-                <Update showModal={showUpdateModal.modal} setShowModal={setShowUpdateModal} debt={showUpdateModal.debt} />
-            )}
+                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
+                {showUpdateModal.modal && (
+                    <Update
+                        showModal={showUpdateModal.modal}
+                        setShowModal={setShowUpdateModal}
+                        debt={showUpdateModal.debt}
+                    />
+                )}
+            </Card>
         </>
     );
 };

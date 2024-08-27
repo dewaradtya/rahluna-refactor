@@ -12,15 +12,15 @@ import Card from '../../../Components/Card';
 import Create from './Create';
 import Update from './Update';
 
-const Index = ({ debtinvoices }) => {
+const Index = ({ debtInvoices }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, debtinvoice: null });
+    const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, debtInvoice: null });
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
 
-    const handleEditButton = (debtinvoice) => {
-        setShowUpdateModal({ modal: true, debtinvoice: debtinvoice });
+    const handleEditButton = (debtInvoice) => {
+        setShowUpdateModal({ modal: true, debtInvoice: debtInvoice });
     };
 
     const handleDeleteButton = (id) => {
@@ -31,10 +31,10 @@ const Index = ({ debtinvoices }) => {
         });
     };
 
-    const filteredDebtInvoices = debtinvoices.data.filter(
-        (debtinvoice) =>
-            debtinvoice.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            debtinvoice.amount.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredDebtInvoices = debtInvoices.data.filter(
+        (debtInvoice) =>
+            debtInvoice.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            debtInvoice.amount.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const columns = useMemo(
@@ -105,6 +105,19 @@ const Index = ({ debtinvoices }) => {
         [loadingButton]
     );
 
+    const totals = useMemo(() => {
+        const TotalSisaHutang = debtInvoices.data.reduce((total, row) => total + (Number(row.remaining) || 0), 0);
+    
+        return {
+            TotalSisaHutang: rupiah(TotalSisaHutang),
+        };
+    }, [debtInvoices]);    
+    
+
+    const footerColumns = [
+        { key: 'TotalSisaHutang', label: 'Total Sisa Hutang' },
+    ];
+
     return (
         <>
             <Card>
@@ -124,8 +137,8 @@ const Index = ({ debtinvoices }) => {
                         setEntriesPerPage={setEntriesPerPage}
                     />
 
-                    <Table columns={columns} rows={filteredDebtInvoices.slice(0, entriesPerPage)} />
-                    <Pagination links={debtinvoices.links} />
+                    <Table columns={columns} rows={filteredDebtInvoices.slice(0, entriesPerPage)}  footer={totals} footerColumns={footerColumns}/>
+                    <Pagination links={debtInvoices.links} />
                 </Card.CardBody>
 
                 {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
@@ -133,7 +146,7 @@ const Index = ({ debtinvoices }) => {
                     <Update
                         showModal={showUpdateModal.modal}
                         setShowModal={setShowUpdateModal}
-                        debtinvoice={showUpdateModal.debtinvoice}
+                        debtInvoice={showUpdateModal.debtInvoice}
                     />
                 )}
             </Card>

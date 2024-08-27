@@ -8,11 +8,14 @@ import SplitButton from '../../Components/Button/SplitButton';
 import BadgeButton from '../../Components/Button/BadgeButton';
 import { FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
+import Card from '../../Components/Card';
 
 const Index = ({ units }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, unit: null });
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleEditButton = (unit) => {
         setShowUpdateModal({ modal: true, unit: unit });
@@ -25,6 +28,11 @@ const Index = ({ units }) => {
             onFinish: () => setLoadingButton(null)
         });
     };
+
+    const filteredUnit = units.data.filter(
+        (unit) =>
+            unit.name.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const columns = useMemo(
         () => [
@@ -58,19 +66,43 @@ const Index = ({ units }) => {
 
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Satuan</h1>
+             <Card>
+                <Card.CardHeader titleText="Table Satuan" />
 
-                <SplitButton color="primary" text="Tambah" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-            </div>
+                <Card.CardBody>
+                    <div className="d-sm-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex column-gap-1 align-items-start flex-wrap">
+                            <SplitButton
+                                color="primary"
+                                text="Satuan Baru"
+                                icon={<FaPlus />}
+                                onClick={() => setShowCreateModal(true)}
+                            />
+                        </div>
+                    </div>
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
 
-            <Table columns={columns} rows={units.data} />
-            <Pagination links={units.links} />
+                    <Table
+                        columns={columns}
+                        rows={filteredUnit.slice(0, entriesPerPage)}
+                    />
+                    <Pagination links={units.links} />
+                </Card.CardBody>
 
-            {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
-            {showUpdateModal.modal && (
-                <Update showModal={showUpdateModal.modal} setShowModal={setShowUpdateModal} unit={showUpdateModal.unit} />
-            )}
+                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
+                {showUpdateModal.modal && (
+                    <Update
+                        showModal={showUpdateModal.modal}
+                        setShowModal={setShowUpdateModal}
+                        unit={showUpdateModal.unit}
+                    />
+                )}
+            </Card>
         </>
     );
 };

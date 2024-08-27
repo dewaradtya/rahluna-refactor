@@ -18,22 +18,22 @@ class DebtInvoiceController extends Controller
     {
         $perPage = $request->query('perPage') ?? 100;
 
-        $debtinvoices = DebtInvoice::paginate($perPage)->appends($request->query());
+        $debtInvoices = DebtInvoice::paginate($perPage)->appends($request->query());
 
-        return Inertia::render('Transaction/InvoiceHutang/Index', compact('debtinvoices'));
+        return Inertia::render('Transaction/InvoiceHutang/Index', compact('debtInvoices'));
     }
 
-    public function show(Request $request, int $piutang): Response|RedirectResponse
+    public function show(Request $request, int $invhutang): Response|RedirectResponse
     {
         try {
             $perPage = $request->query('perPage') ?? 100;
 
-            $receivable = DebtInvoice::findOrFail($piutang);
-            $receivableDetails = $receivable->receivableDetails()->paginate($perPage)->appends($request->query());
+            $debtInvoice = DebtInvoice::findOrFail($invhutang);
+            $debtInvoiceDetails = $debtInvoice->debtInvoiceDetails()->paginate($perPage)->appends($request->query());
 
-            return Inertia::render('Manage/Receivable/Detail/Index', compact('receivable', 'receivableDetails'));
+            return Inertia::render('Transaction/InvoiceHutang/Detail/Index', compact('debtInvoice', 'debtInvoiceDetails'));
         } catch (\Exception $e) {
-            return Redirect::route('piutang.index')->with('error', 'Piutang tidak ditemukan');
+            return Redirect::back()->with('error', 'Invoice hutang tidak ditemukan');
         }
     }
 
@@ -48,7 +48,7 @@ class DebtInvoiceController extends Controller
 
             return Redirect::back()->with('success', 'Invoice Hutang berhasil ditambahkan');
         } catch (\Exception $e) {
-            Log::error('Error storing receivable: ', ['exception' => $e]);
+            Log::error('Error storing debtInvoices: ', ['exception' => $e]);
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah invoice hutang. Silahkan coba lagi.');
         }
     }
@@ -64,7 +64,7 @@ class DebtInvoiceController extends Controller
 
             return Redirect::back()->with('success', 'Invoice Hutang berhasil diubah');
         } catch (\Exception $e) {
-            Log::error('Error updating receivable: ', ['exception' => $e]);
+            Log::error('Error updating debtInvoices: ', ['exception' => $e]);
             return Redirect::back()->with('error', 'Terjadi kesalahan saat mengubah invoice hutang. Silahkan coba lagi.');
         }
     }
@@ -78,7 +78,7 @@ class DebtInvoiceController extends Controller
 
             return Redirect::back()->with('success', 'Invoice Hutang berhasil dihapus');
         } catch (\Exception $e) {
-            Log::error('Error deleting receivable: ', ['exception' => $e]);
+            Log::error('Error deleting debtInvoices: ', ['exception' => $e]);
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus invoice hutang. Silahkan coba lagi.');
         }
     }

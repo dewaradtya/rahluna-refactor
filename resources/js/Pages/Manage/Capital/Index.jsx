@@ -9,11 +9,14 @@ import BadgeButton from '../../../Components/Button/BadgeButton';
 import { FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../utils';
+import Card from '../../../Components/Card';
 
 const Index = ({ capitals }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, capital: null });
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleEditButton = (capital) => {
         setShowUpdateModal({ modal: true, capital: capital });
@@ -26,6 +29,12 @@ const Index = ({ capitals }) => {
             onFinish: () => setLoadingButton(null)
         });
     };
+
+    const filteredCapital = capitals.data.filter(
+        (capital) =>
+            capital.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            capital.amount.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const columns = useMemo(
         () => [
@@ -69,19 +78,40 @@ const Index = ({ capitals }) => {
 
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Modal</h1>
+            <Card>
+                <Card.CardHeader titleText="Table Modal" />
 
-                <SplitButton color="primary" text="Tambah" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-            </div>
+                <Card.CardBody>
+                    <div className="d-sm-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex column-gap-1 align-items-start flex-wrap">
+                            <SplitButton
+                                color="primary"
+                                text="Modal Baru"
+                                icon={<FaPlus />}
+                                onClick={() => setShowCreateModal(true)}
+                            />
+                        </div>
+                    </div>
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
 
-            <Table columns={columns} rows={capitals.data} />
-            <Pagination links={capitals.links} />
+                    <Table columns={columns} rows={filteredCapital.slice(0, entriesPerPage)} />
+                    <Pagination links={capitals.links} />
+                </Card.CardBody>
 
-            {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
-            {showUpdateModal.modal && (
-                <Update showModal={showUpdateModal.modal} setShowModal={setShowUpdateModal} capital={showUpdateModal.capital} />
-            )}
+                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
+                {showUpdateModal.modal && (
+                    <Update
+                        showModal={showUpdateModal.modal}
+                        setShowModal={setShowUpdateModal}
+                        capital={showUpdateModal.capital}
+                    />
+                )}
+            </Card>
         </>
     );
 };
