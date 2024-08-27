@@ -26,7 +26,6 @@ class DebtInvoiceDetailUpdateRequest extends FormRequest
             'description' => 'required|string',
             'amount' => 'required|decimal:0,2',
             'proof' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
-            'oprasional_id' => 'required|exists:oprasionals,id',
         ];
     }
 }

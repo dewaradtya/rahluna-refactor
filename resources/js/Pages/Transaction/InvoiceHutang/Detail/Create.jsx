@@ -1,21 +1,22 @@
 import { useForm } from '@inertiajs/react';
-import { InputField, InputCheckbox, InputNumber, InputTextarea } from '../../../Components/FieldInput';
+import { InputField, InputNumber, InputTextarea } from '../../../../Components/FieldInput';
 import { useEffect } from 'react';
-import Modal from '../../../Components/Modal';
-import LoadingButton from '../../../Components/Button/LoadingButton';
-import { rupiah, today } from '../../../utils';
+import Modal from '../../../../Components/Modal';
+import LoadingButton from '../../../../Components/Button/LoadingButton';
+import { rupiah, today } from '../../../../utils';
 
-const Create = ({ showModal, setShowModal }) => {
+const Create = ({ showModal, setShowModal, debtInvoiceId }) => {
     const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
+        oprasional_id: debtInvoiceId,
         date: today(),
-        origin: '',
+        description: '',
         amount: 0,
-        cashflow: true
+        proof: null
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/transaksi/invoiceHutang', {
+        post('/transaksi/invoiceHutang/detail', {
             preserveScroll: true
         });
     };
@@ -25,38 +26,40 @@ const Create = ({ showModal, setShowModal }) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Tambah Hutang Invoice" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Tambah Bayar Hutang Invoice" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <InputField
-                        label="Jatuh Tempo"
+                        label="Tanggal Bayar"
                         id="date-create"
                         type="date"
                         value={data.date}
                         error={errors?.date}
                         onChange={(e) => setData('date', e.target.value)}
-                        required={true}
-                    />
-                    <InputField
-                        label="Supplier"
-                        id="origin-create"
-                        error={errors?.origin}
-                        onChange={(e) => setData('origin', e.target.value)}
-                        required={true}
+                        required
                     />
                     <InputNumber
-                        label="Nilai"
-                        id="nilai-create"
+                        label="Nilai Bayar"
+                        id="amount-create"
                         addonText={rupiah(data.amount)}
                         error={errors?.amount}
                         onChange={(e) => setData('amount', e.target.value)}
                         required
                     />
-                    <InputCheckbox
-                        label="Data inputan lama, tidak merubah cashflow."
-                        id="cashflow-create"
-                        checked={data.cashflow}
-                        onChange={(e) => setData('cashflow', e.target.checked)}
+                    <InputTextarea
+                        label="Keterangan"
+                        id="description-create"
+                        value={data.description}
+                        error={errors?.description}
+                        onChange={(e) => setData('description', e.target.value)}
+                        required
+                    />
+                    <InputField
+                        type="file"
+                        label="Bukti"
+                        id="proof-create"
+                        error={errors?.proof}
+                        onChange={(e) => setData('proof', e.target.files[0])}
                     />
                     <Modal.Footer>
                         <LoadingButton type="button" onClick={() => setShowModal(false)} loading={processing}>

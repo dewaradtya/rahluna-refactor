@@ -1,19 +1,22 @@
 import MainLayout from '../../../../Layouts/MainLayout';
 import { useMemo, useState } from 'react';
-// import Create from './Create';
-// import Update from './Update';
+import Create from './Create';
+import Update from './Update';
 import Table from '../../../../Components/Table';
 import Pagination from '../../../../Components/Pagination';
 import SplitButton from '../../../../Components/Button/SplitButton';
 import BadgeButton from '../../../../Components/Button/BadgeButton';
-import { FaPlus } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../../utils';
+import Card from '../../../../Components/Card';
 
 const Index = ({ debtInvoice, debtInvoiceDetails }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, debtInvoiceDetail: null });
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleEditButton = (debtInvoiceDetail) => {
         setShowUpdateModal({ modal: true, debtInvoiceDetail: debtInvoiceDetail });
@@ -26,6 +29,16 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
             onFinish: () => setLoadingButton(null)
         });
     };
+
+    const handleBackButton = () => {
+        router.get('/transaksi/invoiceHutang');
+    };
+
+    const filteredDebtInvoiceDetail = debtInvoiceDetails.data.filter(
+        (debtInvoiceDetail) =>
+            debtInvoiceDetail.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            debtInvoiceDetail.amount.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const columns = useMemo(
         () => [
@@ -75,25 +88,76 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
         [loadingButton]
     );
 
+    const totals = useMemo(() => {
+        const TotalHutang = debtInvoiceDetails.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
+        const TotalBayar = debtInvoiceDetails.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
+        const TotalKurang = debtInvoiceDetails.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
+
+        return {
+            TotalHutang: rupiah(TotalHutang),
+            TotalBayar: rupiah(TotalBayar),
+            TotalKurang: rupiah(TotalKurang)
+        };
+    }, [debtInvoiceDetails]);
+
+    const footerColumns = [
+        { key: 'TotalHutang', label: 'Total Hutang' },
+        { key: 'TotalBayar', label: 'Total Bayar' },
+        { key: 'TotalKurang', label: 'Total Kurang' }
+    ];
+
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Hutang Invoice Detail</h1>
-
-                <SplitButton color="primary" text="Tambah" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-            </div>
-
-            <Table columns={columns} rows={debtInvoiceDetails.data} />
-            <Pagination links={debtInvoiceDetails.links} />
-
-            {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} debtInvoiceId={debtInvoice.id} />}
-            {showUpdateModal.modal && (
-                <Update
-                    showModal={showUpdateModal.modal}
-                    setShowModal={setShowUpdateModal}
-                    debtInvoiceDetail={showUpdateModal.debtInvoiceDetail}
+            <Card>
+                <Card.CardHeader
+                    titleText="Table Hutang Invoice Beli Detail"
+                    rightComponent={
+                        <SplitButton
+                            color="danger"
+                            text="Inv Hutang"
+                            icon={<FaArrowLeft />}
+                            onClick={() => handleBackButton(true)}
+                        />
+                    }
                 />
-            )}
+
+                <Card.CardBody>
+                    <div className="d-sm-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex column-gap-1 align-items-start flex-wrap">
+                            <SplitButton
+                                color="success"
+                                text="Bayar Hutang Inv"
+                                icon={<FaPlus />}
+                                onClick={() => setShowCreateModal(true)}
+                            />
+                        </div>
+                    </div>
+                    {/* Input pencarian dan dropdown entri per halaman */}
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
+
+                    <Table
+                        columns={columns}
+                        rows={filteredDebtInvoiceDetail.slice(0, entriesPerPage)}
+                        footer={totals}
+                        footerColumns={footerColumns}
+                    />
+                    <Pagination links={debtInvoiceDetails.links} />
+                </Card.CardBody>
+
+                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
+                {showUpdateModal.modal && (
+                    <Update
+                        showModal={showUpdateModal.modal}
+                        setShowModal={setShowUpdateModal}
+                        debtInvoiceDetail={showUpdateModal.debtInvoiceDetail}
+                    />
+                )}
+            </Card>
         </>
     );
 };

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DebtInvoice extends Model
 {
@@ -30,5 +31,10 @@ class DebtInvoice extends Model
         static::addGlobalScope('funding', function (Builder $builder) {
             $builder->where('funding', 'Invoice Hutang');
         });
+    }
+
+    public function debtInvoiceDetails(): HasMany
+    {
+        return $this->hasMany(DebtInvoiceDetail::class, 'oprasional_id');
     }
 }

@@ -1,22 +1,22 @@
 import { useForm } from '@inertiajs/react';
-import { InputField, InputCheckbox, InputNumber, InputTextarea } from '../../../Components/FieldInput';
+import { InputField, InputNumber, InputTextarea } from '../../../../Components/FieldInput';
 import { useEffect } from 'react';
-import Modal from '../../../Components/Modal';
-import LoadingButton from '../../../Components/Button/LoadingButton';
-import { rupiah, today } from '../../../utils';
+import Modal from '../../../../Components/Modal';
+import LoadingButton from '../../../../Components/Button/LoadingButton';
+import { rupiah, today } from '../../../../utils';
 
-const Update = ({ showModal, setShowModal, debtInvoice }) => {
+const Update = ({ showModal, setShowModal, debtInvoiceDetail }) => {
     const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
-        date: debtInvoice.date || today(),
-        origin: debtInvoice.origin || '',
-        amount: debtInvoice.amount || 0,
-        cashflow: debtInvoice.cashflow || false,
+        date: debtInvoiceDetail.date || today(),
+        description: debtInvoiceDetail.description || '',
+        amount: debtInvoiceDetail.amount || 0,
+        proof: null,
         _method: 'put'
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(`/transaksi/invoiceHutang/${debtInvoice.id}`, {
+        post(`/transaksi/invoiceHutang/detail/${debtInvoiceDetail.id}`, {
             preserveScroll: true
         });
     };
@@ -26,40 +26,41 @@ const Update = ({ showModal, setShowModal, debtInvoice }) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Edit Hutang Invoice" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Edit Bayar Hutang Invoice" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <InputField
-                        label="Jatuh Tempo"
+                        label="Tanggal Bayar"
                         id="date-update"
                         type="date"
                         value={data.date}
                         error={errors?.date}
                         onChange={(e) => setData('date', e.target.value)}
-                        required={true}
-                    />
-                    <InputField
-                        label="Supplier"
-                        id="origin-update"
-                        value={data.origin}
-                        error={errors?.origin}
-                        onChange={(e) => setData('origin', e.target.value)}
-                        required={true}
+                        required
                     />
                     <InputNumber
-                        label="Nilai Hutang Invoice"
-                        id="nilai-update"
+                        label="Nilai Bayar"
+                        id="amount-update"
                         addonText={rupiah(data.amount)}
                         value={data.amount}
                         error={errors?.amount}
                         onChange={(e) => setData('amount', e.target.value)}
                         required
                     />
-                    <InputCheckbox
-                        label="Data inputan lama, tidak merubah cashflow."
-                        id="cashflow-update"
-                        checked={data.cashflow}
-                        onChange={(e) => setData('cashflow', e.target.checked)}
+                    <InputTextarea
+                        label="Keterangan"
+                        id="description-update"
+                        value={data.description}
+                        error={errors?.description}
+                        onChange={(e) => setData('description', e.target.value)}
+                        required
+                    />
+                    <InputField
+                        type="file"
+                        label="Bukti"
+                        id="proof-update"
+                        error={errors?.proof}
+                        onChange={(e) => setData('proof', e.target.files[0])}
                     />
                     <Modal.Footer>
                         <LoadingButton type="button" onClick={() => setShowModal(false)} loading={processing}>
