@@ -67,10 +67,9 @@ const Index = ({ debtInvoices }) => {
                 label: 'Status',
                 name: 'status',
                 renderCell: (row) => {
-                    const dueDate = new Date(row.date);
-                    const today = new Date();
-                    const status = today > dueDate ? 'over time' : 'process';
-                    const color = status === 'over time' ? 'danger' : 'warning';
+                    const remaining = Number(row.remaining);
+                    const color = remaining === 0 ? 'success' : remaining > 0 ? 'danger' : 'warning';
+                    const status = remaining === 0 ? 'Selesai' : remaining > 0 ? (new Date() > new Date(row.date) ? 'over time' : 'process') : 'unknown';
 
                     return (
                         <BadgeButton

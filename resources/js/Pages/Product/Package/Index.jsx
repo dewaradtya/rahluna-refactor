@@ -35,7 +35,7 @@ const Index = ({ productPackages, units }) => {
     };
 
     const handleLihatButton = (id) => {
-        router.get(`/products/package/detail/${id}`);
+        router.get(`/products/package/${id}`);
     };
 
     const filteredProductsPackage = productPackages.data.filter(
@@ -54,7 +54,7 @@ const Index = ({ productPackages, units }) => {
             {
                 label: 'Harga Beli',
                 name: 'purchase_price',
-                renderCell: (row) => rupiah(row.purchase_price)
+                renderCell: (row) => rupiah(row.total_purchase_price)
             },
             {
                 label: 'Harga Jual',

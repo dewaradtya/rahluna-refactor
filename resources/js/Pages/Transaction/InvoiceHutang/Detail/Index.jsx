@@ -149,7 +149,7 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
                     <Pagination links={debtInvoiceDetails.links} />
                 </Card.CardBody>
 
-                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
+                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal}  debtInvoiceId={debtInvoice.id}/>}
                 {showUpdateModal.modal && (
                     <Update
                         showModal={showUpdateModal.modal}

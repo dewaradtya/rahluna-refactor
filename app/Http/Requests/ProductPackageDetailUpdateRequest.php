@@ -23,6 +23,7 @@ class ProductPackageDetailUpdateRequest extends FormRequest
     {
         return [
             'product_id' => 'required|exists:products,id',
+            'product_package_id' => 'required|exists:product_packages,id',
             'qty' => 'required|integer|min:1',
         ];
     }

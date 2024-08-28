@@ -38,23 +38,6 @@ class ProductPackageDetailController extends Controller
         }
     }
 
-    public function show(Request $request, $id): Response
-    {
-        $perPage = $request->query('perPage', 100);
-
-        $productPackage = ProductPackage::findOrFail($id);
-
-        $productPackageDetail = ProductPackageDetail::with('product')->where('product_package_id', $id)->paginate($perPage)->appends($request->query());
-
-        $products = Product::all();
-
-        return Inertia::render('Product/Package/Detail/Index', [
-            'productPackage' => $productPackage,
-            'productPackageDetail' => $productPackageDetail,
-            'products' => $products,
-        ]);
-    }
-
     public function update(ProductPackageDetailUpdateRequest $request, int $productpackageDetail): RedirectResponse
     {
         try {

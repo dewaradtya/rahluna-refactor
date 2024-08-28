@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductPackageStoreRequest;
 use App\Http\Requests\ProductPackageUpdateRequest;
+use App\Models\Product;
 use App\Models\ProductPackage;
 use App\Models\Unit;
 use Illuminate\Http\RedirectResponse;
@@ -43,6 +44,25 @@ class ProductPackageController extends Controller
         }
     }
 
+    public function show(Request $request, int $id): Response|RedirectResponse
+    {
+        try {
+            $perPage = $request->query('perPage') ?? 100;
+
+            $productPackage = ProductPackage::findOrFail($id);
+            $productPackageDetail = $productPackage->productPackageDetails()->with('product')->paginate($perPage)->appends($request->query());
+            $products = Product::all();
+
+            return Inertia::render('Product/Package/Detail/Index', [
+                'productPackage' => $productPackage,
+                'productPackageDetail' => $productPackageDetail,
+                'products' => $products,
+            ]);
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Paket produk tidak ditemukan');
+        }
+    }
+
     public function update(ProductPackageUpdateRequest $request, int $productpackage): RedirectResponse
     {
         try {
@@ -70,5 +90,4 @@ class ProductPackageController extends Controller
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus paket. Silahkan coba lagi.');
         }
     }
-
 }
