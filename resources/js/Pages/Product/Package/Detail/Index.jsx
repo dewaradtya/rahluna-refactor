@@ -10,6 +10,7 @@ import { FaPlus, FaArrowLeft } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { rupiah } from '../../../../utils';
 import Card from '../../../../Components/Card';
+import Confirm from '../../../../Components/Confirm/Confirm';
 
 const Index = ({ productPackage, productPackageDetail, products }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -17,17 +18,35 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/products/package/detail/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (productPackageDetail) => {
         setShowUpdateModal({ modal: true, productPackageDetail });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/products/package/detail/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const handleBackButton = () => {
@@ -89,14 +108,14 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
     const footer = useMemo(
         () => ({
             price: rupiah(productPackageDetail.data.reduce((total, row) => total + row.price * row.qty, 0)),
-            purchase_price: rupiah(productPackageDetail.data.reduce((total, row) => total + row.purchase_price * row.qty, 0)),
+            purchase_price: rupiah(productPackageDetail.data.reduce((total, row) => total + row.purchase_price * row.qty, 0))
         }),
         [productPackageDetail]
     );
-    
+
     const footerColumns = [
         { key: 'purchase_price', label: 'Total harga beli' },
-        { key: 'price', label: 'Total harga jual' },
+        { key: 'price', label: 'Total harga jual' }
     ];
 
     return (
@@ -121,7 +140,12 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
                     entriesPerPage={entriesPerPage}
                     setEntriesPerPage={setEntriesPerPage}
                 />
-                <Table columns={columns} rows={filteredProductPackageDetail.slice(0, entriesPerPage)} footer={footer} footerColumns={footerColumns}/>
+                <Table
+                    columns={columns}
+                    rows={filteredProductPackageDetail.slice(0, entriesPerPage)}
+                    footer={footer}
+                    footerColumns={footerColumns}
+                />
                 <Pagination links={productPackageDetail.links} />
             </Card.CardBody>
 
@@ -141,6 +165,7 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
                     productPackageDetail={showUpdateModal.productPackageDetail}
                 />
             )}
+            <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="package detail"/>
         </Card>
     );
 };

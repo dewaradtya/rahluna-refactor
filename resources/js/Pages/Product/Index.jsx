@@ -13,6 +13,7 @@ import UpdateStock from './UpdateStock';
 import SplitButtonGroup from '../../Components/Button/SplitButtonGroup';
 import ImportExcel from './ImportExcel';
 import Card from '../../Components/Card';
+import Confirm from '../../Components/Confirm/Confirm';
 
 const Index = ({ products, units }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -23,17 +24,35 @@ const Index = ({ products, units }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/products/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (product) => {
         setShowUpdateModal({ modal: true, product });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/products/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const handlePaketButton = () => {
@@ -156,6 +175,7 @@ const Index = ({ products, units }) => {
             {showImportProductModal && (
                 <ImportExcel showModal={showImportProductModal} setShowModal={setShowImportProductModal} />
             )}
+            <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="product"/>
         </Card>
     );
 };

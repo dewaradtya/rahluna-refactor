@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { useContext, useState } from 'react';
 import { FaChartArea, FaCog, FaFolder, FaLaughWink, FaTable, FaTachometerAlt } from 'react-icons/fa';
 import { SidebarToggle } from '../../context/SidebarToggleContext';
+import { ImCross } from 'react-icons/im';
 
 const Sidebar = () => {
     const {
@@ -24,13 +25,12 @@ const Sidebar = () => {
             id="accordionSidebar"
         >
             <Link className="sidebar-brand d-flex align-items-center justify-content-center" href="/">
-                <div className="sidebar-brand-icon rotate-n-15">
-                    <i>
-                        <FaLaughWink />
-                    </i>
+                <div className="sidebar-brand-icon mx-3">
+                    <img src="/img/logo-f.png" alt="Brand Icon" style={{ width: '50px', height: '60px' }} />
                 </div>
+                <ImCross /> 
                 <div className="sidebar-brand-text mx-3">
-                    SB Admin <sup>2</sup>
+                    <img src="/img/apple-touch-icon.png" alt="Brand Icon" style={{ width: '70px', height: '70px' }} />
                 </div>
             </Link>
 
@@ -80,9 +80,7 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
                                 aria-controls={`collapse${rowIndex}`}
                                 onClick={() => handleCollapseClick(rowIndex)}
                             >
-                                <i className="fa-fw">
-                                    {/* <FaCog /> */}
-                                </i>
+                                <i className="fa-fw">{/* <FaCog /> */}</i>
                                 <span>{row.menu}</span>
                             </button>
                             <div
@@ -103,9 +101,7 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
                         </>
                     ) : (
                         <Link className="nav-link" href={row.url}>
-                            <i className="fa-fw">
-                                {/* <FaTachometerAlt /> */}
-                            </i>
+                            <i className="fa-fw">{/* <FaTachometerAlt /> */}</i>
                             <span>{row.menu}</span>
                         </Link>
                     )}
@@ -114,6 +110,5 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
         </>
     );
 };
-
 
 export default Sidebar;

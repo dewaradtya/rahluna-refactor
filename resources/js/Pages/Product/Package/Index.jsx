@@ -10,6 +10,7 @@ import { FaPlus, FaArrowLeft } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { rupiah } from '../../../utils';
 import Card from '../../../Components/Card';
+import Confirm from '../../../Components/Confirm/Confirm';
 
 const Index = ({ productPackages, units }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -17,17 +18,35 @@ const Index = ({ productPackages, units }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/products/package/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (productPackage) => {
         setShowUpdateModal({ modal: true, productPackage });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/products/package/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const handleProductButton = () => {
@@ -128,6 +147,7 @@ const Index = ({ productPackages, units }) => {
                     productPackage={showUpdateModal.productPackage}
                 />
             )}
+            <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="package"/>
         </Card>
     );
 };

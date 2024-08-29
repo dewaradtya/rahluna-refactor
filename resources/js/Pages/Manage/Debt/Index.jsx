@@ -11,6 +11,7 @@ import { FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../utils';
 import Card from '../../../Components/Card';
+import Confirm from '../../../Components/Confirm/Confirm';
 
 const Index = ({ debts }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -18,17 +19,35 @@ const Index = ({ debts }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/hutang/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (debt) => {
         setShowUpdateModal({ modal: true, debt: debt });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/hutang/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const filteredDebt = debts.data.filter(
@@ -137,12 +156,9 @@ const Index = ({ debts }) => {
 
                 {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
                 {showUpdateModal.modal && (
-                    <Update
-                        showModal={showUpdateModal.modal}
-                        setShowModal={setShowUpdateModal}
-                        debt={showUpdateModal.debt}
-                    />
+                    <Update showModal={showUpdateModal.modal} setShowModal={setShowUpdateModal} debt={showUpdateModal.debt} />
                 )}
+                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="debt"/>
             </Card>
         </>
     );

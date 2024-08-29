@@ -9,6 +9,7 @@ import BadgeButton from '../../Components/Button/BadgeButton';
 import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import Card from '../../Components/Card';
+import Confirm from '../../Components/Confirm/Confirm';
 
 const Index = ({ menus, groupMenus }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -16,17 +17,35 @@ const Index = ({ menus, groupMenus }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/menu/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (menu) => {
         setShowUpdateModal({ modal: true, menu: menu });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/menu/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const filteredMenus = menus.data.filter((menu) => menu.menu.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -115,6 +134,7 @@ const Index = ({ menus, groupMenus }) => {
                         groupMenus={groupMenus}
                     />
                 )}
+                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="menu"/>
             </Card>
         </>
     );

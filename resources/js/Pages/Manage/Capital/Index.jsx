@@ -10,6 +10,7 @@ import { FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../utils';
 import Card from '../../../Components/Card';
+import Confirm from '../../../Components/Confirm/Confirm';
 
 const Index = ({ capitals }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -17,17 +18,35 @@ const Index = ({ capitals }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/modal/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (capital) => {
         setShowUpdateModal({ modal: true, capital: capital });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/modal/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const filteredCapital = capitals.data.filter(
@@ -111,6 +130,7 @@ const Index = ({ capitals }) => {
                         capital={showUpdateModal.capital}
                     />
                 )}
+                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="capital"/>
             </Card>
         </>
     );

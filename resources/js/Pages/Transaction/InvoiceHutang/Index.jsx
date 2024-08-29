@@ -11,6 +11,7 @@ import { formatDate, rupiah } from '../../../utils';
 import Card from '../../../Components/Card';
 import Create from './Create';
 import Update from './Update';
+import Confirm from '../../../Components/Confirm/Confirm';
 
 const Index = ({ debtInvoices }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -18,17 +19,35 @@ const Index = ({ debtInvoices }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/transaksi/invoiceHutang/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (debtInvoice) => {
         setShowUpdateModal({ modal: true, debtInvoice: debtInvoice });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/transaksi/invoiceHutang/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const filteredDebtInvoices = debtInvoices.data.filter(
@@ -69,14 +88,16 @@ const Index = ({ debtInvoices }) => {
                 renderCell: (row) => {
                     const remaining = Number(row.remaining);
                     const color = remaining === 0 ? 'success' : remaining > 0 ? 'danger' : 'warning';
-                    const status = remaining === 0 ? 'Selesai' : remaining > 0 ? (new Date() > new Date(row.date) ? 'over time' : 'process') : 'unknown';
+                    const status =
+                        remaining === 0
+                            ? 'Selesai'
+                            : remaining > 0
+                            ? new Date() > new Date(row.date)
+                                ? 'over time'
+                                : 'process'
+                            : 'unknown';
 
-                    return (
-                        <BadgeButton
-                            text={status}
-                            color={color}
-                        />
-                    );
+                    return <BadgeButton text={status} color={color} />;
                 }
             },
             {
@@ -106,16 +127,13 @@ const Index = ({ debtInvoices }) => {
 
     const totals = useMemo(() => {
         const TotalSisaHutang = debtInvoices.data.reduce((total, row) => total + (Number(row.remaining) || 0), 0);
-    
-        return {
-            TotalSisaHutang: rupiah(TotalSisaHutang),
-        };
-    }, [debtInvoices]);    
-    
 
-    const footerColumns = [
-        { key: 'TotalSisaHutang', label: 'Total Sisa Hutang' },
-    ];
+        return {
+            TotalSisaHutang: rupiah(TotalSisaHutang)
+        };
+    }, [debtInvoices]);
+
+    const footerColumns = [{ key: 'TotalSisaHutang', label: 'Total Sisa Hutang' }];
 
     return (
         <>
@@ -125,7 +143,12 @@ const Index = ({ debtInvoices }) => {
                 <Card.CardBody>
                     <div className="d-sm-flex align-items-center justify-content-between mb-2">
                         <div className="d-flex column-gap-1 align-items-start flex-wrap">
-                            <SplitButton color="primary" text="Hutang Inv Baru" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
+                            <SplitButton
+                                color="primary"
+                                text="Hutang Inv Baru"
+                                icon={<FaPlus />}
+                                onClick={() => setShowCreateModal(true)}
+                            />
                         </div>
                     </div>
                     {/* Input pencarian dan dropdown entri per halaman */}
@@ -136,7 +159,12 @@ const Index = ({ debtInvoices }) => {
                         setEntriesPerPage={setEntriesPerPage}
                     />
 
-                    <Table columns={columns} rows={filteredDebtInvoices.slice(0, entriesPerPage)}  footer={totals} footerColumns={footerColumns}/>
+                    <Table
+                        columns={columns}
+                        rows={filteredDebtInvoices.slice(0, entriesPerPage)}
+                        footer={totals}
+                        footerColumns={footerColumns}
+                    />
                     <Pagination links={debtInvoices.links} />
                 </Card.CardBody>
 
@@ -148,6 +176,7 @@ const Index = ({ debtInvoices }) => {
                         debtInvoice={showUpdateModal.debtInvoice}
                     />
                 )}
+                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="debt invoice"/>
             </Card>
         </>
     );

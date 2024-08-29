@@ -10,6 +10,7 @@ import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../../utils';
 import Card from '../../../../Components/Card';
+import Confirm from '../../../../Components/Confirm/Confirm';
 
 const Index = ({ receivable, receivableDetails }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -17,17 +18,35 @@ const Index = ({ receivable, receivableDetails }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/piutang/detail/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (receivableDetail) => {
         setShowUpdateModal({ modal: true, receivableDetail: receivableDetail });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/piutang/detail/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const handleBackButton = () => {
@@ -109,7 +128,12 @@ const Index = ({ receivable, receivableDetails }) => {
                 <Card.CardHeader
                     titleText="Table Piutang Detail"
                     rightComponent={
-                        <SplitButton color="danger" text="Piutang" icon={<FaArrowLeft />} onClick={() => handleBackButton(true)} />
+                        <SplitButton
+                            color="danger"
+                            text="Piutang"
+                            icon={<FaArrowLeft />}
+                            onClick={() => handleBackButton(true)}
+                        />
                     }
                 />
 
@@ -150,6 +174,7 @@ const Index = ({ receivable, receivableDetails }) => {
                         receivableDetail={showUpdateModal.receivableDetail}
                     />
                 )}
+                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="receivable detail"/>
             </Card>
         </>
     );

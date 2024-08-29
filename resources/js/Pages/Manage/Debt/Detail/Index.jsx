@@ -10,6 +10,7 @@ import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../../utils';
 import Card from '../../../../Components/Card';
+import Confirm from '../../../../Components/Confirm/Confirm';
 
 const Index = ({ debt, debtDetails }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -17,17 +18,35 @@ const Index = ({ debt, debtDetails }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/hutang/detail/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (debtDetail) => {
         setShowUpdateModal({ modal: true, debtDetail: debtDetail });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/hutang/detail/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const handleBackButton = () => {
@@ -148,6 +167,7 @@ const Index = ({ debt, debtDetails }) => {
                         debtDetail={showUpdateModal.debtDetail}
                     />
                 )}
+                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="debt detail"/>
             </Card>
         </>
     );

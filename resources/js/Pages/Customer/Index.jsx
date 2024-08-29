@@ -9,7 +9,8 @@ import BadgeButton from '../../Components/Button/BadgeButton';
 import { FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import Card from '../../Components/Card';
-import Modal from '../../Components/Modal';  
+import Modal from '../../Components/Modal';
+import Confirm from '../../Components/Confirm/Confirm';
 
 const Index = ({ customers }) => {
     const [showModalCreate, setShowModalCreate] = useState(false);
@@ -18,17 +19,35 @@ const Index = ({ customers }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [imageModal, setImageModal] = useState({ visible: false, src: '' });
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/customer/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (customer) => {
         setShowModalUpdate({ modal: true, customer });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/customer/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const handleImageModalOpen = (imageSrc) => {
@@ -39,10 +58,11 @@ const Index = ({ customers }) => {
         setImageModal({ visible: false, src: '' });
     };
 
-    const filteredCustomers = customers.data.filter(customer =>
-        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.pic.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.telp.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredCustomers = customers.data.filter(
+        (customer) =>
+            customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            customer.pic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            customer.telp.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const columns = useMemo(
@@ -97,7 +117,7 @@ const Index = ({ customers }) => {
             <Card.CardHeader titleText="Table Customer" />
             <Card.CardBody>
                 <SplitButton color="primary" text="Add Customer" icon={<FaPlus />} onClick={() => setShowModalCreate(true)} />
-                
+
                 {/* Input pencarian dan dropdown entri per halaman */}
                 <Card.CardFilter
                     searchTerm={searchTerm}
@@ -105,7 +125,7 @@ const Index = ({ customers }) => {
                     entriesPerPage={entriesPerPage}
                     setEntriesPerPage={setEntriesPerPage}
                 />
-                
+
                 <Table columns={columns} rows={filteredCustomers.slice(0, entriesPerPage)} />
                 <Pagination links={customers.links} />
             </Card.CardBody>
@@ -121,6 +141,7 @@ const Index = ({ customers }) => {
                     </Modal.Body>
                 </Modal>
             )}
+            <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="customer"/>
         </Card>
     );
 };

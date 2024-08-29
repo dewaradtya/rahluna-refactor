@@ -10,6 +10,7 @@ import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../../utils';
 import Card from '../../../../Components/Card';
+import Confirm from '../../../../Components/Confirm/Confirm';
 
 const Index = ({ debtInvoice, debtInvoiceDetails }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -17,17 +18,35 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/transaksi/invoiceHutang/detail/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (debtInvoiceDetail) => {
         setShowUpdateModal({ modal: true, debtInvoiceDetail: debtInvoiceDetail });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/transaksi/invoiceHutang/detail/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const handleBackButton = () => {
@@ -149,7 +168,9 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
                     <Pagination links={debtInvoiceDetails.links} />
                 </Card.CardBody>
 
-                {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal}  debtInvoiceId={debtInvoice.id}/>}
+                {showCreateModal && (
+                    <Create showModal={showCreateModal} setShowModal={setShowCreateModal} debtInvoiceId={debtInvoice.id} />
+                )}
                 {showUpdateModal.modal && (
                     <Update
                         showModal={showUpdateModal.modal}
@@ -157,6 +178,7 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
                         debtInvoiceDetail={showUpdateModal.debtInvoiceDetail}
                     />
                 )}
+                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="debt invoice detail"/>
             </Card>
         </>
     );
