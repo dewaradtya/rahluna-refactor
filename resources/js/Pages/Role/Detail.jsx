@@ -3,9 +3,14 @@ import { useMemo, useState } from 'react';
 import Table from '../../Components/Table';
 import { router } from '@inertiajs/react';
 import { InputCheckbox } from '../../Components/FieldInput';
+import Card from '../../Components/Card';
+import { FaArrowLeft } from 'react-icons/fa';
+import SplitButton from '../../Components/Button/SplitButton';
 
 const Index = ({ menus, userRole }) => {
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleChangeAccess = (user_role_id, menu_id) => {
         router.post(
@@ -19,6 +24,14 @@ const Index = ({ menus, userRole }) => {
             }
         );
     };
+
+    const handleBackButton = () => {
+        router.get('/role');
+    };
+
+    const filteredMenus = menus.filter((menu) =>
+        menu.menu.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const columns = useMemo(
         () => [
@@ -46,15 +59,23 @@ const Index = ({ menus, userRole }) => {
 
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Role Detail</h1>
-            </div>
-
-            <div className="row">
-                <div className="col-6">
-                    <Table columns={columns} rows={menus} />
-                </div>
-            </div>
+            <Card>
+                <Card.CardHeader
+                    titleText={`Detail Role ${userRole.name}`}
+                    rightComponent={
+                        <SplitButton color="danger" text="Kembali" icon={<FaArrowLeft />} onClick={() => handleBackButton(true)} />
+                    }
+                />
+                <Card.CardBody>
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
+                    <Table columns={columns} rows={filteredMenus.slice(0, entriesPerPage)} />
+                </Card.CardBody>
+            </Card>
         </>
     );
 };

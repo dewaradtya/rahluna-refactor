@@ -1,20 +1,19 @@
 import React, { useMemo, useState } from 'react';
-import MainLayout from '../../../Layouts/MainLayout';
-import Table from '../../../Components/Table';
+import MainLayout from '../../../../Layouts/MainLayout';
+import Table from '../../../../Components/Table';
 import { router } from '@inertiajs/react';
-import Card from '../../../Components/Card';
-import SplitButton from '../../../Components/Button/SplitButton';
+import Card from '../../../../Components/Card';
+import SplitButton from '../../../../Components/Button/SplitButton';
 import { FaArrowLeft, FaPlus } from 'react-icons/fa';
-import BadgeButton from '../../../Components/Button/BadgeButton';
-import Pagination from '../../../Components/Pagination';
+import BadgeButton from '../../../../Components/Button/BadgeButton';
+import Pagination from '../../../../Components/Pagination';
 import Create from './Create';
 
-const Show = ({ suratJalan, customers, products }) => {
+const Index = ({ suratJalan, customer, products }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showPaketModal, setShowPaketModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, suratJalan: null });
-    const [showUpdateStockModal, setShowUpdateStockModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [selectedRows, setSelectedRows] = useState([]);
@@ -41,14 +40,6 @@ const Show = ({ suratJalan, customers, products }) => {
 
     const handleCheckboxChange = (rowId) => {
         setSelectedRows((prev) => (prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId]));
-    };
-
-    const handleSelectAll = () => {
-        if (selectedRows.length === filteredSuratJalan.length) {
-            setSelectedRows([]);
-        } else {
-            setSelectedRows(filteredSuratJalan.map((row) => row.id));
-        }
     };
 
     const filteredSuratJalan = suratJalan.data.filter(
@@ -132,8 +123,8 @@ const Show = ({ suratJalan, customers, products }) => {
             <Card.CardHeader
                 titleText="Table Surat Jalan"
                 additionalInfo={
-                    customers
-                        ? `${customers.name} - ${customers.pic} - ${customers.telp} - ${customers.email}`
+                    customer
+                        ? `${customer.name} - ${customer.pic} - ${customer.telp} - ${customer.email}`
                         : 'No Product Selected'
                 }
                 rightComponent={<SplitButton color="danger" text="Kembali" icon={<FaArrowLeft />} onClick={handleBackButton} />}
@@ -165,13 +156,13 @@ const Show = ({ suratJalan, customers, products }) => {
                     showModal={showCreateModal}
                     setShowModal={setShowCreateModal}
                     products={products}
-                    customerId={customers.Id}
+                    customerId={customer.Id}
                 />
             )}
         </Card>
     );
 };
 
-Show.layout = (page) => <MainLayout children={page} title="Table Surat Jalan" />;
+Index.layout = (page) => <MainLayout children={page} title="Table Surat Jalan" />;
 
-export default Show;
+export default Index;

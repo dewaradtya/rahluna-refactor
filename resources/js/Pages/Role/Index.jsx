@@ -2,13 +2,14 @@ import MainLayout from '../../Layouts/MainLayout';
 import { useMemo, useState } from 'react';
 import Table from '../../Components/Table';
 import Pagination from '../../Components/Pagination';
-import SplitButton from '../../Components/Button/SplitButton';
 import BadgeLink from '../../Components/Link/BadgeLink';
-import { FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
+import Card from '../../Components/Card';
 
 const Index = ({ userRoles }) => {
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleDeleteButton = (id) => {
         router.delete(`/menu/${id}`, {
@@ -17,6 +18,10 @@ const Index = ({ userRoles }) => {
             onFinish: () => setLoadingButton(null)
         });
     };
+
+    const filteredUserRoles = useMemo(() => {
+        return userRoles.data.filter((userRole) => userRole.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    }, [userRoles.data, searchTerm]);
 
     const columns = useMemo(
         () => [
@@ -39,15 +44,21 @@ const Index = ({ userRoles }) => {
 
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Role</h1>
-            </div>
+            <Card>
+                <Card.CardHeader titleText="Table Role" />
 
-            <div className="row">
-                <div className="col-6">
-                    <Table columns={columns} rows={userRoles} />
-                </div>
-            </div>
+                <Card.CardBody>
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
+
+                    <Table columns={columns} rows={filteredUserRoles.slice(0, entriesPerPage)} />
+                    <Pagination links={userRoles.links} />
+                </Card.CardBody>
+            </Card>
         </>
     );
 };

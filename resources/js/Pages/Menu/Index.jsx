@@ -6,13 +6,16 @@ import Table from '../../Components/Table';
 import Pagination from '../../Components/Pagination';
 import SplitButton from '../../Components/Button/SplitButton';
 import BadgeButton from '../../Components/Button/BadgeButton';
-import { FaPlus } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 import { router } from '@inertiajs/react';
+import Card from '../../Components/Card';
 
 const Index = ({ menus, groupMenus }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, menu: null });
     const [loadingButton, setLoadingButton] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [entriesPerPage, setEntriesPerPage] = useState(200);
 
     const handleEditButton = (menu) => {
         setShowUpdateModal({ modal: true, menu: menu });
@@ -25,6 +28,8 @@ const Index = ({ menus, groupMenus }) => {
             onFinish: () => setLoadingButton(null)
         });
     };
+
+    const filteredMenus = menus.data.filter((menu) => menu.menu.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const columns = useMemo(
         () => [
@@ -79,32 +84,38 @@ const Index = ({ menus, groupMenus }) => {
 
     return (
         <>
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Menu</h1>
+            <Card>
+                <Card.CardHeader titleText="Menu" />
+                <Card.CardBody>
+                    <SplitButton color="primary" text="Tambah" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
 
-                <SplitButton color="primary" text="Tambah" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-            </div>
-
-            <Table columns={columns} rows={menus.data} />
-            <Pagination links={menus.links} />
-
-            {showCreateModal && (
-                <Create
-                    showModal={showCreateModal}
-                    setShowModal={setShowCreateModal}
-                    menus={menus.data}
-                    groupMenus={groupMenus}
-                />
-            )}
-            {showUpdateModal.modal && (
-                <Update
-                    showModal={showUpdateModal.modal}
-                    setShowModal={setShowUpdateModal}
-                    dataMenu={showUpdateModal.menu}
-                    menus={menus.data}
-                    groupMenus={groupMenus}
-                />
-            )}
+                    <Card.CardFilter
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        entriesPerPage={entriesPerPage}
+                        setEntriesPerPage={setEntriesPerPage}
+                    />
+                    <Table columns={columns} rows={filteredMenus.slice(0, entriesPerPage)} />
+                    <Pagination links={menus.links} />
+                </Card.CardBody>
+                {showCreateModal && (
+                    <Create
+                        showModal={showCreateModal}
+                        setShowModal={setShowCreateModal}
+                        menus={menus.data}
+                        groupMenus={groupMenus}
+                    />
+                )}
+                {showUpdateModal.modal && (
+                    <Update
+                        showModal={showUpdateModal.modal}
+                        setShowModal={setShowUpdateModal}
+                        dataMenu={showUpdateModal.menu}
+                        menus={menus.data}
+                        groupMenus={groupMenus}
+                    />
+                )}
+            </Card>
         </>
     );
 };

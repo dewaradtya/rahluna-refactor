@@ -97,9 +97,23 @@ class MenuSeeder extends Seeder
 
         Menu::create([
             'menu' => 'Tax',
-            'url' => '/tax',
+            'url' => '-',
             'group_menu' => 'General',
             'icon' => 'fa fa-percent',
+            'is_active' => true,
+        ]);
+        Menu::create([
+            'menu' => 'Tax Page',
+            'url' => '/',
+            'group_menu' => 'General',
+            'main_menu' => 12,
+            'is_active' => true,
+        ]);
+        Menu::create([
+            'menu' => 'Potongan PPN dan PPH',
+            'url' => '/modal',
+            'group_menu' => 'General',
+            'main_menu' => 12,
             'is_active' => true,
         ]);
         Menu::create([
@@ -113,21 +127,28 @@ class MenuSeeder extends Seeder
             'menu' => 'Modal',
             'url' => '/modal',
             'group_menu' => 'General',
-            'main_menu' => 12,
+            'main_menu' => 15,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Hutang',
             'url' => '/hutang',
             'group_menu' => 'General',
-            'main_menu' => 12,
+            'main_menu' => 15,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Piutang',
             'url' => '/piutang',
             'group_menu' => 'General',
-            'main_menu' => 12,
+            'main_menu' => 15,
+            'is_active' => true,
+        ]);
+        Menu::create([
+            'menu' => 'Logout',
+            'url' => '-',
+            'group_menu' => 'General',
+            'icon' => 'fa fa-cog',
             'is_active' => true,
         ]);
     }

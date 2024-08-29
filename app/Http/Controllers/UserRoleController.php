@@ -20,7 +20,12 @@ class UserRoleController extends Controller
     {
         $userRoles = UserRole::all();
 
-        return Inertia::render('Role/Index', compact('userRoles'));
+        return Inertia::render('Role/Index', [
+            'userRoles' => [
+                'data' => $userRoles,
+                'links' => [],
+            ],
+        ]);
     }
 
     public function show(Request $request, string $role): Response|RedirectResponse

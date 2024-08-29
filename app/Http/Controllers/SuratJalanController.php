@@ -16,9 +16,6 @@ use Inertia\Response;
 
 class SuratJalanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request): Response
     {
         $perPage = $request->query('perPage') ?? 100;
@@ -28,24 +25,11 @@ class SuratJalanController extends Controller
         return Inertia::render('Transaction/SuratJalan/Index', compact('customers'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(SuratJalanStoreRequest $request): RedirectResponse
     {
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
-            Log::info('Validated Data:', $validatedData);
 
             $product = Product::findOrFail($validatedData['product_id']);
             $validatedData['purchase_price'] = $product->purchase_price;
@@ -53,9 +37,8 @@ class SuratJalanController extends Controller
             $validatedData['kategori'] = 0;
             $validatedData['surat_jalan_new_id'] = 0;
 
-            $suratJalan = SuratJalan::create($validatedData);
-            Log::info('Surat Jalan Created:', $suratJalan);
-            
+            SuratJalan::create($validatedData);
+
             DB::commit();
             return Redirect::back()->with('success', 'Surat Jalan berhasil ditambahkan.');
         } catch (\Exception $e) {
@@ -65,42 +48,29 @@ class SuratJalanController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Request $request, $id): Response
+    public function show(Request $request, int $id): Response|RedirectResponse
     {
-        $perPage = $request->query('perPage', 100);
-        $customers = Customer::findOrFail($id);
-        $suratJalan = SuratJalan::with(['product', 'surat_jalan_new'])->where('customer_id', $id)->paginate($perPage)->appends($request->query());
-        $products = Product::all();
+        try {
+            $perPage = $request->query('perPage', 100);
+            $customer = Customer::findOrFail($id);
+            $suratJalan = $customer->suratJalan()->with(['product', 'surat_jalan_new'])->paginate($perPage)->appends($request->query());
+            $products = Product::all();
 
-        return Inertia::render('Transaction/SuratJalan/Show', [
-            'suratJalan' => $suratJalan,
-            'customers' => $customers,
-            'products' => $products,
-        ]);
+            return Inertia::render('Transaction/SuratJalan/Detail/Index', [
+                'suratJalan' => $suratJalan,
+                'customer' => $customer,
+                'products' => $products,
+            ]);
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat mengambil data Surat Jalan. Silahkan coba lagi.');
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(SuratJalan $suratJalan)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, SuratJalan $suratJalan)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(SuratJalan $suratJalan)
     {
         //

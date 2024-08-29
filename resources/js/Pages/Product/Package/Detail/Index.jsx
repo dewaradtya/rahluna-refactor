@@ -137,6 +137,7 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
                 <Update
                     showModal={showUpdateModal.modal}
                     setShowModal={setShowUpdateModal}
+                    products={products}
                     productPackageDetail={showUpdateModal.productPackageDetail}
                 />
             )}

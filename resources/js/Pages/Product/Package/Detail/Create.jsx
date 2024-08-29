@@ -31,7 +31,6 @@ const Create = ({ showModal, setShowModal, products, productPackageId }) => {
         <Modal title="Tambah Produk Paket" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
-                    <input type="hidden" name="product_package_id" value={productPackageId} />
                     <Select
                         label="Product"
                         id="product-create"

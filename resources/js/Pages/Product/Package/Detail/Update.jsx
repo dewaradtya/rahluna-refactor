@@ -1,26 +1,28 @@
-import { router, useForm } from '@inertiajs/react';
-import { CreatableSelect, InputField, InputNumber } from '../../../../Components/FieldInput';
+import { useForm } from '@inertiajs/react';
+import { Select, InputField } from '../../../../Components/FieldInput';
 import { useEffect, useMemo, useState } from 'react';
 import Modal from '../../../../Components/Modal';
 import LoadingButton from '../../../../Components/Button/LoadingButton';
-import { rupiah } from '../../../../utils';
 
-const Update = ({ showModal, setShowModal, productPackageDetail }) => {
+const Update = ({ showModal, setShowModal, productPackageDetail, products }) => {
     const [isLoading, setIsLoading] = useState(false);
 
-    const { data, setData, post, errors, recentlySuccessful } = useForm({
-        name: productPackageDetail?.name || '',
-        purchase_price: productPackageDetail?.purchase_price || 0,
-        price: productPackageDetail?.price || 0,
-        _method: 'put'
+    const options = useMemo(
+        () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
+        [products]
+    );
+
+    const { data, setData, put, errors, recentlySuccessful } = useForm({
+        product_id: productPackageDetail?.product_id || null,
+        qty: productPackageDetail?.qty || 0,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsLoading(true);
-        post(`/products/package/${productPackageDetail?.id}`, {
+        put(`/products/package/detail/${productPackageDetail?.id}`, {
             preserveScroll: true,
-            onFinish: () => setIsLoading(false)
+            onFinish: () => setIsLoading(false),
         });
     };
 
@@ -32,21 +34,22 @@ const Update = ({ showModal, setShowModal, productPackageDetail }) => {
         <Modal title="Edit Paket" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
-                    <InputField
-                        label="Nama Produk"
-                        id="name-update"
-                        value={data.name}
-                        error={errors?.name}
-                        onChange={(e) => setData('name', e.target.value)}
+                    <Select
+                        label="Product"
+                        id="product-update"
+                        error={errors?.product_id}
+                        value={options.find((option) => option.value === data.product_id)}
+                        onChange={(option) => setData('product_id', option ? option.value : null)}
+                        options={options}
                         required
                     />
-                    <InputNumber
-                        label="Harga Jual"
-                        id="price-update"
-                        addonText={rupiah(data.price)}
-                        value={data.price}
-                        error={errors?.price}
-                        onChange={(e) => setData('price', e.target.value)}
+                    <InputField
+                        type="number"
+                        label="Qty"
+                        id="qty-update"
+                        value={data.qty}
+                        error={errors?.qty}
+                        onChange={(e) => setData('qty', e.target.value)}
                         required
                     />
                     <Modal.Footer>

@@ -25,6 +25,7 @@ class SuratJalanStoreRequest extends FormRequest
             'product_id' => 'required|exists:products,id',
             'qty' => 'required|integer|min:1',
             'note' => 'nullable|string',
+            'customer_id' => 'required|exists:customers,id',
         ];
     }
 }

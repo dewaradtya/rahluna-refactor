@@ -1,8 +1,8 @@
 import { useForm } from '@inertiajs/react';
-import { InputField, InputTextarea, Select } from '../../../Components/FieldInput';
+import { InputField, InputTextarea, Select } from '../../../../Components/FieldInput';
 import { useEffect, useMemo } from 'react';
-import Modal from '../../../Components/Modal';
-import LoadingButton from '../../../Components/Button/LoadingButton';
+import Modal from '../../../../Components/Modal';
+import LoadingButton from '../../../../Components/Button/LoadingButton';
 
 const Create = ({ showModal, setShowModal, products, customerId }) => {
     const options = useMemo(
@@ -14,7 +14,7 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
         product_id: null,
         qty: 0,
         note: '',
-        customer_id: customerId || null
+        customer_id: customerId
     });
     
 
