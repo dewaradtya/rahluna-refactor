@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SuratJalan extends Model
 {
@@ -27,5 +28,22 @@ class SuratJalan extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($suratJalan) {
+            $suratJalan->productHistories()
+                ->where('status', 'stok terpakai')
+                ->delete();
+        });
+    }
+
+
+    public function productHistories(): HasMany
+    {
+        return $this->hasMany(ProductHistory::class, 'product_id', 'product_id');
     }
 }

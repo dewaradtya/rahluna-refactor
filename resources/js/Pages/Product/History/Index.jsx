@@ -33,7 +33,7 @@ const Index = ({ histories }) => {
                     <Link href={`/products/history/${row.id}`}>
                         {row.product.name}
                     </Link>
-                    ) 
+                )
             },
             {
                 label: 'QTY',
@@ -48,6 +48,11 @@ const Index = ({ histories }) => {
                 label: 'Harga Jual',
                 name: 'price',
                 renderCell: (row) => rupiah(row.price)
+            },
+            {
+                label: 'Total',
+                name: 'total',
+                renderCell: (row) => rupiah(row.price * row.qty)
             },
             {
                 label: 'Status',
@@ -69,17 +74,30 @@ const Index = ({ histories }) => {
         [loadingButton]
     );
 
-    const footer = useMemo(
-        () => ({
-            purchase_price: rupiah(histories.data.reduce((total, row) => total + row.purchase_price * row.qty, 0)),
-            price: rupiah(histories.data.reduce((total, row) => total + row.price * row.qty, 0))
-        }),
-        [histories]
-    );
+    const footer = useMemo(() => {
+        const totalPembelian = histories.data.reduce((total, row) => {
+            if (row.status.toLowerCase() === 'stok awal' || row.status.toLowerCase() === 'tambah stok') {
+                return total + row.price * row.qty;
+            }
+            return total;
+        }, 0);
+
+        const totalPenjualan = histories.data.reduce((total, row) => {
+            if (row.status.toLowerCase() === 'stok terpakai') {
+                return total + row.price * row.qty;
+            }
+            return total;
+        }, 0);
+
+        return {
+            total_pembelian: rupiah(totalPembelian),
+            total_penjualan: rupiah(totalPenjualan),
+        };
+    }, [histories]);
 
     const footerColumns = [
-        { key: 'price', label: 'Total Penjualan' },
-        { key: 'purchase_price', label: 'Total Pembelian' }
+        { key: 'total_penjualan', label: 'Total Penjualan' },
+        { key: 'total_pembelian', label: 'Total Pembelian' }
     ];
 
     return (

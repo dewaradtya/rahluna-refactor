@@ -4,8 +4,7 @@ import { useEffect, useMemo } from 'react';
 import Modal from '../../../../Components/Modal';
 import LoadingButton from '../../../../Components/Button/LoadingButton';
 
-const Create = ({ showModal, setShowModal, products, customerId }) => {
-    console.log(customerId)
+const PackageCreate = ({ showModal, setShowModal, products, customerId }) => {
     const options = useMemo(
         () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
         [products]
@@ -21,7 +20,6 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(data)
         post(`/transaksi/suratJalan`, {
             preserveScroll: true
         });
@@ -32,11 +30,11 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Tambah Produk Surat Jalan" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Tambah Paket Surat Jalan" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <Select
-                        label="Product"
+                        label="Paket"
                         id="product-create"
                         error={errors?.product_id}
                         onChange={(option) => setData('product_id', option ? option.value : null)}
@@ -73,4 +71,4 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
     );
 };
 
-export default Create;
+export default PackageCreate;

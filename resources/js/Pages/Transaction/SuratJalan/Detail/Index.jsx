@@ -8,26 +8,50 @@ import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 import BadgeButton from '../../../../Components/Button/BadgeButton';
 import Pagination from '../../../../Components/Pagination';
 import Create from './Create';
+import PackageCreate from './PackageCreate';
+import SuratJalanNew from './SuratjalanNew';
+import Update from './Update';
+import Confirm from '../../../../Components/Confirm/Confirm';
+import { rupiah } from '../../../../utils';
 
-const Index = ({ suratJalan, customer, products }) => {
+const Index = ({ customer, suratJalan, products }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showSuratJalanModal, setShowSuratJalanModal] = useState(false);
     const [showPaketModal, setShowPaketModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, suratJalan: null });
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+
+    const handleDeleteButton = (id) => {
+        setItemToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            router.delete(`/transaksi/suratJalan/${itemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(itemToDelete),
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
+                },
+
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowDeleteModal(false);
+                }
+            });
+        }
+    };
 
     const handleEditButton = (suratJalan) => {
         setShowUpdateModal({ modal: true, suratJalan });
-    };
-
-    const handleDeleteButton = (id) => {
-        router.delete(`/transaksi/suratJalan/${id}`, {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(id),
-            onFinish: () => setLoadingButton(null)
-        });
     };
 
     const handleBackButton = () => {
@@ -82,12 +106,12 @@ const Index = ({ suratJalan, customer, products }) => {
             {
                 label: 'Harga Beli',
                 name: 'purchase_price',
-                renderCell: (row) => `Rp ${row.purchase_price?.toLocaleString('id-ID') || '0'}`
+                renderCell: (row) => rupiah(row.purchase_price)
             },
             {
                 label: 'Total Harga',
                 name: 'total_price',
-                renderCell: (row) => `Rp ${(row.qty * row.purchase_price)?.toLocaleString('id-ID') || '0'}`
+                renderCell: (row) => rupiah(row.qty * row.purchase_price)
             },
             {
                 label: 'Keterangan',
@@ -123,9 +147,7 @@ const Index = ({ suratJalan, customer, products }) => {
             <Card.CardHeader
                 titleText="Table Surat Jalan"
                 additionalInfo={
-                    customer
-                        ? `${customer.name} - ${customer.pic} - ${customer.telp} - ${customer.email}`
-                        : 'No Product Selected'
+                    customer ? `${customer.name} - ${customer.pic} - ${customer.telp} - ${customer.email}` : 'No Product Selected'
                 }
                 rightComponent={<SplitButton color="danger" text="Kembali" icon={<FaArrowLeft />} onClick={handleBackButton} />}
             />
@@ -138,7 +160,8 @@ const Index = ({ suratJalan, customer, products }) => {
                             color="success"
                             text="Surat Jalan"
                             icon={<FaPlus />}
-                            onClick={() => setShowUpdateStockModal(true)}
+                            onClick={() => setShowSuratJalanModal(true)}
+                            disabled={selectedRows.length === 0}
                         />
                     </div>
                 </div>
@@ -156,9 +179,38 @@ const Index = ({ suratJalan, customer, products }) => {
                     showModal={showCreateModal}
                     setShowModal={setShowCreateModal}
                     products={products}
-                    customerId={customer.Id}
+                    customerId={customer.id}
                 />
             )}
+            {showUpdateModal.modal && (
+                <Update
+                    showModal={showUpdateModal.modal}
+                    setShowModal={setShowUpdateModal}
+                    products={products}
+                    suratJalan={showUpdateModal.suratJalan}
+                />
+            )}
+            {showPaketModal && (
+                <PackageCreate
+                    showModal={showPaketModal}
+                    setShowModal={setShowPaketModal}
+                    products={products}
+                    customerId={customer.id}
+                />
+            )}
+            {showSuratJalanModal && (
+                <SuratJalanNew
+                    showModal={showSuratJalanModal}
+                    setShowModal={setShowSuratJalanModal}
+                    customerId={customer.id}
+                />
+            )}
+            <Confirm
+                showModal={showDeleteModal}
+                setShowModal={setShowDeleteModal}
+                onDelete={handleConfirmDelete}
+                dataType="surat jalan"
+            />
         </Card>
     );
 };

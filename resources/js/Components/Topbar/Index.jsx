@@ -64,9 +64,9 @@ const Topbar = () => {
                     >
                         <Link className="dropdown-item" href="/user/profile" onClick={closeDropdowns}>
                             <i className="mr-2 text-gray-400">
-                                <FaKey />
+                                <FaUser />
                             </i>
-                            Change Pin
+                            Profile
                         </Link>
                         <Link className="dropdown-item" href="/role" onClick={closeDropdowns}>
                             <i className="mr-2 text-gray-400">

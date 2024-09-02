@@ -22,9 +22,9 @@ use App\Http\Controllers\ProductHistoryController;
 use App\Http\Controllers\ProductPackageController;
 use App\Http\Controllers\ProductPackageDetailController;
 use App\Http\Controllers\SuratJalanController;
+use Inertia\Inertia;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
 
 Route::resource('menu', MenuController::class);
 Route::resource('oprasional', OprasionalController::class);
@@ -63,10 +63,23 @@ Route::controller(ProductController::class)->group(function () {
     Route::post('products/import', 'import')->name('products.import');
 });
 
+Route::controller(SuratJalanController::class)->group(function () {
+    Route::get('transaksi/suratJalan', 'index')->name('transaksi.suratJalan.index');
+    Route::post('transaksi/suratJalan', 'store')->name('transaksi.suratJalan.store');
+    Route::post('transaksi/suratJalan/paket', 'addPaket')->name('transaksi.suratJalan.paket');
+    Route::post('transaksi/suratJalan/sjnew', 'suratJalanNew')->name('transaksi.suratJalan.suratJalanNew');
+    Route::get('transaksi/suratJalan/{suratJalan}', 'show')->name('transaksi.suratJalan.show');
+    Route::put('transaksi/suratJalan/{suratJalan}', 'update')->name('transaksi.suratJalan.update');
+    Route::delete('transaksi/suratJalan/{suratJalan}', 'destroy')->name('transaksi.suratJalan.destroy');
+});
+
 Route::resource('products/package', ProductPackageController::class);
 Route::resource('products/package/detail', ProductPackageDetailController::class);
 Route::resource('products/history', ProductHistoryController::class);
-Route::resource('transaksi/suratJalan', SuratJalanController::class);
 Route::resource('transaksi/invoiceJual', InvoiceController::class);
 Route::resource('transaksi/invoiceHutang', DebtInvoiceController::class);
 Route::resource('transaksi/invoiceHutang/detail', DebtInvoiceDetailController::class)->only(['store', 'update', 'destroy']);
+
+Route::fallback(function () {
+    return Inertia::render('NotFound/Index');
+});

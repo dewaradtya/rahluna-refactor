@@ -3,26 +3,20 @@ import { InputField, InputTextarea, Select } from '../../../../Components/FieldI
 import { useEffect, useMemo } from 'react';
 import Modal from '../../../../Components/Modal';
 import LoadingButton from '../../../../Components/Button/LoadingButton';
+import { today } from '../../../../utils';
 
-const Create = ({ showModal, setShowModal, products, customerId }) => {
-    console.log(customerId)
-    const options = useMemo(
-        () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
-        [products]
-    );
+const suratJalanNew = ({ showModal, setShowModal, customerId }) => {
 
     const { data, setData, post, processing, errors, recentlySuccessful, hasErrors } = useForm({
-        product_id: null,
-        qty: 0,
-        note: '',
+        no_surat: 0,
+        date: today(),
         customer_id: customerId
     });
-    
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(data)
-        post(`/transaksi/suratJalan`, {
+        console.log(data);
+        post(`/transaksi/suratJalan/sjnew`, {
             preserveScroll: true
         });
     };
@@ -32,31 +26,24 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Tambah Produk Surat Jalan" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Tambah Surat Jalan Baru" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
-                    <Select
-                        label="Product"
-                        id="product-create"
-                        error={errors?.product_id}
-                        onChange={(option) => setData('product_id', option ? option.value : null)}
-                        options={options}
+                    <InputField
+                        type="number"
+                        label="Nomor Surat Jalan"
+                        id="no_surat-create"
+                        error={errors?.no_surat}
+                        onChange={(e) => setData('no_surat', e.target.value)}
                         required
                     />
                     <InputField
-                        type="number"
-                        label="Qty"
-                        id="qty-create"
-                        error={errors?.qty}
-                        onChange={(e) => setData('qty', e.target.value)}
-                        required
-                    />
-                    <InputTextarea
-                        label="Keterangan"
-                        id="note-create"
-                        error={errors?.note}
-                        value={data.note}
-                        onChange={(e) => setData('note', e.target.value)}
+                        label="Tanggal Kirim"
+                        id="tanggal_kirim-create"
+                        type="date"
+                        value={data.tanggal_kirim}
+                        error={errors?.tanggal_kirim}
+                        onChange={(e) => setData('tanggal_kirim', e.target.value)}
                         required
                     />
                     <Modal.Footer>
@@ -73,4 +60,4 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
     );
 };
 
-export default Create;
+export default suratJalanNew;

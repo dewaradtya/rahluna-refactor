@@ -20,6 +20,7 @@ class MenuSeeder extends Seeder
             'icon' => 'fa fa-home',
             'is_active' => true,
         ]);
+
         Menu::create([
             'menu' => 'Customer',
             'url' => '/customer',
@@ -27,6 +28,31 @@ class MenuSeeder extends Seeder
             'icon' => 'fa fa-users',
             'is_active' => true,
         ]);
+
+        Menu::create([
+            'menu' => 'Project',
+            'url' => '-',
+            'group_menu' => 'Sales',
+            'icon' => 'fa fa-briefcase',
+            'is_active' => true,
+        ]);
+
+        Menu::create([
+            'menu' => 'Berlangsung',
+            'url' => '/project',
+            'group_menu' => 'Sales',
+            'main_menu' => 3,
+            'is_active' => true,
+        ]);
+
+        Menu::create([
+            'menu' => 'Selesai',
+            'url' => '/project/selesai',
+            'group_menu' => 'Sales',
+            'main_menu' => 3,
+            'is_active' => true,
+        ]);
+
         Menu::create([
             'menu' => 'Oprasional',
             'url' => '/oprasional',
@@ -34,6 +60,7 @@ class MenuSeeder extends Seeder
             'icon' => 'fa fa-briefcase',
             'is_active' => true,
         ]);
+
         Menu::create([
             'menu' => 'Product',
             'url' => '-',
@@ -41,28 +68,39 @@ class MenuSeeder extends Seeder
             'icon' => 'fa fa-boxes',
             'is_active' => true,
         ]);
+
         Menu::create([
             'menu' => 'Product',
             'url' => '/products',
             'group_menu' => 'Sales',
-            'main_menu' => 4,
+            'main_menu' => 7,
             'is_active' => true,
         ]);
+
         Menu::create([
             'menu' => 'History',
             'url' => '/products/history',
             'group_menu' => 'Sales',
-            'main_menu' => 4,
+            'main_menu' => 7,
             'is_active' => true,
         ]);
+
         Menu::create([
             'menu' => 'Unit',
             'url' => '/units',
             'group_menu' => 'Sales',
-            'main_menu' => 4,
+            'main_menu' => 7,
             'is_active' => true,
         ]);
-        
+
+        Menu::create([
+            'menu' => 'Purchase',
+            'url' => '-',
+            'group_menu' => 'Sales',
+            'icon' => 'fa fa-exchange-alt',
+            'is_active' => true,
+        ]);
+
         Menu::create([
             'menu' => 'Transaksi',
             'url' => '-',
@@ -75,7 +113,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Surat Jalan',
             'url' => '/transaksi/suratJalan',
             'group_menu' => 'Sales',
-            'main_menu' => 8,
+            'main_menu' => 12,
             'is_active' => true,
         ]);
 
@@ -83,7 +121,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Invoice Jual',
             'url' => '/transaksi/invoiceJual',
             'group_menu' => 'Sales',
-            'main_menu' => 8,
+            'main_menu' => 12,
             'is_active' => true,
         ]);
 
@@ -91,7 +129,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Invoice Hutang Beli',
             'url' => '/transaksi/invoiceHutang',
             'group_menu' => 'Sales',
-            'main_menu' => 8,
+            'main_menu' => 12,
             'is_active' => true,
         ]);
 
@@ -106,14 +144,14 @@ class MenuSeeder extends Seeder
             'menu' => 'Tax Page',
             'url' => '/',
             'group_menu' => 'General',
-            'main_menu' => 12,
+            'main_menu' => 16,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Potongan PPN dan PPH',
             'url' => '/modal',
             'group_menu' => 'General',
-            'main_menu' => 12,
+            'main_menu' => 16,
             'is_active' => true,
         ]);
         Menu::create([
@@ -127,28 +165,28 @@ class MenuSeeder extends Seeder
             'menu' => 'Modal',
             'url' => '/modal',
             'group_menu' => 'General',
-            'main_menu' => 15,
+            'main_menu' => 19,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Hutang',
             'url' => '/hutang',
             'group_menu' => 'General',
-            'main_menu' => 15,
+            'main_menu' => 19,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Piutang',
             'url' => '/piutang',
             'group_menu' => 'General',
-            'main_menu' => 15,
+            'main_menu' => 19,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Logout',
             'url' => '-',
             'group_menu' => 'General',
-            'icon' => 'fa fa-cog',
+            'icon' => 'fa fa-sign-out-alt',
             'is_active' => true,
         ]);
     }

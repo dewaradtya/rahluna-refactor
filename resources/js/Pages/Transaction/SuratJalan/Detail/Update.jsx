@@ -1,29 +1,29 @@
 import { useForm } from '@inertiajs/react';
-import { InputField, InputTextarea, Select } from '../../../../Components/FieldInput';
-import { useEffect, useMemo } from 'react';
+import { Select, InputField, InputTextarea } from '../../../../Components/FieldInput';
+import { useEffect, useMemo, useState } from 'react';
 import Modal from '../../../../Components/Modal';
 import LoadingButton from '../../../../Components/Button/LoadingButton';
 
-const Create = ({ showModal, setShowModal, products, customerId }) => {
-    console.log(customerId)
+const Update = ({ showModal, setShowModal, suratJalan, products }) => {
+    const [isLoading, setIsLoading] = useState(false);
+
     const options = useMemo(
         () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
         [products]
     );
 
-    const { data, setData, post, processing, errors, recentlySuccessful, hasErrors } = useForm({
-        product_id: null,
-        qty: 0,
-        note: '',
-        customer_id: customerId
+    const { data, setData, put, errors, recentlySuccessful } = useForm({
+        product_id: suratJalan?.product_id || null,
+        qty: suratJalan?.qty || 0,
+        note: suratJalan?.note,
     });
-    
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(data)
-        post(`/transaksi/suratJalan`, {
-            preserveScroll: true
+        setIsLoading(true);
+        put(`/transaksi/suratJalan/${suratJalan?.id}`, {
+            preserveScroll: true,
+            onFinish: () => setIsLoading(false),
         });
     };
 
@@ -32,13 +32,14 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Tambah Produk Surat Jalan" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Edit Paket" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <Select
                         label="Product"
-                        id="product-create"
+                        id="product-update"
                         error={errors?.product_id}
+                        value={options.find((option) => option.value === data.product_id)}
                         onChange={(option) => setData('product_id', option ? option.value : null)}
                         options={options}
                         required
@@ -46,24 +47,25 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
                     <InputField
                         type="number"
                         label="Qty"
-                        id="qty-create"
+                        id="qty-update"
+                        value={data.qty}
                         error={errors?.qty}
                         onChange={(e) => setData('qty', e.target.value)}
                         required
                     />
                     <InputTextarea
                         label="Keterangan"
-                        id="note-create"
+                        id="note-update"
                         error={errors?.note}
                         value={data.note}
                         onChange={(e) => setData('note', e.target.value)}
                         required
                     />
                     <Modal.Footer>
-                        <LoadingButton type="button" onClick={() => setShowModal(false)} loading={processing}>
+                        <LoadingButton type="button" onClick={() => setShowModal(false)} loading={isLoading}>
                             Tutup
                         </LoadingButton>
-                        <LoadingButton type="submit" loading={processing}>
+                        <LoadingButton type="submit" loading={isLoading}>
                             Simpan
                         </LoadingButton>
                     </Modal.Footer>
@@ -73,4 +75,4 @@ const Create = ({ showModal, setShowModal, products, customerId }) => {
     );
 };
 
-export default Create;
+export default Update;
