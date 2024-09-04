@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('invoices', function (Blueprint $table) {
-            $table->id(); // id sebagai primary key dengan auto-increment
+            $table->id(); 
             $table->string('nama_invoice', 255);
             $table->foreignId('customer_id')->constrained('customers');
             $table->string('referensi', 255);
@@ -33,6 +33,8 @@ return new class extends Migration
             $table->date('due_date');
             $table->date('tanggal_dibuat');
             $table->foreignId('user_id')->constrained('users');
+            $table->timestamp('first_create')->useCurrent();
+            $table->timestamp('last_update')->useCurrent()->useCurrentOnUpdate();
         });
     }
 
