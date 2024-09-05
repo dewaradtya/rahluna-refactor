@@ -21,10 +21,7 @@ return new class extends Migration
             // $table->integer('tax'); // pajak
             // $table->integer('tax_percentage'); // persen pajak
             $table->decimal('amount', 11)->default(0);
-            $table->integer('pph_value')->default(0);
             $table->foreignId('tax_id')->nullable()->constrained('taxes');
-            $table->integer('debt_info')->default(0);
-            $table->date('debt_due')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->string('proof')->nullable(); // bukti
             $table->timestamp('created_at')->useCurrent();

@@ -28,7 +28,6 @@ class ProjectUangKeluarStoreRequest extends FormRequest
             'amount' => 'required|decimal:0,2',
             'note' => 'nullable|string',
             'tax_id' => 'nullable|integer|exists:taxes,id',
-            'debt_info' => 'nullable|integer',
             'proof' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
         ];
     }

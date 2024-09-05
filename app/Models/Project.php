@@ -24,12 +24,9 @@ class Project extends Model
         'oprasional',
         'nilai_pajakM',
         'nilai_pajakK',
-        'nilai_pph',
         'pajak',
         'status',
-        'kategoriPajak',
         'user_id',
-        'file_po',
     ];
 
     public function customer(): BelongsTo

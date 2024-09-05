@@ -16,7 +16,6 @@ const Create = ({ showModal, setShowModal, customers, }) => {
         name: '',
         deadline: today(),
         nilai_penawaran: 0,
-        file_po: null
     });
     
 
@@ -67,13 +66,6 @@ const Create = ({ showModal, setShowModal, customers, }) => {
                         error={errors?.nilai_penawaran}
                         onChange={(e) => setData('nilai_penawaran', e.target.value)}
                         required
-                    />
-                    <InputField
-                        type="file"
-                        label="Bukti"
-                        id="file_po-create"
-                        error={errors?.file_po}
-                        onChange={(e) => setData('file_po', e.target.files[0])}
                     />
                     <Modal.Footer>
                         <LoadingButton type="button" onClick={() => setShowModal(false)} loading={processing}>

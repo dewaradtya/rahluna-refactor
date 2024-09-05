@@ -10,14 +10,11 @@ const Menu = ({ showModal, setShowModal, project, onEdit }) => {
             router.delete(`/project/${project.id}`, {
                 preserveScroll: true,
                 onStart: () => {
-                    // You can set loading state here if needed
                 },
                 onFinish: () => {
                     setShowModal(false);
-                    // Optionally handle cleanup after deletion
                 },
                 onError: () => {
-                    // Handle error if the deletion fails
                 },
             });
         }
@@ -31,7 +28,9 @@ const Menu = ({ showModal, setShowModal, project, onEdit }) => {
     };
 
     const handleView = () => {
-        console.log('Lihat');
+        if (project && project.id) {
+            router.visit(`/project/${project.id}`);
+        }
     };
 
     const handleComplete = () => {

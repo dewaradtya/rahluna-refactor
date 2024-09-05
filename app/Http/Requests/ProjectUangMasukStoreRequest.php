@@ -27,7 +27,6 @@ class ProjectUangMasukStoreRequest extends FormRequest
             'amount' => 'required|decimal:0,2',
             'note' => 'nullable|string',
             'tax_id' => 'nullable|integer|exists:taxes,id',
-            'pph_value' => 'nullable|integer',
             'proof' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
         ];
     }

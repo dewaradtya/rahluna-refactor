@@ -29,16 +29,14 @@ const UangKeluar = ({ showModal, setShowModal, projects }) => {
         project_id: null,
         note: '',
         amount: 0,
-        pph_value: 0,
         requirement: '',
         proof: null,
         tax_id: null,
-        debt_info: 0
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/project/uangKeluar', {
+        post('/project/detail/uangKeluar', {
             preserveScroll: true
         });
     };
@@ -97,12 +95,6 @@ const UangKeluar = ({ showModal, setShowModal, projects }) => {
                         error={errors?.tax_id}
                         onChange={(option) => setData('tax_id', option ? option.value : null)}
                         options={TaxOptions}
-                    />
-                    <InputCheckbox
-                        label="Hutang"
-                        id="pph-create"
-                        checked={data.debt_info === 1} 
-                        onChange={(e) => setData('debt_info', e.target.checked ? 1 : 0)}
                     />
                     <InputField
                         type="file"

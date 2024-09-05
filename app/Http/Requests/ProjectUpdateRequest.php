@@ -25,7 +25,6 @@ class ProjectUpdateRequest extends FormRequest
             'name' => 'required|string',
             'deadline' => 'required|date',
             'nilai_penawaran' => 'required|decimal:0,2',
-            'file_po' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
             'customer_id' => 'required|exists:customers,id',
         ];
     }

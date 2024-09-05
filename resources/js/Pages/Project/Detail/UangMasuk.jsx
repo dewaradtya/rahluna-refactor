@@ -1,9 +1,9 @@
 import { useForm, usePage } from '@inertiajs/react';
-import { Select, InputField, InputNumber } from '../../Components/FieldInput';
+import { Select, InputField, InputNumber } from '../../../Components/FieldInput';
 import { useEffect, useMemo } from 'react';
-import Modal from '../../Components/Modal';
-import LoadingButton from '../../Components/Button/LoadingButton';
-import { rupiah, today } from '../../utils';
+import Modal from '../../../Components/Modal';
+import LoadingButton from '../../../Components/Button/LoadingButton';
+import { rupiah, today } from '../../../utils';
 
 const FundingOptions = [
     { value: 'Oprasional', label: 'Oprasional' },
@@ -13,25 +13,16 @@ const FundingOptions = [
     { value: 'Entertaint Cost', label: 'Entertaint Cost' }
 ];
 
-const UangMasuk = ({ showModal, setShowModal, projects }) => {
+const UangMasuk = ({ showModal, setShowModal, projectId }) => {
     const {
         additional: { taxs }
     } = usePage().props;
-
-    const options = useMemo(
-        () =>
-            projects.map((project) => ({
-                value: project.id,
-                label: `${project.name} - ${project.customer?.name || 'No Customer'}`
-            })),
-        [projects]
-    );
 
     const TaxOptions = taxs.map(({ id, tax }) => ({ value: id, label: tax + '%' }));
 
     const { setData, data, post, processing, errors, recentlySuccessful } = useForm({
         date: today(),
-        project_id: null,
+        project_id: projectId,
         note: '',
         amount: 0,
         proof: null,
@@ -60,14 +51,6 @@ const UangMasuk = ({ showModal, setShowModal, projects }) => {
                         value={data.date}
                         error={errors?.date}
                         onChange={(e) => setData('date', e.target.value)}
-                        required
-                    />
-                    <Select
-                        label="Nama Project"
-                        id="project-create"
-                        error={errors?.project_id}
-                        onChange={(option) => setData('project_id', option ? option.value : null)}
-                        options={options}
                         required
                     />
                     <InputNumber

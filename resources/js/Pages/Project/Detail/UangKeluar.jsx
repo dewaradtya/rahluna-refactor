@@ -1,46 +1,40 @@
 import { useForm, usePage } from '@inertiajs/react';
-import { Select, InputField, InputNumber } from '../../Components/FieldInput';
+import { Select, InputField, InputNumber, InputCheckbox } from '../../../Components/FieldInput';
 import { useEffect, useMemo } from 'react';
-import Modal from '../../Components/Modal';
-import LoadingButton from '../../Components/Button/LoadingButton';
-import { rupiah, today } from '../../utils';
+import Modal from '../../../Components/Modal';
+import LoadingButton from '../../../Components/Button/LoadingButton';
+import { rupiah, today } from '../../../utils';
 
-const FundingOptions = [
+const RequirementOptions = [
+    { value: 'Material', label: 'Material' },
+    { value: 'Pekerja', label: 'Pekerja' },
     { value: 'Oprasional', label: 'Oprasional' },
-    { value: 'Gaji', label: 'Gaji' },
-    { value: 'Fee', label: 'Fee' },
-    { value: 'Bayar Pajak', label: 'Bayar Pajak' },
-    { value: 'Entertaint Cost', label: 'Entertaint Cost' }
+    { value: 'Aset', label: 'Aset' },
+    { value: 'Sewa Alat', label: 'Sewa Alat' },
+    { value: 'Konsumsi', label: 'Konsumsi' },
+    { value: 'Trasnsport', label: 'Trasnsport' }
 ];
 
-const UangMasuk = ({ showModal, setShowModal, projects }) => {
+const UangKeluar = ({ showModal, setShowModal, projectId }) => {
     const {
         additional: { taxs }
     } = usePage().props;
-
-    const options = useMemo(
-        () =>
-            projects.map((project) => ({
-                value: project.id,
-                label: `${project.name} - ${project.customer?.name || 'No Customer'}`
-            })),
-        [projects]
-    );
 
     const TaxOptions = taxs.map(({ id, tax }) => ({ value: id, label: tax + '%' }));
 
     const { setData, data, post, processing, errors, recentlySuccessful } = useForm({
         date: today(),
-        project_id: null,
+        project_id: projectId,
         note: '',
         amount: 0,
+        requirement: '',
         proof: null,
-        tax_id: null
+        tax_id: null,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/project/detail/uangMasuk', {
+        post('/project/detail/uangKeluar', {
             preserveScroll: true
         });
     };
@@ -50,7 +44,7 @@ const UangMasuk = ({ showModal, setShowModal, projects }) => {
     }, [recentlySuccessful]);
 
     return (
-        <Modal title="Uang Masuk Project" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Uang Keluar Project" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <InputField
@@ -63,11 +57,11 @@ const UangMasuk = ({ showModal, setShowModal, projects }) => {
                         required
                     />
                     <Select
-                        label="Nama Project"
-                        id="project-create"
-                        error={errors?.project_id}
-                        onChange={(option) => setData('project_id', option ? option.value : null)}
-                        options={options}
+                        label="Kebutuhan"
+                        id="kebutuhan-create"
+                        error={errors?.requirement}
+                        onChange={(option) => setData('requirement', option ? option.value : null)}
+                        options={RequirementOptions}
                         required
                     />
                     <InputNumber
@@ -113,4 +107,4 @@ const UangMasuk = ({ showModal, setShowModal, projects }) => {
     );
 };
 
-export default UangMasuk;
+export default UangKeluar;

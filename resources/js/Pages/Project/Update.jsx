@@ -14,7 +14,6 @@ const Update = ({ showModal, setShowModal, project, customers }) => {
         name: project?.name || '',
         deadline: project?.deadline || today(),
         nilai_penawaran: project?.nilai_penawaran || 0,
-        file_po: null,
         _method: 'put'
     });
 
@@ -69,13 +68,6 @@ const Update = ({ showModal, setShowModal, project, customers }) => {
                         error={errors?.nilai_penawaran}
                         onChange={(e) => setData('nilai_penawaran', e.target.value)}
                         required
-                    />
-                    <InputField
-                        type="file"
-                        label="File PO"
-                        id="file_po-update"
-                        error={errors?.file_po}
-                        onChange={(e) => setData('file_po', e.target.files[0])}
                     />
                     <Modal.Footer>
                         <LoadingButton type="button" onClick={() => setShowModal(false)} loading={isLoading}>

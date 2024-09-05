@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProjectStoreRequest;
-use App\Http\Requests\ProjectUangKeluarStoreRequest;
-use App\Http\Requests\ProjectUangMasukStoreRequest;
 use App\Http\Requests\ProjectUpdateRequest;
 use App\Models\Customer;
 use App\Models\Project;
@@ -53,13 +51,13 @@ class ProjectController extends Controller
             $perPage = $request->query('perPage') ?? 100;
 
             $project = Project::findOrFail($id);
-            $projectDetail = $project->projectDetails()->with('customer')->paginate($perPage)->appends($request->query());
-            $customers = Customer::all();
+            $projectDetail = $project->projectDetail()->with(['customer', 'tax'])->paginate($perPage)->appends($request->query());
+            $customer = Customer::all();
 
             return Inertia::render('Project/Detail/Index', [
                 'project' => $project,
                 'projectDetail' => $projectDetail,
-                'customers' => $customers,
+                'customer' => $customer,
             ]);
         } catch (\Exception $e) {
             return Redirect::back()->with('error', 'Projek tidak ditemukan');
@@ -90,42 +88,9 @@ class ProjectController extends Controller
             return Redirect::back()->with('success', 'Projek berhasil dihapus');
         } catch (\Exception $e) {
             Log::error('Error deleting projects: ', ['exception' => $e]);
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus satuan. Silahkan coba lagi.');
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus projek detail. Silahkan coba lagi.');
         }
     }
 
-    public function uangMasuk(ProjectUangMasukStoreRequest $request): RedirectResponse
-    {
-        DB::beginTransaction();
-        try {
-            $validatedData = $request->validated();
-            $validatedData['user_id'] = 1;
-            $validatedData['requirement'] = "Uang Masuk";
-            ProjectDetail::create($validatedData);
-
-            DB::commit();
-            return Redirect::back()->with('success', 'Uang masuk berhasil ditambahkan');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error storing project: ', ['exception' => $e]);
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah uang masuk. Silahkan coba lagi.');
-        }
-    }
-
-    public function uangKeluar(ProjectUangKeluarStoreRequest $request): RedirectResponse
-    {
-        DB::beginTransaction();
-        try {
-            $validatedData = $request->validated();
-            $validatedData['user_id'] = 1;
-            ProjectDetail::create($validatedData);
-
-            DB::commit();
-            return Redirect::back()->with('success', 'Uang keluar berhasil ditambahkan');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error storing project: ', ['exception' => $e]);
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah uang keluar. Silahkan coba lagi.');
-        }
-    }
+   
 }

@@ -19,10 +19,7 @@ class ProjectDetail extends Model
         'requirement',
         'note',
         'amount',
-        'pph_value',
         'tax_id',
-        'debt_info',
-        'debt_due',
         'user_id',
         'proof',
     ];
