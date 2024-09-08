@@ -1,5 +1,5 @@
 import { useForm, usePage } from '@inertiajs/react';
-import { Select, InputField, InputNumber, InputCheckbox } from '../../../Components/FieldInput';
+import { Select, InputField, InputNumber, InputCheckbox, InputTextarea } from '../../../Components/FieldInput';
 import { useEffect, useMemo } from 'react';
 import Modal from '../../../Components/Modal';
 import LoadingButton from '../../../Components/Button/LoadingButton';
@@ -72,9 +72,10 @@ const UangKeluar = ({ showModal, setShowModal, projectId }) => {
                         onChange={(e) => setData('amount', e.target.value)}
                         required
                     />
-                    <InputField
+                    <InputTextarea
                         label="Keterangan"
-                        id="keterangan-create"
+                        id="note-create"
+                        value={data.note}
                         error={errors?.note}
                         onChange={(e) => setData('note', e.target.value)}
                         required

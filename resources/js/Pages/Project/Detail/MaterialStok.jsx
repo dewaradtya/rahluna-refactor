@@ -1,47 +1,41 @@
-import { useForm, usePage } from '@inertiajs/react';
-import { Select, InputField, InputNumber, InputTextarea } from '../../../Components/FieldInput';
+import { useForm } from '@inertiajs/react';
+import { InputField, InputNumber, InputTextarea, Select } from '../../../Components/FieldInput';
 import { useEffect, useMemo } from 'react';
 import Modal from '../../../Components/Modal';
 import LoadingButton from '../../../Components/Button/LoadingButton';
 import { rupiah, today } from '../../../utils';
 
-const FundingOptions = [
-    { value: 'Oprasional', label: 'Oprasional' },
-    { value: 'Gaji', label: 'Gaji' },
-    { value: 'Fee', label: 'Fee' },
-    { value: 'Bayar Pajak', label: 'Bayar Pajak' },
-    { value: 'Entertaint Cost', label: 'Entertaint Cost' }
-];
+const MaterialStok = ({ showModal, setShowModal, product, projectId }) => {
+    console.log(projectId)
+    const options = useMemo(
+        () => product.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
+        [product]
+    );
 
-const UangMasuk = ({ showModal, setShowModal, projectId }) => {
-    const {
-        additional: { taxs }
-    } = usePage().props;
-
-    const TaxOptions = taxs.map(({ id, tax }) => ({ value: id, label: tax + '%' }));
-
-    const { setData, data, post, processing, errors, recentlySuccessful } = useForm({
+    const { data, setData, post, processing, errors, recentlySuccessful, hasErrors } = useForm({
         date: today(),
-        project_id: projectId,
-        note: '',
+        product_id: null,
         amount: 0,
-        proof: null,
-        tax_id: null
+        qty: 0,
+        note: '',
+        project_id: projectId
     });
+    
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/project/detail/uangMasuk', {
+        console.log(data)
+        post(`/project/detail/material`, {
             preserveScroll: true
         });
     };
 
     useEffect(() => {
         if (recentlySuccessful) setShowModal(false);
-    }, [recentlySuccessful]);
+    }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Uang Masuk Project" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Material Stok Project" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <InputField
@@ -53,12 +47,28 @@ const UangMasuk = ({ showModal, setShowModal, projectId }) => {
                         onChange={(e) => setData('date', e.target.value)}
                         required
                     />
+                    <Select
+                        label="Jenis Barang"
+                        id="product-create"
+                        error={errors?.product_id}
+                        onChange={(option) => setData('product_id', option ? option.value : null)}
+                        options={options}
+                        required
+                    />
                     <InputNumber
                         label="Nilai"
                         id="nilai-create"
                         addonText={rupiah(data.amount)}
                         error={errors?.amount}
                         onChange={(e) => setData('amount', e.target.value)}
+                        required
+                    />
+                    <InputField
+                        type="number"
+                        label="Qty"
+                        id="qty-create"
+                        error={errors?.qty}
+                        onChange={(e) => setData('qty', e.target.value)}
                         required
                     />
                     <InputTextarea
@@ -68,20 +78,6 @@ const UangMasuk = ({ showModal, setShowModal, projectId }) => {
                         error={errors?.note}
                         onChange={(e) => setData('note', e.target.value)}
                         required
-                    />
-                    <Select
-                        label="Pajak"
-                        id="pajak-create"
-                        error={errors?.tax_id}
-                        onChange={(option) => setData('tax_id', option ? option.value : null)}
-                        options={TaxOptions}
-                    />
-                    <InputField
-                        type="file"
-                        label="Bukti"
-                        id="bukti-create"
-                        error={errors?.proof}
-                        onChange={(e) => setData('proof', e.target.files[0])}
                     />
                     <Modal.Footer>
                         <LoadingButton type="button" onClick={() => setShowModal(false)} loading={processing}>
@@ -97,4 +93,4 @@ const UangMasuk = ({ showModal, setShowModal, projectId }) => {
     );
 };
 
-export default UangMasuk;
+export default MaterialStok;

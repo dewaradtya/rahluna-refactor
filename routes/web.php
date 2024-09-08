@@ -23,6 +23,7 @@ use App\Http\Controllers\ProductPackageController;
 use App\Http\Controllers\ProductPackageDetailController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectDetailController;
+use App\Http\Controllers\ProjectDoneController;
 use App\Http\Controllers\SuratJalanController;
 use Inertia\Inertia;
 
@@ -75,6 +76,15 @@ Route::controller(SuratJalanController::class)->group(function () {
     Route::delete('transaksi/suratJalan/{suratJalan}', 'destroy')->name('transaksi.suratJalan.destroy');
 });
 
+Route::controller(ProjectController::class)->group(function () {
+    Route::get('project', 'index')->name('project.index');
+    Route::post('project', 'store')->name('project.store');
+    Route::post('/project/{project}/complete', 'complete')->name('project.complete');
+    Route::get('project/{project}', 'show')->name('project.show');
+    Route::put('project/{project}', 'update')->name('project.update');
+    Route::delete('project/{project}', 'destroy')->name('project.destroy');
+});
+
 Route::controller(ProjectDetailController::class)->group(function () {
     Route::post('project/detail/uangMasuk', 'uangMasuk')->name('project.detail.uangMasuk');
     Route::post('project/detail/uangKeluar', 'uangKeluar')->name('project.detail.uangKeluar');
@@ -84,7 +94,7 @@ Route::controller(ProjectDetailController::class)->group(function () {
     Route::post('project/detail/import', 'import')->name('project.detail.import');
 });
 
-Route::resource('project', ProjectController::class);
+Route::resource('projects/done', ProjectDoneController::class);
 Route::resource('products/package', ProductPackageController::class);
 Route::resource('products/package/detail', ProductPackageDetailController::class);
 Route::resource('products/history', ProductHistoryController::class);

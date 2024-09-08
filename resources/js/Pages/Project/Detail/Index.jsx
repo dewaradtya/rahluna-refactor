@@ -15,12 +15,16 @@ import UangKeluar from './UangKeluar';
 import SplitButtonGroup from '../../../Components/Button/SplitButtonGroup';
 import Update from './Update';
 import ImportExcel from './ImportExcel';
+import MaterialStok from './MaterialStok';
+import ImportPurchase from './ImportPurchase';
 
-const Index = ({ projectDetail, project, customer }) => {
+const Index = ({ projectDetail, project, product }) => {
     const [showModalCreate, setShowModalCreate] = useState(false);
     const [showUangMasukModal, setShowUangMasukModal] = useState(false);
     const [showUangKeluarModal, setShowUangKeluarModal] = useState(false);
     const [showImportProductModal, setShowImportProductModal] = useState(false);
+    const [showMaterialStokModal, setShowMaterialStokModal] = useState(false);
+    const [showImportPurchaseModal, setShowImportPurchaseModal] = useState(false);
     const [showModalUpdateUangMasuk, setShowModalUpdateUangMasuk] = useState({ modal: false, projectDetail: null });
     const [loadingButton, setLoadingButton] = useState(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -80,6 +84,11 @@ const Index = ({ projectDetail, project, customer }) => {
             {
                 label: 'Kebutuhan',
                 name: 'requirement',
+                rowSpan: 2
+            },
+            {
+                label: 'Keterangan',
+                name: 'note',
                 rowSpan: 2
             },
             {
@@ -212,13 +221,13 @@ const Index = ({ projectDetail, project, customer }) => {
                             color="secondary"
                             text="Material Stok"
                             icon={<FaPlus />}
-                            onClick={() => setShowCreateModal(true)}
+                            onClick={() => setShowMaterialStokModal(true)}
                         />
                         <SplitButton
                             color="warning"
                             text="Import Purchase"
                             icon={<FaFile />}
-                            onClick={() => setShowCreateModal(true)}
+                            onClick={() => setShowImportPurchaseModal(true)}
                         ></SplitButton>
                         <SplitButtonGroup
                             color="info"
@@ -272,6 +281,22 @@ const Index = ({ projectDetail, project, customer }) => {
             )}
             {showUangKeluarModal && (
                 <UangKeluar showModal={showUangKeluarModal} setShowModal={setShowUangKeluarModal} projectId={project.id} />
+            )}
+            {showMaterialStokModal && (
+                <MaterialStok
+                    showModal={showMaterialStokModal}
+                    setShowModal={setShowMaterialStokModal}
+                    product={product}
+                    projectId={project.id}
+                />
+            )}
+            {showImportPurchaseModal && (
+                <ImportPurchase
+                    showModal={showImportPurchaseModal}
+                    setShowModal={setShowImportPurchaseModal}
+                    product={product}
+                    projectId={project.id}
+                />
             )}
             {showImportProductModal && (
                 <ImportExcel showModal={showImportProductModal} setShowModal={setShowImportProductModal} projectId={project.id} />

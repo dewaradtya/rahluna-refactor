@@ -36,6 +36,6 @@ class Project extends Model
 
     public function projectDetail(): HasMany
     {
-        return $this->hasMany(ProjectDetail::class, 'project_id');
+        return $this->hasMany(ProjectDetail::class);
     }
 }

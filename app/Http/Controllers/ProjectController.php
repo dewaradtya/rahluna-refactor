@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProjectStoreRequest;
 use App\Http\Requests\ProjectUpdateRequest;
 use App\Models\Customer;
+use App\Models\Product;
 use App\Models\Project;
 use App\Models\ProjectDetail;
 use Illuminate\Http\RedirectResponse;
@@ -21,10 +22,11 @@ class ProjectController extends Controller
     {
         $perPage = $request->query('perPage') ?? 100;
 
-        $projects = Project::with('customer', 'projectDetail')->paginate($perPage)->appends($request->query());
+        $projects = Project::with(['customer', 'projectDetail'])->where('status', 'berlangsung')->paginate($perPage)->appends($request->query());
         $customers = Customer::all();
+        $product = Product::all();
 
-        return Inertia::render('Project/Index', compact('projects', 'customers'));
+        return Inertia::render('Project/Index', compact('projects', 'customers', 'product' ));
     }
 
     public function store(ProjectStoreRequest $request): RedirectResponse
@@ -53,10 +55,12 @@ class ProjectController extends Controller
             $project = Project::findOrFail($id);
             $projectDetail = $project->projectDetail()->with(['customer', 'tax'])->paginate($perPage)->appends($request->query());
             $customer = Customer::all();
+            $product = Product::all();
 
             return Inertia::render('Project/Detail/Index', [
                 'project' => $project,
                 'projectDetail' => $projectDetail,
+                'product' => $product,
                 'customer' => $customer,
             ]);
         } catch (\Exception $e) {
@@ -92,5 +96,15 @@ class ProjectController extends Controller
         }
     }
 
-   
+    public function complete(Project $project): RedirectResponse
+    {
+        try {
+            $project->update(['status' => 'selesai']);
+    
+            return back()->with('success', 'Status projek berhasil diperbarui menjadi selesai.');
+        } catch (\Exception $e) {
+            Log::error('Error completing project: ', ['exception' => $e]);
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui status projek.');
+        }
+    }
 }

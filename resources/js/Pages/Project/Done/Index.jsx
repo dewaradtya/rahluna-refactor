@@ -1,31 +1,20 @@
-import MainLayout from '../../Layouts/MainLayout';
+import MainLayout from '../../../Layouts/MainLayout';
 import { useMemo, useState } from 'react';
-import Create from './Create';
-import Update from './Update';
-import Table from '../../Components/Table';
-import Pagination from '../../Components/Pagination';
-import SplitButton from '../../Components/Button/SplitButton';
-import Card from '../../Components/Card';
-import { FaFile, FaPlus } from 'react-icons/fa';
-import { formatDate, rupiah } from '../../utils';
+// import Create from './Create';
+// import Update from './Update';
+import Table from '../../../Components/Table';
+import Pagination from '../../../Components/Pagination';
+import SplitButton from '../../../Components/Button/SplitButton';
+import Card from '../../../Components/Card';
+import { formatDate, rupiah } from '../../../utils';
 import { router } from '@inertiajs/react';
-import Confirm from '../../Components/Confirm/Confirm';
+import Confirm from '../../../Components/Confirm/Confirm';
 import { PiExportDuotone } from 'react-icons/pi';
-import { MdAttachMoney } from 'react-icons/md';
-import BadgeButton from '../../Components/Button/BadgeButton';
+import BadgeButton from '../../../Components/Button/BadgeButton';
 import Menu from './Menu';
-import UangMasuk from './UangMasuk';
-import UangKeluar from './UangKeluar';
-import MaterialStok from './MaterialStok';
-import ImportPurchase from './ImportPurchase';
 
 const Index = ({ projects, customers, product }) => {
-    const [showModalCreate, setShowModalCreate] = useState(false);
     const [showModalMenu, setShowModalMenu] = useState(false);
-    const [showUangMasukModal, setShowUangMasukModal] = useState(false);
-    const [showUangKeluarModal, setShowUangKeluarModal] = useState(false);
-    const [showMaterialStokModal, setShowMaterialStokModal] = useState(false);
-    const [showImportPurchaseModal, setShowImportPurchaseModal] = useState(false);
     const [showModalUpdate, setShowModalUpdate] = useState({ modal: false, project: null });
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -250,16 +239,10 @@ const Index = ({ projects, customers, product }) => {
 
     return (
         <Card>
-            <Card.CardHeader titleText="Table Project" />
+            <Card.CardHeader titleText="Table Project Finished" />
             <Card.CardBody>
                 <div className="d-sm-flex align-items-center justify-start mb-2">
                     <div className="d-flex column-gap-1 align-items-start flex-wrap">
-                        <SplitButton
-                            color="primary"
-                            text="Projek Baru"
-                            icon={<FaPlus />}
-                            onClick={() => setShowModalCreate(true)}
-                        />
                         <SplitButton
                             color="dark"
                             text="Export Excel"
@@ -269,32 +252,7 @@ const Index = ({ projects, customers, product }) => {
                     </div>
                 </div>
                 <div className="d-sm-flex align-items-center justify-content-between mb-2">
-                    <div className="d-flex column-gap-1 align-items-start flex-wrap">
-                        <SplitButton
-                            color="success"
-                            text="Masuk"
-                            icon={<MdAttachMoney />}
-                            onClick={() => setShowUangMasukModal(true)}
-                        />
-                        <SplitButton
-                            color="danger"
-                            text="Keluar"
-                            icon={<MdAttachMoney />}
-                            onClick={() => setShowUangKeluarModal(true)}
-                        />
-                        <SplitButton
-                            color="secondary"
-                            text="Material Stok"
-                            icon={<FaPlus />}
-                            onClick={() => setShowMaterialStokModal(true)}
-                        />
-                        <SplitButton
-                            color="warning"
-                            text="Import Purchase"
-                            icon={<FaFile />}
-                            onClick={() => setShowImportPurchaseModal(true)}
-                        ></SplitButton>
-                    </div>
+                    <div className="d-flex column-gap-1 align-items-start flex-wrap"></div>
                 </div>
                 <Card.CardFilter
                     searchTerm={searchTerm}
@@ -311,7 +269,6 @@ const Index = ({ projects, customers, product }) => {
                 <Pagination links={projects.links} />
             </Card.CardBody>
 
-            {showModalCreate && <Create showModal={showModalCreate} setShowModal={setShowModalCreate} customers={customers} />}
             {showModalMenu && (
                 <Menu
                     showModal={showModalMenu}
@@ -334,28 +291,6 @@ const Index = ({ projects, customers, product }) => {
                     setShowModal={setShowDeleteModal}
                     onDelete={handleConfirmDelete}
                     dataType="project"
-                />
-            )}
-            {showUangMasukModal && (
-                <UangMasuk showModal={showUangMasukModal} setShowModal={setShowUangMasukModal} projects={projects.data} />
-            )}
-            {showUangKeluarModal && (
-                <UangKeluar showModal={showUangKeluarModal} setShowModal={setShowUangKeluarModal} projects={projects.data} />
-            )}
-            {showMaterialStokModal && (
-                <MaterialStok
-                    showModal={showMaterialStokModal}
-                    setShowModal={setShowMaterialStokModal}
-                    product={product}
-                    projects={projects.data}
-                />
-            )}
-             {showImportPurchaseModal && (
-                <ImportPurchase
-                    showModal={showImportPurchaseModal}
-                    setShowModal={setShowImportPurchaseModal}
-                    product={product}
-                    projects={projects.data}
                 />
             )}
         </Card>

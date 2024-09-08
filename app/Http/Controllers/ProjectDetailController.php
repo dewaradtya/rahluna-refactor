@@ -86,6 +86,24 @@ class ProjectDetailController extends Controller
         }
     }
 
+    public function materialStok(ProjectUangMasukStoreRequest $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            $validatedData = $request->validated();
+            $validatedData['user_id'] = 1;
+            $validatedData['requirement'] = "Material Stok";
+            ProjectDetail::create($validatedData);
+
+            DB::commit();
+            return Redirect::back()->with('success', 'Material stok berhasil ditambahkan');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error storing project: ', ['exception' => $e]);
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah material stok. Silahkan coba lagi.');
+        }
+    }
+
     public function downloadFormat($projectId)
     {
         return Excel::download(new ProjectDetailExport($projectId), 'project_details.xlsx');

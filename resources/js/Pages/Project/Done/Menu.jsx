@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import Modal from '../../Components/Modal';
+import Modal from '../../../Components/Modal';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { MdDone, MdEdit } from 'react-icons/md';
@@ -34,23 +34,9 @@ const Menu = ({ showModal, setShowModal, project, onEdit }) => {
     };
 
     const handleComplete = () => {
-        if (project && project.id) {
-            router.post(`/project/${project.id}/complete`, {}, {
-                preserveScroll: true,
-                onStart: () => {
-                    console.log('Mulai memperbarui status...');
-                },
-                onFinish: () => {
-                    setShowModal(false);
-                    console.log('Projek selesai.');
-                },
-                onError: (error) => {
-                    console.error('Terjadi kesalahan: ', error);
-                },
-            });
-        }
+        console.log('Selesai');
     };
-    
+
     return (
         <Modal title="Aksi" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
@@ -80,15 +66,6 @@ const Menu = ({ showModal, setShowModal, project, onEdit }) => {
                     >
                         <MdEdit size={24} />
                         <span>Edit</span>
-                    </button>
-
-                    <button
-                        onClick={handleComplete}
-                        className="btn btn-success d-flex flex-column align-items-center justify-content-center rounded-circle"
-                        style={{ width: '80px', height: '80px' }}
-                    >
-                        <MdDone size={24} />
-                        <span>Selesai</span>
                     </button>
                 </div>
             </Modal.Body>

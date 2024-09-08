@@ -1,5 +1,5 @@
 import { useForm, usePage } from '@inertiajs/react';
-import { Select, InputField, InputNumber } from '../../../Components/FieldInput';
+import { Select, InputField, InputNumber, InputTextarea } from '../../../Components/FieldInput';
 import { useEffect } from 'react';
 import Modal from '../../../Components/Modal';
 import LoadingButton from '../../../Components/Button/LoadingButton';
@@ -67,7 +67,7 @@ const Update = ({ showModal, setShowModal, projectDetail }) => {
                         onChange={(option) => !isUangMasuk && setData('requirement', option ? option.value : null)}
                         options={RequirementOptions}
                         required
-                        isDisabled={isUangMasuk} // Disable the select field if the requirement is "Uang Masuk"
+                        isDisabled={isUangMasuk}
                     />
                     <InputNumber
                         label="Nilai"
@@ -78,9 +78,9 @@ const Update = ({ showModal, setShowModal, projectDetail }) => {
                         onChange={(e) => setData('amount', e.target.value)}
                         required
                     />
-                    <InputField
+                    <InputTextarea
                         label="Keterangan"
-                        id="keterangan-update"
+                        id="note-update"
                         value={data.note}
                         error={errors?.note}
                         onChange={(e) => setData('note', e.target.value)}

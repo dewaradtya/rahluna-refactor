@@ -47,7 +47,7 @@ class MenuSeeder extends Seeder
 
         Menu::create([
             'menu' => 'Selesai',
-            'url' => '/project/selesai',
+            'url' => '/projects/done',
             'group_menu' => 'Sales',
             'main_menu' => 3,
             'is_active' => true,

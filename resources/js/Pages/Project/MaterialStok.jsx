@@ -1,52 +1,46 @@
-import { useForm, usePage } from '@inertiajs/react';
-import { Select, InputField, InputNumber, InputCheckbox, InputTextarea } from '../../Components/FieldInput';
+import { useForm } from '@inertiajs/react';
+import { InputField, InputNumber, InputTextarea, Select } from '../../Components/FieldInput';
 import { useEffect, useMemo } from 'react';
 import Modal from '../../Components/Modal';
 import LoadingButton from '../../Components/Button/LoadingButton';
 import { rupiah, today } from '../../utils';
 
-const RequirementOptions = [
-    { value: 'Material', label: 'Material' },
-    { value: 'Pekerja', label: 'Pekerja' },
-    { value: 'Oprasional', label: 'Oprasional' },
-    { value: 'Aset', label: 'Aset' },
-    { value: 'Sewa Alat', label: 'Sewa Alat' },
-    { value: 'Konsumsi', label: 'Konsumsi' },
-    { value: 'Trasnsport', label: 'Trasnsport' }
-];
+const MaterialStok = ({ showModal, setShowModal, product, projects }) => {
+    console.log(projects)
+    const options = useMemo(
+        () => product.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
+        [product]
+    );
 
-const UangKeluar = ({ showModal, setShowModal, projects }) => {
-    const {
-        additional: { taxs }
-    } = usePage().props;
+    const ProjectsOptions = useMemo(
+        () => projects.map((projects) => ({ value: projects.id, label: `${projects.name} - ${projects.customer.name}` })),
+        [projects]
+    );
 
-    const options = useMemo(() => projects.map((project) => ({ value: project.id, label: `${project.name}` })), [projects]);
-
-    const TaxOptions = taxs.map(({ id, tax }) => ({ value: id, label: tax + '%' }));
-
-    const { setData, data, post, processing, errors, recentlySuccessful } = useForm({
+    const { data, setData, post, processing, errors, recentlySuccessful, hasErrors } = useForm({
         date: today(),
-        project_id: null,
-        note: '',
+        product_id: null,
         amount: 0,
-        requirement: '',
-        proof: null,
-        tax_id: null,
+        qty: 0,
+        note: '',
+        project_id: null
     });
+    
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/project/detail/uangKeluar', {
+        console.log(data)
+        post(`/project/detail/material`, {
             preserveScroll: true
         });
     };
 
     useEffect(() => {
         if (recentlySuccessful) setShowModal(false);
-    }, [recentlySuccessful]);
+    }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Uang Keluar Project" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Material Stok Project" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <InputField
@@ -67,11 +61,11 @@ const UangKeluar = ({ showModal, setShowModal, projects }) => {
                         required
                     />
                     <Select
-                        label="Kebutuhan"
-                        id="kebutuhan-create"
-                        error={errors?.requirement}
-                        onChange={(option) => setData('requirement', option ? option.value : null)}
-                        options={RequirementOptions}
+                        label="Jenis Barang"
+                        id="product-create"
+                        error={errors?.product_id}
+                        onChange={(option) => setData('product_id', option ? option.value : null)}
+                        options={options}
                         required
                     />
                     <InputNumber
@@ -82,6 +76,14 @@ const UangKeluar = ({ showModal, setShowModal, projects }) => {
                         onChange={(e) => setData('amount', e.target.value)}
                         required
                     />
+                    <InputField
+                        type="number"
+                        label="Qty"
+                        id="qty-create"
+                        error={errors?.qty}
+                        onChange={(e) => setData('qty', e.target.value)}
+                        required
+                    />
                     <InputTextarea
                         label="Keterangan"
                         id="note-create"
@@ -89,20 +91,6 @@ const UangKeluar = ({ showModal, setShowModal, projects }) => {
                         error={errors?.note}
                         onChange={(e) => setData('note', e.target.value)}
                         required
-                    />
-                    <Select
-                        label="Pajak"
-                        id="pajak-create"
-                        error={errors?.tax_id}
-                        onChange={(option) => setData('tax_id', option ? option.value : null)}
-                        options={TaxOptions}
-                    />
-                    <InputField
-                        type="file"
-                        label="Bukti"
-                        id="bukti-create"
-                        error={errors?.proof}
-                        onChange={(e) => setData('proof', e.target.files[0])}
                     />
                     <Modal.Footer>
                         <LoadingButton type="button" onClick={() => setShowModal(false)} loading={processing}>
@@ -118,4 +106,4 @@ const UangKeluar = ({ showModal, setShowModal, projects }) => {
     );
 };
 
-export default UangKeluar;
+export default MaterialStok;
