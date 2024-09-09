@@ -46,7 +46,7 @@ const ImportPurchase = ({ showModal, setShowModal, product, projects }) => {
                         required
                     />
                     <Select
-                        label="Jenis Barang"
+                        label="No. Referensi"
                         id="product-create"
                         error={errors?.product_id}
                         onChange={(option) => setData('product_id', option ? option.value : null)}

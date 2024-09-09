@@ -24,6 +24,7 @@ use App\Http\Controllers\ProductPackageDetailController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectDetailController;
 use App\Http\Controllers\ProjectDoneController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SuratJalanController;
 use Inertia\Inertia;
 
@@ -95,6 +96,7 @@ Route::controller(ProjectDetailController::class)->group(function () {
 });
 
 Route::resource('projects/done', ProjectDoneController::class);
+Route::resource('purchase', PurchaseController::class);
 Route::resource('products/package', ProductPackageController::class);
 Route::resource('products/package/detail', ProductPackageDetailController::class);
 Route::resource('products/history', ProductHistoryController::class);

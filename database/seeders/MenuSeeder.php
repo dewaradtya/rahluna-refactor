@@ -95,7 +95,7 @@ class MenuSeeder extends Seeder
 
         Menu::create([
             'menu' => 'Purchase',
-            'url' => '-',
+            'url' => '/purchase',
             'group_menu' => 'Sales',
             'icon' => 'fa fa-exchange-alt',
             'is_active' => true,

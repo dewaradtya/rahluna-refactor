@@ -1,7 +1,7 @@
 import MainLayout from '../../../Layouts/MainLayout';
 import { useMemo, useState } from 'react';
 // import Create from './Create';
-// import Update from './Update';
+import Update from './Update';
 import Table from '../../../Components/Table';
 import Pagination from '../../../Components/Pagination';
 import SplitButton from '../../../Components/Button/SplitButton';
@@ -98,12 +98,14 @@ const Index = ({ projects, customers, product }) => {
             {
                 label: 'Material Pajak',
                 name: 'material_pajak',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.total_material || 0)
             },
             {
                 label: 'Material Non-Pajak',
                 name: 'material_non_pajak',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.total_material || 0)
             },
             {
                 label: 'Material Invoice',
@@ -113,32 +115,38 @@ const Index = ({ projects, customers, product }) => {
             {
                 label: 'Pekerja',
                 name: 'pekerja',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.total_pekerja || 0)
             },
             {
                 label: 'Oprasional',
                 name: 'oprasional',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.total_oprasional || 0)
             },
             {
                 label: 'Sewa Alat',
                 name: 'sewa_alat',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.total_sewa_alat || 0)
             },
             {
                 label: 'Konsumsi',
                 name: 'konsumsi',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.total_konsumsi || 0)
             },
             {
                 label: 'Transport',
                 name: 'transport',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.total_transport || 0)
             },
             {
                 label: 'Aset',
                 name: 'aset',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.total_aset || 0)
             },
             {
                 label: 'Potensi Profit',
@@ -147,14 +155,35 @@ const Index = ({ projects, customers, product }) => {
                     {
                         label: 'Nilai',
                         name: 'profit_value',
-                        renderCell: (row) => rupiah(row.nilai_penawaran)
+                        renderCell: (row) => {
+                            const totalRequirements = (row.total_oprasional || 0) +
+                                (row.total_sewa_alat || 0) +
+                                (row.total_konsumsi || 0) +
+                                (row.total_transport || 0) +
+                                (row.total_aset || 0) +
+                                (row.total_material || 0) +
+                                (row.total_pekerja || 0);
+    
+                            const profit = row.nilai_penawaran - totalRequirements;
+                            return rupiah(profit || 0);
+                        }
                     },
                     {
                         label: 'Persen',
-                        name: 'profit',
+                        name: 'profit_percentage',
                         renderCell: (row) => {
-                            const persen = row.nilai_penawaran ? (row.nilai_penawaran / row.nilai_penawaran) * 100 + '%' : '-';
-                            return persen;
+                            const totalRequirements = (row.total_oprasional || 0) +
+                                (row.total_sewa_alat || 0) +
+                                (row.total_konsumsi || 0) +
+                                (row.total_transport || 0) +
+                                (row.total_aset || 0) +
+                                (row.total_material || 0) +
+                                (row.total_pekerja || 0);
+    
+                            const profit = row.nilai_penawaran - totalRequirements;
+    
+                            const percentage = row.nilai_penawaran ? (profit / row.nilai_penawaran) * 100 : 0;
+                            return `${percentage.toFixed(2)}%`;
                         }
                     }
                 ]
@@ -162,7 +191,8 @@ const Index = ({ projects, customers, product }) => {
             {
                 label: 'Hutang',
                 name: 'hutang',
-                rowSpan: 2
+                rowSpan: 2,
+                renderCell: (row) => rupiah(row.nilai_penawaran - row.total_uang_masuk || 0)
             },
             {
                 label: 'Pajak',
@@ -297,6 +327,6 @@ const Index = ({ projects, customers, product }) => {
     );
 };
 
-Index.layout = (page) => <MainLayout children={page} title="Project Page" />;
+Index.layout = (page) => <MainLayout children={page} title="Project Done Page" />;
 
 export default Index;

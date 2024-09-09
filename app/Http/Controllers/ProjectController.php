@@ -22,11 +22,27 @@ class ProjectController extends Controller
     {
         $perPage = $request->query('perPage') ?? 100;
 
-        $projects = Project::with(['customer', 'projectDetail'])->where('status', 'berlangsung')->paginate($perPage)->appends($request->query());
+        $projects = Project::with(['customer', 'projectDetail'])
+            ->where('status', 'berlangsung')
+            ->paginate($perPage)
+            ->appends($request->query());
+
+        $projects->getCollection()->transform(function ($project) {
+            $requirements = ['Oprasional', 'Sewa Alat', 'Konsumsi', 'Transport', 'Aset', 'Material', 'Pekerja', 'Uang Masuk'];
+
+            foreach ($requirements as $requirement) {
+                $project->{'total_' . strtolower(str_replace(' ', '_', $requirement))} = $project->projectDetail
+                    ->where('requirement', $requirement)
+                    ->sum('amount');
+            }
+
+            return $project;
+        });
+
         $customers = Customer::all();
         $product = Product::all();
 
-        return Inertia::render('Project/Index', compact('projects', 'customers', 'product' ));
+        return Inertia::render('Project/Index', compact('projects', 'customers', 'product'));
     }
 
     public function store(ProjectStoreRequest $request): RedirectResponse
@@ -87,6 +103,8 @@ class ProjectController extends Controller
     {
         try {
             $projects = Project::findOrFail($projects);
+            $projects->projectDetail()->delete();
+
             $projects->delete();
 
             return Redirect::back()->with('success', 'Projek berhasil dihapus');
@@ -100,7 +118,7 @@ class ProjectController extends Controller
     {
         try {
             $project->update(['status' => 'selesai']);
-    
+
             return back()->with('success', 'Status projek berhasil diperbarui menjadi selesai.');
         } catch (\Exception $e) {
             Log::error('Error completing project: ', ['exception' => $e]);
