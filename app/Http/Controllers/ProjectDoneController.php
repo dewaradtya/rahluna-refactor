@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProjectDoneExport;
 use App\Http\Requests\ProjectDoneUpdateRequest;
 use App\Http\Requests\ProjectUpdateRequest;
 use App\Models\Customer;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProjectDoneController extends Controller
 {
@@ -56,5 +58,10 @@ class ProjectDoneController extends Controller
             Log::error('Error updating project: ', ['exception' => $e]);
             return Redirect::back()->with('error', 'Terjadi kesalahan saat mengubah projek. Silahkan coba lagi.');
         }
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new ProjectDoneExport, 'ProjectDone.xlsx');
     }
 }

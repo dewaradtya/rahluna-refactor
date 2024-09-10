@@ -167,14 +167,15 @@ const Index = ({ projects, customers, product }) => {
                         label: 'Nilai',
                         name: 'profit_value',
                         renderCell: (row) => {
-                            const totalRequirements = (row.total_oprasional || 0) +
+                            const totalRequirements =
+                                (row.total_oprasional || 0) +
                                 (row.total_sewa_alat || 0) +
                                 (row.total_konsumsi || 0) +
                                 (row.total_transport || 0) +
                                 (row.total_aset || 0) +
                                 (row.total_material || 0) +
                                 (row.total_pekerja || 0);
-    
+
                             const profit = row.nilai_penawaran - totalRequirements;
                             return rupiah(profit || 0);
                         }
@@ -183,16 +184,17 @@ const Index = ({ projects, customers, product }) => {
                         label: 'Persen',
                         name: 'profit_percentage',
                         renderCell: (row) => {
-                            const totalRequirements = (row.total_oprasional || 0) +
+                            const totalRequirements =
+                                (row.total_oprasional || 0) +
                                 (row.total_sewa_alat || 0) +
                                 (row.total_konsumsi || 0) +
                                 (row.total_transport || 0) +
                                 (row.total_aset || 0) +
                                 (row.total_material || 0) +
                                 (row.total_pekerja || 0);
-    
+
                             const profit = row.nilai_penawaran - totalRequirements;
-    
+
                             const percentage = row.nilai_penawaran ? (profit / row.nilai_penawaran) * 100 : 0;
                             return `${percentage.toFixed(2)}%`;
                         }
@@ -225,12 +227,12 @@ const Index = ({ projects, customers, product }) => {
                     let color;
                     let keadaan;
 
-                    if (new Date() > new Date(row.deadline)) {
-                        color = 'danger';
-                        keadaan = 'Over Time';
-                    } else if (status === 'selesai') {
+                    if (status === 'selesai') {
                         color = 'success';
                         keadaan = 'Selesai';
+                    } else if (new Date() > new Date(row.deadline)) {
+                        color = 'danger';
+                        keadaan = 'Over Time';
                     } else if (status === 'berlangsung') {
                         color = 'warning';
                         keadaan = 'Process';
@@ -247,35 +249,42 @@ const Index = ({ projects, customers, product }) => {
     );
 
     const totals = useMemo(() => {
+        // Calculate totals based on projects data
         const totalNilai = projects.data.reduce((total, row) => total + (Number(row.nilai_penawaran) || 0), 0);
-        const totalGaji = projects.data
-            .filter((row) => row.funding === 'Gaji')
-            .reduce((total, row) => total + (Number(row.total_payment) || 0), 0);
-        const totalFee = projects.data
-            .filter((row) => row.funding === 'Fee')
-            .reduce((total, row) => total + (Number(row.amount) || 0), 0);
-        const totalEntertaintCost = projects.data
-            .filter((row) => row.funding === 'Entertaint Cost')
-            .reduce((total, row) => total + (Number(row.amount) || 0), 0);
-        const totalPajakMasukan = projects.data.reduce((total, row) => {
+        const totalPajak = projects.data.reduce((total, row) => {
             const taxValue = row.tax && row.tax.tax_value ? Number(row.tax.tax_value) : 0;
             return total + taxValue;
+        }, 0);
+        const totalPotensiProfit = projects.data.reduce((total, row) => {
+            const totalRequirements =
+                (row.total_oprasional || 0) +
+                (row.total_sewa_alat || 0) +
+                (row.total_konsumsi || 0) +
+                (row.total_transport || 0) +
+                (row.total_aset || 0) +
+                (row.total_material || 0) +
+                (row.total_pekerja || 0);
+
+            const profit = row.nilai_penawaran - totalRequirements;
+            return total + profit;
+        }, 0);
+        const kurangBayar = projects.data.reduce((total, row) => {
+            return total + (row.nilai_penawaran - (row.total_uang_masuk || 0));
         }, 0);
 
         return {
             totalNilai: rupiah(totalNilai),
-            totalGaji: rupiah(totalGaji),
-            totalFee: rupiah(totalFee),
-            totalEntertaintCost: rupiah(totalEntertaintCost),
-            totalPajakMasukan: rupiah(totalPajakMasukan)
+            totalPajak: rupiah(totalPajak),
+            totalPotensiProfit: rupiah(totalPotensiProfit),
+            kurangBayar: rupiah(kurangBayar)
         };
-    }, [projects]);
+    }, [projects.data]);
 
     const footerColumns = [
         { key: 'totalNilai', label: 'Total Nilai' },
-        { key: 'totalFee', label: 'Total Pajak' },
-        { key: 'totalEntertaintCost', label: 'Total Potensi Profit' },
-        { key: 'totalPajakMasukan', label: 'Kurang Bayar' }
+        { key: 'totalPajak', label: 'Total Pajak' },
+        { key: 'totalPotensiProfit', label: 'Total Potensi Profit' },
+        { key: 'kurangBayar', label: 'Kurang Bayar' }
     ];
 
     return (
@@ -294,7 +303,7 @@ const Index = ({ projects, customers, product }) => {
                             color="dark"
                             text="Export Excel"
                             icon={<PiExportDuotone />}
-                            onClick={() => setShowCreateModal(true)}
+                            onClick={() => (window.location.href = '/projects/export')}
                         />
                     </div>
                 </div>

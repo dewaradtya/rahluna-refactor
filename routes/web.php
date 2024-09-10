@@ -82,6 +82,7 @@ Route::controller(ProjectController::class)->group(function () {
     Route::get('project', 'index')->name('project.index');
     Route::post('project', 'store')->name('project.store');
     Route::post('/project/{project}/complete', 'complete')->name('project.complete');
+    Route::get('/projects/export', 'exportExcel')->name('project.export');
     Route::get('project/{project}', 'show')->name('project.show');
     Route::put('project/{project}', 'update')->name('project.update');
     Route::delete('project/{project}', 'destroy')->name('project.destroy');
@@ -105,8 +106,17 @@ Route::controller(PurchaseController::class)->group(function () {
     Route::delete('purchase/{purchase}', 'destroy')->name('purchase.destroy');
 });
 
+Route::controller(ProjectDoneController::class)->group(function () {
+    Route::get('projects/done', 'index')->name('projects.done.index');
+    Route::post('projects/done', 'store')->name('projects.done.store');
+    Route::get('/projects/done/export', 'exportExcel')->name('projects.done.export');
+    Route::get('projects/done/{project}', 'show')->name('projects.done.show');
+    Route::put('projects/done/{project}', 'update')->name('projects.done.update');
+    Route::delete('projects/done/{project}', 'destroy')->name('projects.done.destroy');
+});
+
 Route::resource('purchase/detail', PurchaseDetailController::class);
-Route::resource('projects/done', ProjectDoneController::class);
+// Route::resource('projects/done', ProjectDoneController::class);
 Route::resource('products/package', ProductPackageController::class);
 Route::resource('products/package/detail', ProductPackageDetailController::class);
 Route::resource('products/history', ProductHistoryController::class);

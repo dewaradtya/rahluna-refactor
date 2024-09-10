@@ -194,65 +194,69 @@ const Index = ({ projectDetail, project, product }) => {
         { key: 'pemasukan', label: 'Nilai Total Pemasukan' }
     ];
 
+    const isProjectCompleted = project?.status === 'selesai';
+
     return (
         <Card>
-            <Card.CardHeader
-                titleText="Detail Project"
-                rightComponent={
-                    <SplitButton color="danger" text="Kembali" icon={<FaArrowLeft />} onClick={() => handleBackButton(true)} />
-                }
-            />
+            <Card.CardHeader titleText="Detail Project" />
             <Card.CardBody>
                 <div className="d-sm-flex align-items-center justify-content-between mb-2">
                     <div className="d-flex column-gap-1 align-items-start flex-wrap">
-                        <SplitButton
-                            color="success"
-                            text="Masuk"
-                            icon={<MdAttachMoney />}
-                            onClick={() => setShowUangMasukModal(true)}
-                        />
-                        <SplitButton
-                            color="danger"
-                            text="Keluar"
-                            icon={<MdAttachMoney />}
-                            onClick={() => setShowUangKeluarModal(true)}
-                        />
-                        <SplitButton
-                            color="secondary"
-                            text="Material Stok"
-                            icon={<FaPlus />}
-                            onClick={() => setShowMaterialStokModal(true)}
-                        />
-                        <SplitButton
-                            color="warning"
-                            text="Import Purchase"
-                            icon={<FaFile />}
-                            onClick={() => setShowImportPurchaseModal(true)}
-                        ></SplitButton>
-                        <SplitButtonGroup
-                            color="info"
-                            text="Import Excel"
-                            icon={<FaFile />}
-                            dropdownOpen={dropdownOpen}
-                            setDropdownOpen={setDropdownOpen}
-                            onClick={() => setShowImportProductModal(true)}
-                        >
-                            <SplitButtonGroup.Link
-                                href={`/project/detail/${project.id}/download-format`}
-                                dropdownOpen={dropdownOpen}
-                                setDropdownOpen={setDropdownOpen}
-                            >
-                                Download Format
-                            </SplitButtonGroup.Link>
-                        </SplitButtonGroup>
+                        {!isProjectCompleted && (
+                            <>
+                                <SplitButton
+                                    color="success"
+                                    text="Masuk"
+                                    icon={<MdAttachMoney />}
+                                    onClick={() => setShowUangMasukModal(true)}
+                                />
+                                <SplitButton
+                                    color="danger"
+                                    text="Keluar"
+                                    icon={<MdAttachMoney />}
+                                    onClick={() => setShowUangKeluarModal(true)}
+                                />
+                                <SplitButton
+                                    color="secondary"
+                                    text="Material Stok"
+                                    icon={<FaPlus />}
+                                    onClick={() => setShowMaterialStokModal(true)}
+                                />
+                                <SplitButton
+                                    color="warning"
+                                    text="Import Purchase"
+                                    icon={<FaFile />}
+                                    onClick={() => setShowImportPurchaseModal(true)}
+                                />
+                                <SplitButtonGroup
+                                    color="info"
+                                    text="Import Excel"
+                                    icon={<FaFile />}
+                                    dropdownOpen={dropdownOpen}
+                                    setDropdownOpen={setDropdownOpen}
+                                    onClick={() => setShowImportProductModal(true)}
+                                >
+                                    <SplitButtonGroup.Link
+                                        href={`/project/detail/${project.id}/download-format`}
+                                        dropdownOpen={dropdownOpen}
+                                        setDropdownOpen={setDropdownOpen}
+                                    >
+                                        Download Format
+                                    </SplitButtonGroup.Link>
+                                </SplitButtonGroup>
+                            </>
+                        )}
                     </div>
                 </div>
-                <p className="fw-bold">
-                    Project: <span className="fw-normal">{project ? `${project.name}` : 'No Project Selected'}</span>
-                </p>
-                <p className="fw-bold">
-                    User: <span className="fw-normal">{project?.customer ? project.customer.name : 'No customer Selected'}</span>
-                </p>
+                <div className="mb-2">
+                    <p className="fw-bold mb-0">
+                        Nama Project: <span className="fw-normal">{project ? `${project.name}` : 'No Project Selected'}</span>
+                    </p>
+                    <p className="fw-bold mb-0">
+                        User:{' '}
+                        <span className="fw-normal">{project?.customer ? project.customer.name : 'No customer Selected'}</span>
+                    </p>
+                </div>
                 <Card.CardFilter
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}

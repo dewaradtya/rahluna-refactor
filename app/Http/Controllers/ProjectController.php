@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProjectExport;
 use App\Http\Requests\ProjectStoreRequest;
 use App\Http\Requests\ProjectUpdateRequest;
 use App\Models\Customer;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProjectController extends Controller
 {
@@ -114,6 +116,12 @@ class ProjectController extends Controller
         }
     }
 
+    
+    public function exportExcel()
+    {
+        return Excel::download(new ProjectExport, 'Project.xlsx');
+    }
+    
     public function complete(Project $project): RedirectResponse
     {
         try {

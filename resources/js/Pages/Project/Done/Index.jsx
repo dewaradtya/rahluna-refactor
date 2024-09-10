@@ -156,14 +156,15 @@ const Index = ({ projects, customers, product }) => {
                         label: 'Nilai',
                         name: 'profit_value',
                         renderCell: (row) => {
-                            const totalRequirements = (row.total_oprasional || 0) +
+                            const totalRequirements =
+                                (row.total_oprasional || 0) +
                                 (row.total_sewa_alat || 0) +
                                 (row.total_konsumsi || 0) +
                                 (row.total_transport || 0) +
                                 (row.total_aset || 0) +
                                 (row.total_material || 0) +
                                 (row.total_pekerja || 0);
-    
+
                             const profit = row.nilai_penawaran - totalRequirements;
                             return rupiah(profit || 0);
                         }
@@ -172,16 +173,17 @@ const Index = ({ projects, customers, product }) => {
                         label: 'Persen',
                         name: 'profit_percentage',
                         renderCell: (row) => {
-                            const totalRequirements = (row.total_oprasional || 0) +
+                            const totalRequirements =
+                                (row.total_oprasional || 0) +
                                 (row.total_sewa_alat || 0) +
                                 (row.total_konsumsi || 0) +
                                 (row.total_transport || 0) +
                                 (row.total_aset || 0) +
                                 (row.total_material || 0) +
                                 (row.total_pekerja || 0);
-    
+
                             const profit = row.nilai_penawaran - totalRequirements;
-    
+
                             const percentage = row.nilai_penawaran ? (profit / row.nilai_penawaran) * 100 : 0;
                             return `${percentage.toFixed(2)}%`;
                         }
@@ -214,12 +216,12 @@ const Index = ({ projects, customers, product }) => {
                     let color;
                     let keadaan;
 
-                    if (new Date() > new Date(row.deadline)) {
-                        color = 'danger';
-                        keadaan = 'Over Time';
-                    } else if (status === 'selesai') {
+                    if (status === 'selesai') {
                         color = 'success';
                         keadaan = 'Selesai';
+                    } else if (new Date() > new Date(row.deadline)) {
+                        color = 'danger';
+                        keadaan = 'Over Time';
                     } else if (status === 'berlangsung') {
                         color = 'warning';
                         keadaan = 'Process';
@@ -277,7 +279,7 @@ const Index = ({ projects, customers, product }) => {
                             color="dark"
                             text="Export Excel"
                             icon={<PiExportDuotone />}
-                            onClick={() => setShowCreateModal(true)}
+                            onClick={() => (window.location.href = '/projects/done/export')}
                         />
                     </div>
                 </div>
