@@ -100,11 +100,17 @@ const Index = ({ purchase, project }) => {
             {
                 label: 'Nilai P.O',
                 name: 'nilai_po',
-                renderCell: (row) => rupiah(row.total_value)
+                renderCell: (row) => {
+                    const discount = row.discount || 0;
+                    const finalValue = row.total_value - (row.total_value * (discount / 100));
+                    return rupiah(finalValue);
+                }
             },
             {
                 label: 'Discount',
-                name: 'discount'
+                name: 'discount',
+                renderCell: (row) => (row.discount + '%' || 0)
+
             },
             {
                 label: 'Delivery Date',
@@ -115,10 +121,6 @@ const Index = ({ purchase, project }) => {
                 label: 'Tanggal Dibuat',
                 name: 'date',
                 renderCell: (row) => formatDate(row.date)
-            },
-            {
-                label: 'Digunakan',
-                name: 'telp'
             }
         ],
         [loadingButton]
@@ -152,7 +154,7 @@ const Index = ({ purchase, project }) => {
                 />
             )}
             {showModalUpdate.modal && (
-                <Update showModal={showModalUpdate.modal} setShowModal={setShowModalUpdate} purchase={showModalUpdate.purchase}/>
+                <Update showModal={showModalUpdate.modal} setShowModal={setShowModalUpdate} purchase={showModalUpdate.purchase} />
             )}
             {imageModal.visible && (
                 <Modal title="Bukti" showModal={imageModal.visible} setShowModal={handleImageModalClose}>

@@ -1,5 +1,5 @@
 import { useForm, usePage } from '@inertiajs/react';
-import { Select, InputField, InputNumber, InputTextarea } from '../../Components/FieldInput';
+import { Select, InputField, InputNumber, InputTextarea, InputPercentage } from '../../Components/FieldInput';
 import { useEffect, useMemo } from 'react';
 import Modal from '../../Components/Modal';
 import LoadingButton from '../../Components/Button/LoadingButton';
@@ -22,7 +22,8 @@ const Create = ({ showModal, setShowModal, project }) => {
         address: '',
         supply: '',
         delivery_date: today(),
-        tax_invoice: null,
+        discount: 0,
+        tax_invoice: null
     });
 
     const handleSubmit = (e) => {
@@ -87,6 +88,13 @@ const Create = ({ showModal, setShowModal, project }) => {
                         error={errors?.delivery_date}
                         onChange={(e) => setData('delivery_date', e.target.value)}
                         required
+                    />
+                    <InputPercentage
+                        label="Discount"
+                        id="discount-create"
+                        value={data.discount}
+                        onChange={(e) => setData('discount', e.target.value)}
+                        error={errors?.discount}
                     />
                     <InputField
                         type="file"

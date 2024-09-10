@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { InputField, InputNumber, InputTextarea, Select } from '../../Components/FieldInput';
+import { InputField, InputNumber, InputPercentage, InputTextarea, Select } from '../../Components/FieldInput';
 import { useEffect, useMemo, useState } from 'react';
 import Modal from '../../Components/Modal';
 import LoadingButton from '../../Components/Button/LoadingButton';
@@ -12,7 +12,8 @@ const Update = ({ showModal, setShowModal, purchase }) => {
         referensi: purchase?.referensi || '',
         date: purchase?.date || today(),
         supply: purchase?.supply || '',
-        address: purchase?.referensi || '',
+        address: purchase?.address || '',
+        discount: purchase?.discount || 0,
         delivery_date: purchase?.delivery_date || today(),
         tax_invoice: null,
         purchase_invoice: null,
@@ -77,6 +78,13 @@ const Update = ({ showModal, setShowModal, purchase }) => {
                         error={errors?.delivery_date}
                         onChange={(e) => setData('delivery_date', e.target.value)}
                         required
+                    />
+                    <InputPercentage
+                        label="Discount"
+                        id="discount-update"
+                        value={data.discount}
+                        onChange={(e) => setData('discount', e.target.value)}
+                        error={errors?.discount}
                     />
                     <InputField
                         type="file"

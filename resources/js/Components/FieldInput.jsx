@@ -42,6 +42,36 @@ export const InputNumber = ({ className = 'form-control', id, label, addonText, 
     );
 };
 
+export const InputPercentage = ({ className = 'form-control', id, label, onChange, error = null, ...props }) => {
+    const linkProps = {
+        ...props,
+    };
+
+    if (onChange) {
+        linkProps.onChange = onChange;
+    }
+
+    return (
+        <div className="form-group">
+            <label htmlFor={id}>{label}</label>
+            <div className="input-group mb-3">
+                <input
+                    type="number"
+                    id={id}
+                    name={id}
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    className={`${className} ${error ? 'is-invalid' : ''}`}
+                    {...linkProps}
+                />
+                <span className="input-group-text">%</span>
+            </div>
+            {error ? <div className="invalid-feedback">{error}</div> : ''}
+        </div>
+    );
+};
+
 export const InputTextarea = ({ id, label, value = '', onChange, error = null, ...props }) => {
     const linkProps = {
         ...props

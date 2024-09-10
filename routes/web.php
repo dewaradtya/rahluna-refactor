@@ -25,6 +25,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectDetailController;
 use App\Http\Controllers\ProjectDoneController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PurchaseDetailController;
 use App\Http\Controllers\SuratJalanController;
 use Inertia\Inertia;
 
@@ -95,8 +96,17 @@ Route::controller(ProjectDetailController::class)->group(function () {
     Route::post('project/detail/import', 'import')->name('project.detail.import');
 });
 
+Route::controller(PurchaseController::class)->group(function () {
+    Route::get('purchase', 'index')->name('purchase.index');
+    Route::post('purchase', 'store')->name('purchase.store');
+    Route::get('/purchase/{purchase}/pdf', 'generatePdf')->name('purchase.generatePdf');
+    Route::get('purchase/{purchase}', 'show')->name('purchase.show');
+    Route::put('purchase/{purchase}', 'update')->name('purchase.update');
+    Route::delete('purchase/{purchase}', 'destroy')->name('purchase.destroy');
+});
+
+Route::resource('purchase/detail', PurchaseDetailController::class);
 Route::resource('projects/done', ProjectDoneController::class);
-Route::resource('purchase', PurchaseController::class);
 Route::resource('products/package', ProductPackageController::class);
 Route::resource('products/package/detail', ProductPackageDetailController::class);
 Route::resource('products/history', ProductHistoryController::class);

@@ -28,6 +28,7 @@ class PurchaseStoreRequest extends FormRequest
             'supply' => 'required|string',
             'address' => 'required|string',
             'delivery_date' => 'required|date',
+            'discount' => 'nullable|integer',
             'tax_invoice' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
         ];
     }

@@ -41,6 +41,6 @@ class Purchase extends Model
 
     public function purchaseDetail(): HasMany
     {
-        return $this->hasMany(ProjectDetail::class);
+        return $this->hasMany(PurchaseDetail::class);
     }
 }
