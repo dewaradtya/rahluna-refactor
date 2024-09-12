@@ -89,7 +89,12 @@ class SuratJalanController extends Controller
             $perPage = $request->query('perPage', 100);
 
             $customer = Customer::findOrFail($id);
-            $suratJalan = $customer->suratJalan()->with(['product', 'suratJalanNew'])->paginate($perPage)->appends($request->query());
+            $suratJalan = $customer->suratJalan()
+                ->whereNull('surat_jalan_new_id')
+                ->with(['product', 'suratJalanNew'])
+                ->paginate($perPage)
+                ->appends($request->query());
+
             $products = Product::all();
 
             return Inertia::render('Transaction/SuratJalan/Detail/Index', [

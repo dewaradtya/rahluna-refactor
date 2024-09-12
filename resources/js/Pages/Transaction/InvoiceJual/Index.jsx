@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import MainLayout from '../../../Layouts/MainLayout';
 import Table from '../../../Components/Table';
@@ -7,24 +7,56 @@ import Card from '../../../Components/Card';
 import SplitButton from '../../../Components/Button/SplitButton';
 import { MdOutlineDoneOutline } from 'react-icons/md';
 import { GrInProgress } from 'react-icons/gr';
+import Menu from './Menu';
+import { rupiah } from '../../../utils';
+import Update from './Update';
+import Pay from './Pay';
 
 const Index = ({ invoiceJual }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [isLunas, setIsLunas] = useState(false);
+    const [selectedInvoiceJual, setSelectedInvoiceJual] = useState(null);
+    const [showModalMenu, setShowModalMenu] = useState(false);
+    const [showModalUpdate, setShowModalUpdate] = useState({ modal: false, invoiceJual: null });
+    const [showModalPay, setShowModalPay] = useState({ modal: false, invoiceJual: null });
 
-    const filteredInvoices = invoiceJual.data.filter(
-        (invoice) =>
-            invoice.nama_invoice.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (isLunas ? invoice.isLunas : !invoice.isLunas)
-    );
+    const handleEditButton = (invoiceJual) => {
+        setShowModalUpdate({ modal: true, invoiceJual: invoiceJual });
+    };
+
+    const handlePayButton = (invoiceJual) => {
+        setShowModalPay({ modal: true, invoiceJual: invoiceJual });
+    };
+
+    const filteredInvoices = invoiceJual.data.filter((invoice) => {
+        const remainingAmount = invoice.total_nilai - invoice.total_bayar;
+        const matchesSearchTerm = invoice.nama_invoice.toLowerCase().includes(searchTerm.toLowerCase());
+
+        return matchesSearchTerm && (isLunas ? remainingAmount <= 0 : remainingAmount > 0);
+    });
 
     const columns = useMemo(
         () => [
             {
                 label: 'No. Invoice',
                 name: 'id',
-                renderCell: (row) => row.id
+                renderCell: (row) => (
+                    <p
+                        className="text-danger"
+                        style={{
+                            cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                            setSelectedInvoiceJual(row);
+                            setShowModalMenu(true);
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+                        onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
+                    >
+                        {row.referensi}
+                    </p>
+                )
             },
             {
                 label: 'No. Kwitansi',
@@ -44,7 +76,11 @@ const Index = ({ invoiceJual }) => {
             {
                 label: 'Nilai Invoice',
                 name: 'total_nilai',
-                renderCell: (row) => row.total_nilai
+                renderCell: (row) => {
+                    const discount = row.discount || 0;
+                    const finalValue = row.total_nilai - row.total_nilai * (discount / 100) - row.pengurang_harga;
+                    return rupiah(finalValue);
+                }
             },
             {
                 label: 'PPN',
@@ -54,7 +90,7 @@ const Index = ({ invoiceJual }) => {
             {
                 label: 'Discount',
                 name: 'discount',
-                renderCell: (row) => row.discount
+                renderCell: (row) => row.discount + '%' || 0
             },
             {
                 label: 'Jatuh Tempo',
@@ -69,7 +105,11 @@ const Index = ({ invoiceJual }) => {
             {
                 label: 'Nilai Kurang Bayar',
                 name: 'remaining_amount',
-                renderCell: (row) => row.total_nilai - row.total_bayar
+                renderCell: (row) => {
+                    const discount = row.discount || 0;
+                    const remaining = row.total_nilai - row.total_nilai * (discount / 100) - row.total_bayar - row.pengurang_harga;
+                    return rupiah(remaining);
+                }
             }
         ],
         [isLunas]
@@ -79,9 +119,9 @@ const Index = ({ invoiceJual }) => {
         setIsLunas((prev) => !prev);
     };
 
-    const buttonColor = isLunas ? 'danger' : 'success' ;
+    const buttonColor = isLunas ? 'danger' : 'success';
     const buttonText = isLunas ? 'Inv Berlangsung' : 'Inv Lunas';
-    const buttonIcon = isLunas ? <GrInProgress /> : < MdOutlineDoneOutline  />;
+    const buttonIcon = isLunas ? <GrInProgress /> : <MdOutlineDoneOutline />;
 
     return (
         <Card>
@@ -104,6 +144,31 @@ const Index = ({ invoiceJual }) => {
                 <Table columns={columns} rows={filteredInvoices.slice(0, entriesPerPage)} />
                 <Pagination links={invoiceJual.links} />
             </Card.CardBody>
+            {showModalMenu && (
+                <Menu
+                    showModal={showModalMenu}
+                    setShowModal={setShowModalMenu}
+                    invoiceJual={selectedInvoiceJual}
+                    onEdit={handleEditButton}
+                    onPay={handlePayButton}
+                />
+            )}
+            {showModalUpdate.modal && (
+                <Update
+                    showModal={showModalUpdate.modal}
+                    setShowModal={setShowModalUpdate}
+                    invoiceJual={showModalUpdate.invoiceJual}
+                />
+            )}
+
+            {showModalPay.modal && (
+                <Pay
+                    showModal={showModalPay.modal}
+                    setShowModal={setShowModalPay}
+                    invoiceJual={showModalPay.invoiceJual}
+                    invoiceJualId={invoiceJual.id}
+                />
+            )}
         </Card>
     );
 };

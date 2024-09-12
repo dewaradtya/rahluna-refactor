@@ -27,7 +27,9 @@ class ProductPackageDetailController extends Controller
             $validatedData['purchase_price'] = $product->purchase_price;
             $validatedData['price'] = $product->price;
 
-            ProductPackageDetail::create($validatedData);
+            $productPackageDetail = ProductPackageDetail::create($validatedData);
+
+            $this->updateProductPackageTotal($productPackageDetail->product_package_id);
 
             DB::commit();
             return Redirect::back()->with('success', 'Produk berhasil ditambahkan');
@@ -38,31 +40,52 @@ class ProductPackageDetailController extends Controller
         }
     }
 
+    protected function updateProductPackageTotal($productPackageId)
+    {
+        $totalPurchasePrice = ProductPackageDetail::where('product_package_id', $productPackageId)
+            ->sum(DB::raw('purchase_price * qty'));
+
+        ProductPackage::where('id', $productPackageId)->update(['purchase_price' => $totalPurchasePrice]);
+    }
+
     public function update(ProductPackageDetailUpdateRequest $request, int $productpackageDetail): RedirectResponse
     {
+        DB::beginTransaction();
         try {
             $productPackageDetail = ProductPackageDetail::findOrFail($productpackageDetail);
 
             $validatedData = $request->validated();
             $productPackageDetail->update($validatedData);
 
+            $this->updateProductPackageTotal($productPackageDetail->product_package_id);
+
+            DB::commit();
             return Redirect::back()->with('success', 'Produk berhasil diubah');
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error updating product: ', ['exception' => $e]);
             return Redirect::back()->with('error', 'Terjadi kesalahan saat mengubah produk. Silahkan coba lagi.');
         }
     }
 
-    public function destroy(int $productpackageDetail): RedirectResponse
-    {
-        try {
-            $productPackageDetail = ProductPackageDetail::findOrFail($productpackageDetail);
-            $productPackageDetail->delete();
 
-            return Redirect::back()->with('success', 'Produk berhasil dihapus');
-        } catch (\Exception $e) {
-            Log::error('Error deleting product: ', ['exception' => $e]);
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus produk. Silahkan coba lagi.');
-        }
+    public function destroy(int $productPackageDetailId): RedirectResponse
+{
+    DB::beginTransaction();
+    try {
+        $productPackageDetail = ProductPackageDetail::findOrFail($productPackageDetailId);
+        $productPackageId = $productPackageDetail->product_package_id;
+        $productPackageDetail->delete();
+
+        $this->updateProductPackageTotal($productPackageId);
+
+        DB::commit();
+        return Redirect::back()->with('success', 'Produk berhasil dihapus');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error deleting product: ', ['exception' => $e]);
+        return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus produk. Silahkan coba lagi.');
     }
+}
+
 }

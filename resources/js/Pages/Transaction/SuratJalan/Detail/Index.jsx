@@ -68,9 +68,10 @@ const Index = ({ customer, suratJalan, products }) => {
 
     const filteredSuratJalan = suratJalan.data.filter(
         (product) =>
-            product.product?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.product?.model_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.product?.price?.toString().includes(searchTerm.toLowerCase())
+            product.surat_jalan_new_id === null && (
+                product.product?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.product?.model_number.toLowerCase().includes(searchTerm.toLowerCase())
+            )
     );
 
     const columns = useMemo(

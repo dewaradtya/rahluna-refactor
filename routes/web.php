@@ -115,12 +115,20 @@ Route::controller(ProjectDoneController::class)->group(function () {
     Route::delete('projects/done/{project}', 'destroy')->name('projects.done.destroy');
 });
 
+Route::controller(InvoiceController::class)->group(function () {
+    Route::get('transaksi/invoiceJual', 'index')->name('transaksi.invoiceJual.index');
+    Route::post('transaksi/invoiceJual', 'store')->name('transaksi.invoiceJual.store');
+    Route::post('transaksi/invoiceJual/pay/{invoiceJual}', 'pay')->name('transaksi.invoiceJual.pay');
+    Route::post('transaksi/invoiceJual/pengurang/{invoiceJual}', 'pengurangHarga')->name('transaksi.invoiceJual.pengurangHarga');
+    Route::get('transaksi/invoiceJual/{invoiceJual}', 'show')->name('transaksi.invoiceJual.show');
+    Route::put('transaksi/invoiceJual/{invoiceJual}', 'update')->name('transaksi.invoiceJual.update');
+    Route::delete('transaksi/invoiceJual/{invoiceJual}', 'destroy')->name('transaksi.invoiceJual.destroy');
+});
+
 Route::resource('purchase/detail', PurchaseDetailController::class);
-// Route::resource('projects/done', ProjectDoneController::class);
 Route::resource('products/package', ProductPackageController::class);
 Route::resource('products/package/detail', ProductPackageDetailController::class);
 Route::resource('products/history', ProductHistoryController::class);
-Route::resource('transaksi/invoiceJual', InvoiceController::class);
 Route::resource('transaksi/invoiceHutang', DebtInvoiceController::class);
 Route::resource('transaksi/invoiceHutang/detail', DebtInvoiceDetailController::class)->only(['store', 'update', 'destroy']);
 

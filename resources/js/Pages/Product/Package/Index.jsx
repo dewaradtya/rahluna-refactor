@@ -73,7 +73,7 @@ const Index = ({ productPackages, units }) => {
             {
                 label: 'Harga Beli',
                 name: 'purchase_price',
-                renderCell: (row) => rupiah(row.total_purchase_price)
+                renderCell: (row) => rupiah(row.purchase_price)
             },
             {
                 label: 'Harga Jual',
