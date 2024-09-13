@@ -36,7 +36,6 @@ const Pay = ({ showModal, setShowModal, invoiceJual,  invoiceJualId }) => {
                         addonText={rupiah(data.total_bayar)}
                         error={errors?.total_bayar}
                         onChange={(e) => setData('total_bayar', e.target.value)}
-                        required
                     />
                     <InputNumber
                         label="PPN + PPH dibayar customer"

@@ -27,7 +27,7 @@ const Index = ({ invoice, invoiceDetail }) => {
 
     const handleConfirmDelete = () => {
         if (itemToDelete) {
-            router.delete(`/invoice/detail/${itemToDelete}`, {
+            router.delete(`/transaksi/invoiceJual/detail/${itemToDelete}`, {
                 preserveScroll: true,
                 onStart: () => setLoadingButton(itemToDelete),
                 onFinish: () => {

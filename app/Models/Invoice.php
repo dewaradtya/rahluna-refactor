@@ -37,6 +37,20 @@ class Invoice extends Model
         'user_id'
     ];
 
+    protected $appends = ['totalinvoice'];
+
+    public function getTotalInvoiceAttribute()
+    {
+        $discount = $this->discount ?? 0;
+        $pengurangHarga = $this->pengurang_harga ?? 0;
+        $totalNilai = $this->total_nilai ?? 0;
+
+        $finalValue = $totalNilai - ($totalNilai * ($discount / 100)) - $pengurangHarga;
+
+        return $finalValue;
+    }
+
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

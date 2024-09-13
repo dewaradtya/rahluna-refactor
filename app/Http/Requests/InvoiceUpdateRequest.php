@@ -30,6 +30,7 @@ class InvoiceUpdateRequest extends FormRequest
             'note' => 'required|string',
             'due_date' => 'required|date',
             'discount' => 'nullable|integer',
+            'nilai_ppn' => 'nullable|integer',
             'faktur_pajak' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
         ];
     }

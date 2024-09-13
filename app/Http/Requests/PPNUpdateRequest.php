@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class InvoicePayRequest extends FormRequest
+class PPNUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,10 @@ class InvoicePayRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'total_bayar' => 'nullable|decimal:0,2',
-            'ppn_pph_customer' => 'nullable|decimal:0,2',
+            'ppn_pph_customer' => 'required|decimal:0,2',
+            'ppn_customer' => 'required|decimal:0,2',
+            'pph_customer' => 'required|decimal:0,2',
+            'tax_invoice' => 'nullable|mimes:jpeg,png,jpg,pdf|max:2048',
         ];
     }
 }

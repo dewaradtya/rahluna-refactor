@@ -26,8 +26,8 @@ return new class extends Migration
             $table->integer('discount');
             $table->double('ppn');
             $table->bigInteger('pengurang_harga');
-            $table->string('faktur_pajak', 255)->default('default.jpg');
-            $table->string('bukti_customer', 255)->default('default.jpg');
+            $table->string('faktur_pajak', 255)->nullable();
+            $table->string('bukti_customer', 255)->nullable();
             $table->text('payment_term');
             $table->text('note');
             $table->date('due_date');

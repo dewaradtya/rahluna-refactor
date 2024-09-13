@@ -12,12 +12,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtInvoiceController;
 use App\Http\Controllers\DebtInvoiceDetailController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\ManageDebtController;
 use App\Http\Controllers\OprasionalController;
 use App\Http\Controllers\ManageCapitalController;
 use App\Http\Controllers\ManageDebtDetailController;
 use App\Http\Controllers\ManageReceivableController;
 use App\Http\Controllers\ManageReceivableDetailController;
+use App\Http\Controllers\PPNController;
 use App\Http\Controllers\ProductHistoryController;
 use App\Http\Controllers\ProductPackageController;
 use App\Http\Controllers\ProductPackageDetailController;
@@ -27,6 +29,7 @@ use App\Http\Controllers\ProjectDoneController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseDetailController;
 use App\Http\Controllers\SuratJalanController;
+use App\Http\Controllers\TaxController;
 use Inertia\Inertia;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -125,7 +128,10 @@ Route::controller(InvoiceController::class)->group(function () {
     Route::delete('transaksi/invoiceJual/{invoiceJual}', 'destroy')->name('transaksi.invoiceJual.destroy');
 });
 
+Route::resource('transaksi/invoiceJual/detail', InvoiceDetailController::class);
 Route::resource('purchase/detail', PurchaseDetailController::class);
+Route::resource('taxes', TaxController::class);
+Route::resource('tax/ppn', PPNController::class);
 Route::resource('products/package', ProductPackageController::class);
 Route::resource('products/package/detail', ProductPackageDetailController::class);
 Route::resource('products/history', ProductHistoryController::class);

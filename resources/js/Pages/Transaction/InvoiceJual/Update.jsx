@@ -1,13 +1,17 @@
 import { useForm } from '@inertiajs/react';
-import { InputField, InputNumber, InputPercentage, InputTextarea, Select } from '../../../Components/FieldInput';
+import { InputField, InputPercentage, InputTextarea, Select } from '../../../Components/FieldInput';
 import { useEffect, useMemo, useState } from 'react';
 import Modal from '../../../Components/Modal';
 import LoadingButton from '../../../Components/Button/LoadingButton';
-import { rupiah, today } from '../../../utils';
+import { today } from '../../../utils';
 
 const Update = ({ showModal, setShowModal, invoiceJual }) => {
     const [isLoading, setIsLoading] = useState(false);
-    console.log(invoiceJual);
+    
+    const PpnOptions = [
+        { value: invoiceJual.totalinvoice * 10 / 100, label: '10%' },
+        { value: invoiceJual.totalinvoice * 11 / 100, label: '11%' }
+    ];
 
     const { data, setData, post, errors, recentlySuccessful } = useForm({
         referensi: invoiceJual?.referensi || '',
@@ -18,6 +22,7 @@ const Update = ({ showModal, setShowModal, invoiceJual }) => {
         note: invoiceJual?.note || '',
         discount: invoiceJual?.discount || 0,
         due_date: invoiceJual?.due_date || today(),
+        nilai_ppn: invoiceJual?.nilai_ppn || '',
         faktur_pajak: null,
         _method: 'put'
     });
@@ -103,6 +108,14 @@ const Update = ({ showModal, setShowModal, invoiceJual }) => {
                         error={errors?.note}
                         onChange={(e) => setData('note', e.target.value)}
                         required
+                    />
+                    <Select
+                        label="Tambah PPN"
+                        id="nilai_ppn-update"
+                        value={PpnOptions.find((option) => option.value === data.nilai_ppn)}
+                        error={errors?.nilai_ppn}
+                        onChange={(option) => setData('nilai_ppn', option ? option.value : null)}
+                        options={PpnOptions}
                     />
                     <InputField
                         type="file"

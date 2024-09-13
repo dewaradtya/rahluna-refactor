@@ -76,16 +76,12 @@ const Index = ({ invoiceJual }) => {
             {
                 label: 'Nilai Invoice',
                 name: 'total_nilai',
-                renderCell: (row) => {
-                    const discount = row.discount || 0;
-                    const finalValue = row.total_nilai - row.total_nilai * (discount / 100) - row.pengurang_harga;
-                    return rupiah(finalValue);
-                }
+                renderCell: (row) =>  rupiah(row.totalinvoice)
             },
             {
                 label: 'PPN',
                 name: 'ppn',
-                renderCell: (row) => row.ppn
+                renderCell: (row) => rupiah(row.nilai_ppn)
             },
             {
                 label: 'Discount',
@@ -106,8 +102,7 @@ const Index = ({ invoiceJual }) => {
                 label: 'Nilai Kurang Bayar',
                 name: 'remaining_amount',
                 renderCell: (row) => {
-                    const discount = row.discount || 0;
-                    const remaining = row.total_nilai - row.total_nilai * (discount / 100) - row.total_bayar - row.pengurang_harga;
+                    const remaining = row.totalinvoice - row.total_bayar + row.nilai_ppn;
                     return rupiah(remaining);
                 }
             }

@@ -142,14 +142,14 @@ class MenuSeeder extends Seeder
         ]);
         Menu::create([
             'menu' => 'Tax Page',
-            'url' => '/',
+            'url' => '/taxes',
             'group_menu' => 'General',
             'main_menu' => 16,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Potongan PPN dan PPH',
-            'url' => '/modal',
+            'url' => '/tax/ppn',
             'group_menu' => 'General',
             'main_menu' => 16,
             'is_active' => true,
