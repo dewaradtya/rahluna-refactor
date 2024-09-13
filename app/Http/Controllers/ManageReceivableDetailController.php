@@ -81,9 +81,9 @@ class ManageReceivableDetailController extends Controller
     {
         if ($request->hasFile('proof')) {
             if ($receivableDetail && $receivableDetail->proof) {
-                Storage::delete($receivableDetail->proof);
+                Storage::disk('public')->delete($receivableDetail->proof);
             }
-            return $request->file('proof')->store('manage-receivables');
+            return $request->file('proof')->store('manage-receivables', 'public');
         }
         if ($receivableDetail && $receivableDetail->proof) {
             return $receivableDetail->proof;

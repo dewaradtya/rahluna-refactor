@@ -18,8 +18,16 @@ class DatabaseSeeder extends Seeder
         $this->call([MenuSeeder::class, UserRoleSeeder::class, UserAccessMenuSeeder::class, TaxSeeder::class]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Super Admin',
+            'email' => 'superadmin@rahlunaabadi.id',
+            'pin' => 123456,
+            'user_role_id' => 1
+        ]);
+
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@rahlunaabadi.id',
+            'pin' => 123123,
             'user_role_id' => 2
         ]);
     }

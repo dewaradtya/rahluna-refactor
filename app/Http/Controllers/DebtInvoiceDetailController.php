@@ -82,9 +82,9 @@ class DebtInvoiceDetailController extends Controller
     {
         if ($request->hasFile('proof')) {
             if ($debtInvoiceDetail && $debtInvoiceDetail->proof) {
-                Storage::delete($debtInvoiceDetail->proof);
+                Storage::disk('public')->delete($debtInvoiceDetail->proof);
             }
-            return $request->file('proof')->store('manage-debtInvoices');
+            return $request->file('proof')->store('manage-debtInvoices', 'public');
         }
         if ($debtInvoiceDetail && $debtInvoiceDetail->proof) {
             return $debtInvoiceDetail->proof;

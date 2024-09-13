@@ -75,9 +75,9 @@ class OprasionalController extends Controller
     {
         if ($request->hasFile('proof')) {
             if ($oprasional && $oprasional->proof) {
-                Storage::delete($oprasional->proof);
+                Storage::disk('public')->delete($oprasional->proof);
             }
-            return $request->file('proof')->store('oprasionals');
+            return $request->file('proof')->store('oprasionals', 'public');
         }
         if ($oprasional && $oprasional->proof) {
             return $oprasional->proof;

@@ -6,6 +6,7 @@ use App\Models\Tax;
 use App\Models\Menu;
 use Inertia\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -44,8 +45,17 @@ class HandleInertiaRequests extends Middleware
             ],
             'additional' => [
                 'taxs' => fn () => Tax::all(),
-                'sidebar' => fn () => Menu::getSidebar()
-            ]
+                'sidebar' => fn () => Menu::getSidebar(),
+            ],
+
+            'auth' => [
+                'user' => Auth::check() ? [
+                    'id' => Auth::user()->id,
+                    'name' => Auth::user()->name,
+                    'email' => Auth::user()->email,
+                    'profile' => Auth::user()->profile,
+                ] : null,
+            ],
         ]);
     }
 }

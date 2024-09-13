@@ -1,6 +1,17 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import { useContext, useState } from 'react';
-import { FaChartArea, FaCog, FaFolder, FaLaughWink, FaTable, FaTachometerAlt } from 'react-icons/fa';
+import {
+    FaBalanceScale,
+    FaBoxes,
+    FaBriefcase,
+    FaCog,
+    FaExchangeAlt,
+    FaHardHat,
+    FaHome,
+    FaShoppingCart,
+    FaSignOutAlt,
+    FaUser
+} from 'react-icons/fa';
 import { SidebarToggle } from '../../context/SidebarToggleContext';
 import { ImCross } from 'react-icons/im';
 
@@ -66,6 +77,25 @@ const Sidebar = () => {
 };
 
 const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
+    const { post } = useForm();
+    const iconMapping = {
+        'fa fa-home': <FaHome size={16} />,
+        'fa fa-users': <FaUser size={16} />,
+        'fa fa-hard-hat': <FaHardHat size={16} />,
+        'fa fa-briefcase': <FaBriefcase size={16} />,
+        'fa fa-boxes': <FaBoxes size={16} />,
+        'fa fa-shopping-cart': <FaShoppingCart size={16} />,
+        'fa fa-exchange-alt': <FaExchangeAlt size={16} />,
+        'fa fa-salance-scale': <FaBalanceScale size={16} />,
+        'fa fa-cog': <FaCog size={16} />,
+        'fa fa-sign-out-alt': <FaSignOutAlt size={16} />
+    };
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        post('/logout');
+    };
+
     return (
         <>
             {rows.map((row, rowIndex) => (
@@ -80,7 +110,7 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
                                 aria-controls={`collapse${rowIndex}`}
                                 onClick={() => handleCollapseClick(rowIndex)}
                             >
-                                <i className="fa-fw">{/* <FaCog /> */}</i>
+                                {iconMapping[row.icon]}
                                 <span>{row.menu}</span>
                             </button>
                             <div
@@ -90,7 +120,6 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
                                 data-parent="#accordionSidebar"
                             >
                                 <div className="bg-white py-2 collapse-inner rounded">
-                                    {/* <h6 className="collapse-header">Custom Components:</h6> */}
                                     {row.submenus.map((submenu, submenuIndex) => (
                                         <Link className="collapse-item" href={submenu.url} key={submenuIndex}>
                                             {submenu.menu}
@@ -100,10 +129,21 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
                             </div>
                         </>
                     ) : (
-                        <Link className="nav-link" href={row.url}>
-                            <i className="fa-fw">{/* <FaTachometerAlt /> */}</i>
-                            <span>{row.menu}</span>
-                        </Link>
+                        row.url === '/logout' ? (
+                            <a
+                                className="nav-link"
+                                href={row.url}
+                                onClick={handleLogout}
+                            >
+                                {iconMapping[row.icon]}
+                                <span>{row.menu}</span>
+                            </a>
+                        ) : (
+                            <Link className="nav-link" href={row.url}>
+                                {iconMapping[row.icon]}
+                                <span>{row.menu}</span>
+                            </Link>
+                        )
                     )}
                 </li>
             ))}

@@ -75,9 +75,9 @@ class CustomerController extends Controller
     {
         if ($request->hasFile('identity')) {
             if ($customer && $customer->identity) {
-                Storage::delete($customer->identity);
+                Storage::disk('public')->delete($customer->identity);
             }
-            return $request->file('identity')->store('customers');
+            return $request->file('identity')->store('customers', 'public');
         }
         if ($customer && $customer->identity) {
             return $customer->identity;

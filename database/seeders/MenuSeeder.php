@@ -33,7 +33,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Project',
             'url' => '-',
             'group_menu' => 'Sales',
-            'icon' => 'fa fa-briefcase',
+            'icon' => 'fa fa-hard-hat',
             'is_active' => true,
         ]);
 
@@ -97,7 +97,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Purchase',
             'url' => '/purchase',
             'group_menu' => 'Sales',
-            'icon' => 'fa fa-exchange-alt',
+            'icon' => 'fa fa-shopping-cart',
             'is_active' => true,
         ]);
 
@@ -137,7 +137,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Tax',
             'url' => '-',
             'group_menu' => 'General',
-            'icon' => 'fa fa-percent',
+            'icon' => 'fa fa-salance-scale',
             'is_active' => true,
         ]);
         Menu::create([
@@ -184,7 +184,7 @@ class MenuSeeder extends Seeder
         ]);
         Menu::create([
             'menu' => 'Logout',
-            'url' => '-',
+            'url' => '/logout',
             'group_menu' => 'General',
             'icon' => 'fa fa-sign-out-alt',
             'is_active' => true,
