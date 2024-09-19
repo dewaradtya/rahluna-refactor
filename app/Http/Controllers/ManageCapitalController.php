@@ -29,7 +29,7 @@ class ManageCapitalController extends Controller
             $validatedData = $request->validated();
             $validatedData['funding'] = 'Modal';
             $validatedData['cashflow'] = $request->cashflow ? 1 : 0;
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
 
             ManageCapital::create($validatedData);
 

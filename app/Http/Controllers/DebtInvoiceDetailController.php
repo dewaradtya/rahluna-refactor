@@ -20,7 +20,7 @@ class DebtInvoiceDetailController extends Controller
         try {
             $validatedData = $request->validated();
             $validatedData['proof'] = $this->handleProof($request);
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             $debtInvoiceDetail = DebtInvoiceDetail::create($validatedData);
 
             $this->updateTotalPayment($debtInvoiceDetail->debtInvoice, $request->amount);

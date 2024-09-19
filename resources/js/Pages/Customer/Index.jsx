@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import Create from './Create';
 import Update from './Update';
@@ -21,6 +21,16 @@ const Index = ({ customers }) => {
     const [imageModal, setImageModal] = useState({ visible: false, src: '' });
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [isSticky, setIsSticky] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsSticky(window.scrollY > 100);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleDeleteButton = (id) => {
         setItemToDelete(id);
@@ -116,7 +126,19 @@ const Index = ({ customers }) => {
         <Card>
             <Card.CardHeader titleText="Table Customer" />
             <Card.CardBody>
-                <SplitButton color="primary" text="Add Customer" icon={<FaPlus />} onClick={() => setShowModalCreate(true)} />
+                <SplitButton
+                    color="primary"
+                    text="Add Customer"
+                    icon={<FaPlus />}
+                    onClick={() => setShowModalCreate(true)}
+                    style={{
+                        position: isSticky ? 'fixed' : 'relative',
+                        top: isSticky ? '10px' : '5px',
+                        right: '0px',
+                        zIndex: 1000,
+                        transition: 'position 0.3s ease, top 0.3s ease',
+                    }}
+                />
 
                 {/* Input pencarian dan dropdown entri per halaman */}
                 <Card.CardFilter

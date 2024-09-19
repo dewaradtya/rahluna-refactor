@@ -56,7 +56,7 @@ class ProjectDetailController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             $validatedData['requirement'] = "Uang Masuk";
             ProjectDetail::create($validatedData);
 
@@ -74,7 +74,7 @@ class ProjectDetailController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             ProjectDetail::create($validatedData);
 
             DB::commit();
@@ -91,7 +91,7 @@ class ProjectDetailController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             $validatedData['requirement'] = "Material Stok";
             ProjectDetail::create($validatedData);
 

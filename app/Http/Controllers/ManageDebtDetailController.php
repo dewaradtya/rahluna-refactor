@@ -19,7 +19,7 @@ class ManageDebtDetailController extends Controller
         try {
             $validatedData = $request->validated();
             $validatedData['proof'] = $this->handleProof($request);
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             $debtDetail = ManageDebtDetail::create($validatedData);
 
             $this->updateTotalPayment($debtDetail->debt, $request->amount);

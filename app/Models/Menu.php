@@ -31,22 +31,18 @@ class Menu extends Model
             ->get()
             ->filter(fn ($menu) => $menu->user_access_is_active);
 
-        // Buat koleksi untuk menyimpan menu dengan submenus
         $mainMenus = $menus->whereNull('main_menu')->values();
         $subMenus = $menus->whereNotNull('main_menu');
 
-        // Tambahkan submenu ke menu utama yang sesuai
         $mainMenus->each(function ($mainMenu) use ($subMenus) {
             $mainMenu->submenus = $subMenus->where('main_menu', $mainMenu->id)->values();
         });
 
-        // Kelompokkan menu berdasarkan group_menu dengan urutan tertentu
         $groupOrder = ['Admin', 'Sales', 'General'];
         $groupedMenus = collect($groupOrder)->mapWithKeys(function ($group) use ($mainMenus) {
             return [$group => $mainMenus->where('group_menu', $group)->values()];
         });
 
-        // Kembalikan menu yang dikelompokkan dengan submenus yang sesuai
         return $groupedMenus->toArray();
     }
 }

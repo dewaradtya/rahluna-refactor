@@ -32,7 +32,7 @@ class ProductPackageController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             $productPackage = ProductPackage::create($validatedData);
 
             DB::commit();

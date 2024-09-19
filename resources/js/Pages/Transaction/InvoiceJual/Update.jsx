@@ -7,10 +7,11 @@ import { today } from '../../../utils';
 
 const Update = ({ showModal, setShowModal, invoiceJual }) => {
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const PpnOptions = [
-        { value: invoiceJual.totalinvoice * 10 / 100, label: '10%' },
-        { value: invoiceJual.totalinvoice * 11 / 100, label: '11%' }
+        { value: 0, label: 'pilih' },
+        { value: 10, label: '10%' },
+        { value: 11, label: '11%' }
     ];
 
     const { data, setData, post, errors, recentlySuccessful } = useForm({
@@ -22,7 +23,7 @@ const Update = ({ showModal, setShowModal, invoiceJual }) => {
         note: invoiceJual?.note || '',
         discount: invoiceJual?.discount || 0,
         due_date: invoiceJual?.due_date || today(),
-        nilai_ppn: invoiceJual?.nilai_ppn || '',
+        ppn: invoiceJual?.ppn || '',
         faktur_pajak: null,
         _method: 'put'
     });
@@ -111,10 +112,10 @@ const Update = ({ showModal, setShowModal, invoiceJual }) => {
                     />
                     <Select
                         label="Tambah PPN"
-                        id="nilai_ppn-update"
-                        value={PpnOptions.find((option) => option.value === data.nilai_ppn)}
-                        error={errors?.nilai_ppn}
-                        onChange={(option) => setData('nilai_ppn', option ? option.value : null)}
+                        id="ppn-update"
+                        value={PpnOptions.find((option) => option.value === data.ppn) || PpnOptions[0]} // Nilai default jika tidak ada input
+                        error={errors?.ppn}
+                        onChange={(option) => setData('ppn', option ? option.value : 0)} // Pastikan ada default
                         options={PpnOptions}
                     />
                     <InputField

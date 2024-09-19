@@ -77,7 +77,7 @@ const Index = ({ histories }) => {
     const footer = useMemo(() => {
         const totalPembelian = histories.data.reduce((total, row) => {
             if (row.status.toLowerCase() === 'stok awal' || row.status.toLowerCase() === 'tambah stok') {
-                return total + row.price * row.qty;
+                return total + row.purchase_price * row.qty;
             }
             return total;
         }, 0);

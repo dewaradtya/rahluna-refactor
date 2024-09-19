@@ -52,7 +52,7 @@ class ProjectController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             $validatedData['status'] = "berlangsung";
             Project::create($validatedData);
 

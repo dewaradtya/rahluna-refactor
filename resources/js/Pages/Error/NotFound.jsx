@@ -4,7 +4,9 @@ const Index = () => {
             <div>
                 <h1 className="display-1 fw-bold text-primary">404</h1>
                 <p className="lead">Oops! Halaman tidak ditemukan.</p>
-                <a href="/" className="btn btn-primary mt-3">Kembali ke Beranda</a>
+                <a href="/" className="btn btn-primary mt-3">
+                    Kembali ke Beranda
+                </a>
             </div>
         </div>
     );

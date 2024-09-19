@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import Create from './Create';
 import Update from './Update';
@@ -26,6 +26,16 @@ const Index = ({ products, units }) => {
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [isSticky, setIsSticky] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsSticky(window.scrollY > 100);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleDeleteButton = (id) => {
         setItemToDelete(id);
@@ -42,7 +52,6 @@ const Index = ({ products, units }) => {
                     setShowDeleteModal(false);
                     setItemToDelete(null);
                 },
-
                 onError: () => {
                     setLoadingButton(null);
                     setShowDeleteModal(false);
@@ -120,17 +129,50 @@ const Index = ({ products, units }) => {
 
     return (
         <Card>
-            <Card.CardHeader titleText="Table Produk"></Card.CardHeader>
+            <Card.CardHeader titleText="Table Produk" />
             <Card.CardBody>
-                <div className="d-sm-flex align-items-center justify-content-between mb-2">
+                <div
+                    className={`d-sm-flex align-items-center justify-content-between mb-2 ${isSticky ? 'sticky-header' : ''}`}
+                >
                     <div className="d-flex column-gap-1 align-items-start flex-wrap">
-                        <SplitButton color="primary" text="Baru" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-                        <SplitButton color="info" text="Paket" icon={<FaPlus />} onClick={handlePaketButton} />
+                        <SplitButton
+                            color="primary"
+                            text="Baru"
+                            icon={<FaPlus />}
+                            onClick={() => setShowCreateModal(true)}
+                            style={{
+                                position: isSticky ? 'fixed' : 'relative',
+                                top: isSticky ? '10px' : '5px',
+                                right: '0px',
+                                zIndex: 1000,
+                                transition: 'position 0.3s ease, top 0.3s ease',
+                            }}
+                        />
+                        <SplitButton
+                            color="info"
+                            text="Paket"
+                            icon={<FaPlus />}
+                            onClick={handlePaketButton}
+                            style={{
+                                position: isSticky ? 'fixed' : 'relative',
+                                top: isSticky ? '50px' : '5px',
+                                right: '0px',
+                                zIndex: 1000,
+                                transition: 'position 0.3s ease, top 0.3s ease',
+                            }}
+                        />
                         <SplitButton
                             color="warning"
                             text="Stok"
                             icon={<FaPlus />}
                             onClick={() => setShowUpdateStockModal(true)}
+                            style={{
+                                position: isSticky ? 'fixed' : 'relative',
+                                top: isSticky ? '90px' : '5px',
+                                right: '0px',
+                                zIndex: 1000,
+                                transition: 'position 0.3s ease, top 0.3s ease',
+                            }}
                         />
                         <SplitButtonGroup
                             color="success"
@@ -139,6 +181,13 @@ const Index = ({ products, units }) => {
                             dropdownOpen={dropdownOpen}
                             setDropdownOpen={setDropdownOpen}
                             onClick={() => setShowImportProductModal(true)}
+                            style={{
+                                position: isSticky ? 'fixed' : 'relative',
+                                top: isSticky ? '130px' : '5px',
+                                right: '0px',
+                                zIndex: 1000,
+                                transition: 'position 0.3s ease, top 0.3s ease',
+                            }}
                         >
                             <SplitButtonGroup.Link
                                 href="/products/download-format"
@@ -175,7 +224,12 @@ const Index = ({ products, units }) => {
             {showImportProductModal && (
                 <ImportExcel showModal={showImportProductModal} setShowModal={setShowImportProductModal} />
             )}
-            <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="product"/>
+            <Confirm
+                showModal={showDeleteModal}
+                setShowModal={setShowDeleteModal}
+                onDelete={handleConfirmDelete}
+                dataType="product"
+            />
         </Card>
     );
 };

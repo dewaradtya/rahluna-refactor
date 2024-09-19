@@ -27,7 +27,7 @@ class UnitController extends Controller
     {
         try {
             $validatedData = $request->validated();
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             Unit::create($validatedData);
 
             return Redirect::back()->with('success', 'Satuan berhasil ditambahkan');

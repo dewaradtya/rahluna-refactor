@@ -19,7 +19,7 @@ class ManageReceivableDetailController extends Controller
         try {
             $validatedData = $request->validated();
             $validatedData['proof'] = $this->handleProof($request);
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             $receivableDetail = ManageReceivableDetail::create($validatedData);
 
             $this->updateTotalPayment($receivableDetail->receivable, $request->amount);

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MainLayout from '../../../../Layouts/MainLayout';
 import Create from './Create';
 import Update from './Update';
@@ -20,6 +20,16 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [isSticky, setIsSticky] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsSticky(window.scrollY > 80);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleDeleteButton = (id) => {
         setItemToDelete(id);
@@ -131,7 +141,19 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
             <Card.CardBody>
                 <div className="d-sm-flex align-items-center justify-content-between mb-2">
                     <div className="d-flex column-gap-1 align-items-start flex-wrap">
-                        <SplitButton color="primary" text="Baru" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
+                        <SplitButton
+                            color="primary"
+                            text="Baru"
+                            icon={<FaPlus />}
+                            onClick={() => setShowCreateModal(true)}
+                            style={{
+                                position: isSticky ? 'fixed' : 'relative',
+                                top: isSticky ? '10px' : '5px',
+                                right: '0px',
+                                zIndex: 1000,
+                                transition: 'position 0.3s ease, top 0.3s ease'
+                            }}
+                        />
                     </div>
                 </div>
                 <Card.CardFilter
@@ -165,7 +187,12 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
                     productPackageDetail={showUpdateModal.productPackageDetail}
                 />
             )}
-            <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="package detail"/>
+            <Confirm
+                showModal={showDeleteModal}
+                setShowModal={setShowDeleteModal}
+                onDelete={handleConfirmDelete}
+                dataType="package detail"
+            />
         </Card>
     );
 };

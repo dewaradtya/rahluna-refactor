@@ -43,7 +43,7 @@ class DebtInvoiceController extends Controller
             $validatedData = $request->validated();
             $validatedData['funding'] = 'Invoice Hutang';
             $validatedData['cashflow'] = $request->cashflow ? 1 : 0;
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             DebtInvoice::create($validatedData);
 
             return Redirect::back()->with('success', 'Invoice Hutang berhasil ditambahkan');

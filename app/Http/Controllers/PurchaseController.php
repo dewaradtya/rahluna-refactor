@@ -41,7 +41,7 @@ class PurchaseController extends Controller
                 return Redirect::back()->with('error', 'Purchase order untuk project ini sudah ada.');
             }
 
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             Purchase::create($validatedData);
 
             DB::commit();

@@ -22,6 +22,18 @@ class InvoiceDetail extends Model
         'kategori', 
     ];
 
+    protected $appends = ['nilai_ppn', 'discount'];
+
+    public function getNilaiPpnAttribute()
+    {
+        return $this->invoice->nilai_ppn;
+    }
+
+    public function getDiscountAttribute()
+    {
+        return $this->invoice->discount;
+    }
+
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class, 'invoice_id');

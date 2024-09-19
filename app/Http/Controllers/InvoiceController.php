@@ -6,6 +6,7 @@ use App\Http\Requests\InvoicePayRequest;
 use App\Http\Requests\InvoicePengurangRequest;
 use App\Http\Requests\InvoiceUpdateRequest;
 use App\Models\Invoice;
+use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,10 +42,12 @@ class InvoiceController extends Controller
 
             $invoice = Invoice::with('customer')->findOrFail($id);
             $invoiceDetail = $invoice->invoiceDetail()->with('product')->paginate($perPage)->appends($request->query());
+            $products = Product::all();
 
             return Inertia::render('Transaction/InvoiceJual/Detail/Index', [
                 'invoice' => $invoice,
                 'invoiceDetail' => $invoiceDetail,
+                'products' => $products,
             ]);
         } catch (\Exception $e) {
             return Redirect::back()->with('error', 'Projek tidak ditemukan');
@@ -57,6 +60,7 @@ class InvoiceController extends Controller
             $invoiceJual = Invoice::findOrFail($invoiceJual);
 
             $validatedData = $request->validated();
+            $validatedData['nilai_ppn'] = $invoiceJual->totalinvoice * ($validatedData['ppn'] / 100);
             $validatedData['faktur_pajak'] = $this->handleTaxInvoice($request, $invoiceJual);
             $invoiceJual->update($validatedData);
 

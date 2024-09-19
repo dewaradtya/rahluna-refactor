@@ -43,7 +43,7 @@ class ManageReceivableController extends Controller
             $validatedData = $request->validated();
             $validatedData['funding'] = 'Piutang';
             $validatedData['cashflow'] = $request->cashflow ? 1 : 0;
-            $validatedData['user_id'] = 1;
+            $validatedData['user_id'] = auth()->id();
             ManageReceivable::create($validatedData);
 
             return Redirect::back()->with('success', 'Piutang berhasil ditambahkan');

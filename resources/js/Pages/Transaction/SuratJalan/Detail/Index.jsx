@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MainLayout from '../../../../Layouts/MainLayout';
 import Table from '../../../../Components/Table';
 import { router } from '@inertiajs/react';
@@ -25,6 +25,16 @@ const Index = ({ customer, suratJalan, products }) => {
     const [selectedRows, setSelectedRows] = useState([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [isSticky, setIsSticky] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsSticky(window.scrollY > 100);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleDeleteButton = (id) => {
         setItemToDelete(id);
@@ -68,10 +78,9 @@ const Index = ({ customer, suratJalan, products }) => {
 
     const filteredSuratJalan = suratJalan.data.filter(
         (product) =>
-            product.surat_jalan_new_id === null && (
-                product.product?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.product?.model_number.toLowerCase().includes(searchTerm.toLowerCase())
-            )
+            product.surat_jalan_new_id === null &&
+            (product.product?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.product?.model_number.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const columns = useMemo(
@@ -155,14 +164,45 @@ const Index = ({ customer, suratJalan, products }) => {
             <Card.CardBody>
                 <div className="d-sm-flex align-items-center justify-content-between mb-2">
                     <div className="d-flex column-gap-1 align-items-start flex-wrap">
-                        <SplitButton color="primary" text="Produk" icon={<FaPlus />} onClick={() => setShowCreateModal(true)} />
-                        <SplitButton color="info" text="Paket" icon={<FaPlus />} onClick={() => setShowPaketModal(true)} />
+                        <SplitButton
+                            color="primary"
+                            text="Produk"
+                            icon={<FaPlus />}
+                            onClick={() => setShowCreateModal(true)}
+                            style={{
+                                position: isSticky ? 'fixed' : 'relative',
+                                top: isSticky ? '10px' : '5px',
+                                right: '0px',
+                                zIndex: 1000,
+                                transition: 'position 0.3s ease, top 0.3s ease'
+                            }}
+                        />
+                        <SplitButton
+                            color="info"
+                            text="Paket"
+                            icon={<FaPlus />}
+                            onClick={() => setShowPaketModal(true)}
+                            style={{
+                                position: isSticky ? 'fixed' : 'relative',
+                                top: isSticky ? '50px' : '5px',
+                                right: '0px',
+                                zIndex: 1000,
+                                transition: 'position 0.3s ease, top 0.3s ease'
+                            }}
+                        />
                         <SplitButton
                             color="success"
                             text="Surat Jalan"
                             icon={<FaPlus />}
                             onClick={() => setShowSuratJalanModal(true)}
                             disabled={selectedRows.length === 0}
+                            style={{
+                                position: isSticky ? 'fixed' : 'relative',
+                                top: isSticky ? '90px' : '5px',
+                                right: '0px',
+                                zIndex: 1000,
+                                transition: 'position 0.3s ease, top 0.3s ease'
+                            }}
                         />
                     </div>
                 </div>
@@ -200,11 +240,7 @@ const Index = ({ customer, suratJalan, products }) => {
                 />
             )}
             {showSuratJalanModal && (
-                <SuratJalanNew
-                    showModal={showSuratJalanModal}
-                    setShowModal={setShowSuratJalanModal}
-                    customerId={customer.id}
-                />
+                <SuratJalanNew showModal={showSuratJalanModal} setShowModal={setShowSuratJalanModal} customerId={customer.id} />
             )}
             <Confirm
                 showModal={showDeleteModal}

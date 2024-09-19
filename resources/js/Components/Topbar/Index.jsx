@@ -1,21 +1,21 @@
+import React, { useState } from 'react';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import { useContext, useState } from 'react';
-import { FaCogs, FaSignOutAlt, FaBars, FaUser, FaKey } from 'react-icons/fa';
+import { useContext } from 'react';
+import { FaCogs, FaSignOutAlt, FaBars, FaUser } from 'react-icons/fa';
 import { SidebarToggle } from '../../context/SidebarToggleContext';
-import { FaGear } from 'react-icons/fa6';
 import LogoutConfirm from '../Confirm/LogoutConfirm';
 
 const Topbar = () => {
-    const { props } = usePage();
     const { auth } = usePage().props;
     const { sidebarToggled, setSidebarToggled } = useContext(SidebarToggle);
     const [profileOpened, setProfileOpened] = useState(false);
-    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // Manage modal visibility
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const { post } = useForm();
 
     const handleLogout = () => {
         post('/logout');
     };
+
     const closeDropdowns = () => {
         setProfileOpened(false);
     };
@@ -51,7 +51,6 @@ const Topbar = () => {
                         className="nav-link dropdown-toggle"
                         type="button"
                         id="userDropdown"
-                        data-toggle="dropdown"
                         aria-haspopup="true"
                         aria-expanded={profileOpened}
                         onClick={() => setProfileOpened(!profileOpened)}
@@ -89,28 +88,26 @@ const Topbar = () => {
                         </Link>
                         <Link className="dropdown-item" href="/role" onClick={closeDropdowns}>
                             <i className="mr-2 text-gray-400">
-                                <FaGear />
+                                <FaCogs />
                             </i>
                             Setting Access
                         </Link>
                         <div className="dropdown-divider"></div>
-                        <Link
+                        <button
                             className="dropdown-item"
-                            href="#"
-                            data-toggle="modal"
-                            data-target="#logoutModal"
                             onClick={() => {
                                 closeDropdowns();
                                 openLogoutModal();
-                            }}                        >
+                            }}
+                        >
                             <i className="mr-2 text-gray-400">
                                 <FaSignOutAlt />
                             </i>
                             Logout
-                        </Link>
+                        </button>
                     </div>
                 </li>
-                <div className={`backdrop-fade ${profileOpened ? '' : 'd-none'}`} onClick={closeDropdowns}></div>
+                {profileOpened && <div className="backdrop-fade" onClick={closeDropdowns}></div>}
             </ul>
             <LogoutConfirm
                 isOpen={isLogoutModalOpen}
