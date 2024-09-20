@@ -63,4 +63,27 @@ class InvoiceDetailController extends Controller
             return Redirect::back()->with('error', 'Terjadi kesalahan saat membuka PDF invoice. Silahkan coba lagi.');
         }
     }
+
+    public function kwitansi($id)
+    {
+        try {
+            $invoice = Invoice::with('customer')->findOrFail($id);
+            $invoiceDetail = $invoice->invoiceDetail()->with('product')->get();
+            
+    
+            $data = [
+                'invoice' => $invoice,
+                'invoiceDetail' => $invoiceDetail,
+            ];
+    
+            $pdf = Pdf::loadView('invoiceJual.kwitansi', $data)->setPaper('a4', 'landscape');;
+    
+            $filename = "kwitansi.pdf";
+    
+            return $pdf->stream($filename);
+        } catch (\Exception $e) {
+            Log::error('Error generating invoice PDF: ', ['exception' => $e]);
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat membuka PDF invoice. Silahkan coba lagi.');
+        }
+    }
 }

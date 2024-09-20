@@ -8,7 +8,7 @@ import SplitButton from '../../../Components/Button/SplitButton';
 import { MdOutlineDoneOutline } from 'react-icons/md';
 import { GrInProgress } from 'react-icons/gr';
 import Menu from './Menu';
-import { rupiah } from '../../../utils';
+import { formatDate, rupiah } from '../../../utils';
 import Update from './Update';
 import Pay from './Pay';
 
@@ -30,7 +30,7 @@ const Index = ({ invoiceJual }) => {
     };
 
     const filteredInvoices = invoiceJual.data.filter((invoice) => {
-        const remainingAmount = invoice.total_nilai - invoice.total_bayar;
+        const remainingAmount = invoice.totalinvoice - invoice.total_bayar + invoice.nilai_ppn;
         const matchesSearchTerm = invoice.nama_invoice.toLowerCase().includes(searchTerm.toLowerCase());
 
         return matchesSearchTerm && (isLunas ? remainingAmount <= 0 : remainingAmount > 0);
@@ -91,12 +91,12 @@ const Index = ({ invoiceJual }) => {
             {
                 label: 'Jatuh Tempo',
                 name: 'due_date',
-                renderCell: (row) => row.due_date
+                renderCell: (row) => formatDate(row.due_date)
             },
             {
                 label: 'Tanggal Dibuat',
                 name: 'tanggal_dibuat',
-                renderCell: (row) => row.tanggal_dibuat
+                renderCell: (row) => formatDate(row.tanggal_dibuat)
             },
             {
                 label: 'Nilai Kurang Bayar',

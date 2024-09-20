@@ -3,7 +3,7 @@ import MainLayout from '../../../Layouts/MainLayout';
 import Table from '../../../Components/Table';
 import Pagination from '../../../Components/Pagination';
 import Card from '../../../Components/Card';
-import { rupiah } from '../../../utils';
+import { formatDate, rupiah } from '../../../utils';
 import BadgeButton from '../../../Components/Button/BadgeButton';
 import Update from './Update';
 import Modal from '../../../Components/Modal';
@@ -36,7 +36,7 @@ const Index = ({ invoice }) => {
             {
                 label: 'Tanggal Dibuat',
                 name: 'tanggal_dibuat',
-                renderCell: (row) => row.tanggal_dibuat
+                renderCell: (row) => formatDate(row.tanggal_dibuat)
             },
             {
                 label: 'Nama Invoice',

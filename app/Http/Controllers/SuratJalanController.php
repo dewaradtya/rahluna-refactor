@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SjNewInvoiceRequest;
 use App\Http\Requests\SuratJalanNewStoreRequest;
 use App\Http\Requests\SuratJalanStoreRequest;
 use App\Http\Requests\SuratJalanUpdateRequest;
 use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\InvoiceDetail;
 use App\Models\Product;
 use App\Models\ProductHistory;
+use App\Models\ProductPackage;
 use App\Models\SuratJalan;
 use App\Models\SuratJalanNew;
 use Illuminate\Http\RedirectResponse;
@@ -35,6 +39,7 @@ class SuratJalanController extends Controller
         try {
             $validatedData = $request->validated();
 
+            // Temukan produk berdasarkan product_id
             $product = Product::findOrFail($validatedData['product_id']);
             $validatedData['purchase_price'] = $product->purchase_price;
             $validatedData['price'] = $product->price;
@@ -62,7 +67,7 @@ class SuratJalanController extends Controller
                     $existingProductHistory->save();
                 }
             } else {
-                $suratJalan = SuratJalan::create($validatedData);
+                SuratJalan::create($validatedData);
 
                 ProductHistory::create([
                     'qty' => $validatedData['qty'],
@@ -75,11 +80,10 @@ class SuratJalanController extends Controller
             }
 
             DB::commit();
-            return Redirect::back()->with('success', 'Surat Jalan berhasil ditambahkan.');
+            return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke Surat Jalan.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error storing Surat Jalan: ', ['exception' => $e]);
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah Surat Jalan. Silahkan coba lagi.');
+            return redirect()->back()->withErrors('Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -91,22 +95,74 @@ class SuratJalanController extends Controller
             $customer = Customer::findOrFail($id);
             $suratJalan = $customer->suratJalan()
                 ->whereNull('surat_jalan_new_id')
-                ->with(['product', 'suratJalanNew'])
+                ->with(['product', 'suratJalanNew', 'productPackage'])
                 ->paginate($perPage)
                 ->appends($request->query());
+
+            $suratJalanNew = SuratJalanNew::where('customer_id', $id)->paginate($perPage);
+            $productPackages = ProductPackage::all();
 
             $products = Product::all();
 
             return Inertia::render('Transaction/SuratJalan/Detail/Index', [
                 'suratJalan' => $suratJalan,
+                'suratJalanNew' => $suratJalanNew,
                 'customer' => $customer,
                 'products' => $products,
+                'productPackages' => $productPackages
             ]);
         } catch (\Exception $e) {
             return Redirect::back()->with('error', 'Terjadi kesalahan saat mengambil data Surat Jalan. Silahkan coba lagi.');
         }
     }
 
+    public function addPaket(SuratJalanStoreRequest $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            $validatedData = $request->validated();
+    
+            $productPackage = ProductPackage::findOrFail($validatedData['product_id']);
+            $validatedData['purchase_price'] = $productPackage->purchase_price;
+            $validatedData['price'] = $productPackage->price;
+            $validatedData['kategori'] = "Paket"; // Pastikan ini diatur ke "Paket"
+            $validatedData['surat_jalan_new_id'] = null;
+    
+            foreach ($productPackage->productPackageDetails as $detail) {
+                $product = Product::findOrFail($detail->product_id);
+                $product->stock -= ($detail->qty * $validatedData['qty']);
+                $product->save();
+    
+                ProductHistory::create([
+                    'qty' => $detail->qty * $validatedData['qty'],
+                    'price' => $product->price,
+                    'purchase_price' => $product->purchase_price,
+                    'product_origin_id' => $product->id,
+                    'product_id' => $product->id,
+                    'status' => 'stok terpakai'
+                ]);
+            }
+    
+            $existingSuratJalan = SuratJalan::where('product_id', $productPackage->id)
+                ->where('customer_id', $validatedData['customer_id'])
+                ->whereNull('surat_jalan_new_id')
+                ->first();
+    
+            if ($existingSuratJalan) {
+                $existingSuratJalan->qty += $validatedData['qty'];
+                $existingSuratJalan->save();
+            } else {
+                SuratJalan::create($validatedData);
+            }
+    
+            DB::commit();
+            return redirect()->back()->with('success', 'Paket berhasil ditambahkan ke Surat Jalan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors('Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+    
     public function update(SuratJalanUpdateRequest $request, int $suratJalan): RedirectResponse
     {
         try {
@@ -161,6 +217,52 @@ class SuratJalanController extends Controller
             DB::rollBack();
             Log::error('Error storing Surat Jalan: ', ['exception' => $e]);
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah Surat Jalan. Silahkan coba lagi.');
+        }
+    }
+
+    public function sjNewInvoice(SjNewInvoiceRequest $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            $validatedData = $request->validated();
+            $validatedData['user_id'] = auth()->id();
+
+            $invoice = Invoice::create($validatedData);
+
+            $suratJalanNewList = SuratJalanNew::whereNull('invoice_id')
+                ->where('customer_id', $invoice->customer_id)
+                ->get();
+
+            $totalNilai = 0;
+
+            foreach ($suratJalanNewList as $suratJalanNew) {
+                $suratJalanDetails = SuratJalan::where('surat_jalan_new_id', $suratJalanNew->id)->get();
+
+                foreach ($suratJalanDetails as $detail) {
+                    $totalNilai += $detail->price * $detail->qty;
+
+                    InvoiceDetail::create([
+                        'invoice_id'     => $invoice->id,
+                        'product_id'     => $detail->product_id,
+                        'qty'            => $detail->qty,
+                        'price'          => $detail->price,
+                        'purchase_price' => $detail->purchase_price,
+                        'note'           => $detail->note,
+                        'kategori'       => $detail->kategori,
+                    ]);
+                }
+
+                $suratJalanNew->update(['invoice_id' => $invoice->id]);
+            }
+
+            $invoice->update(['total_nilai' => $totalNilai]);
+
+            DB::commit();
+            return Redirect::back()->with('success', 'Invoice Baru berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error storing invoice: ', ['exception' => $e]);
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menambah invoice. Silahkan coba lagi.');
         }
     }
 }

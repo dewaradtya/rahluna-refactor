@@ -5,7 +5,7 @@ import Pagination from '../../../../Components/Pagination';
 import SplitButton from '../../../../Components/Button/SplitButton';
 import BadgeButton from '../../../../Components/Button/BadgeButton';
 import { FaDollarSign, FaDownload, FaFile } from 'react-icons/fa';
-import { rupiah } from '../../../../utils';
+import { formatDate, rupiah } from '../../../../utils';
 import Card from '../../../../Components/Card';
 import PengurangHarga from './PengurangHarga';
 import Update from './Update';
@@ -34,6 +34,12 @@ const Index = ({ invoice, invoiceDetail, products }) => {
     const handleDownloadPdf = () => {
         if (invoice && invoice.id) {
             window.open(`/transaksi/invoiceJual/detail/${invoice.id}/pdf`, '_blank');
+        }
+    };
+
+    const handleKwitansi = () => {
+        if (invoice && invoice.id) {
+            window.open(`/transaksi/invoiceJual/detail/${invoice.id}/kwitansi`, '_blank');
         }
     };
 
@@ -78,7 +84,7 @@ const Index = ({ invoice, invoiceDetail, products }) => {
             {
                 label: 'Disc',
                 name: 'discount',
-                renderCell: (row) => row.discount ? `${row.discount}%` : '0%'
+                renderCell: (row) => (row.discount ? `${row.discount}%` : '0%')
             },
             {
                 label: 'PPN',
@@ -89,8 +95,8 @@ const Index = ({ invoice, invoiceDetail, products }) => {
                 label: 'Total Sub After Disc',
                 name: 'after_disc',
                 renderCell: (row) => {
-                    const discountAmount = (row.price * row.qty) * (row.discount / 100);
-                    const totalAfterDiscount = (row.price * row.qty) - discountAmount;
+                    const discountAmount = row.price * row.qty * (row.discount / 100);
+                    const totalAfterDiscount = row.price * row.qty - discountAmount;
                     const totalWithPPN = totalAfterDiscount + row.nilai_ppn;
                     return rupiah(totalWithPPN);
                 }
@@ -134,26 +140,13 @@ const Index = ({ invoice, invoiceDetail, products }) => {
                     <div className="d-sm-flex align-items-center justify-content-between mb-2">
                         <div className="d-flex column-gap-1 align-items-start flex-wrap">
                             <SplitButton
-                                color="dark"
-                                text="Testing Print"
-                                icon={<FaFile />}
-                                onClick={handleDownloadPdf}
-                                style={{
-                                    position: isSticky ? 'fixed' : 'relative',
-                                    top: isSticky ? '10px' : '5px',
-                                    right: '0px',
-                                    zIndex: 1000,
-                                    transition: 'position 0.3s ease, top 0.3s ease'
-                                }}
-                            />
-                            <SplitButton
                                 color="danger"
                                 text="Print Kwitansi"
                                 icon={<FaDownload />}
-                                onClick={handleDownloadPdf}
+                                onClick={handleKwitansi}
                                 style={{
                                     position: isSticky ? 'fixed' : 'relative',
-                                    top: isSticky ? '50px' : '5px',
+                                    top: isSticky ? '10px' : '5px',
                                     right: '0px',
                                     zIndex: 1000,
                                     transition: 'position 0.3s ease, top 0.3s ease'
@@ -166,7 +159,7 @@ const Index = ({ invoice, invoiceDetail, products }) => {
                                 onClick={handleDownloadPdf}
                                 style={{
                                     position: isSticky ? 'fixed' : 'relative',
-                                    top: isSticky ? '90px' : '5px',
+                                    top: isSticky ? '50px' : '5px',
                                     right: '0px',
                                     zIndex: 1000,
                                     transition: 'position 0.3s ease, top 0.3s ease'
@@ -179,7 +172,7 @@ const Index = ({ invoice, invoiceDetail, products }) => {
                                 onClick={() => setShowPengurangModal(true)}
                                 style={{
                                     position: isSticky ? 'fixed' : 'relative',
-                                    top: isSticky ? '130px' : '5px',
+                                    top: isSticky ? '90px' : '5px',
                                     right: '0px',
                                     zIndex: 1000,
                                     transition: 'position 0.3s ease, top 0.3s ease'
@@ -200,7 +193,7 @@ const Index = ({ invoice, invoiceDetail, products }) => {
                         </p>
                         <p className="fw-bold mb-0">
                             Jatuh Tempo:{' '}
-                            <span className="fw-normal">{invoice ? `${invoice.due_date}` : 'No invoice Selected'}</span>
+                            <span className="fw-normal">{invoice ? formatDate(invoice.due_date) : 'No invoice Selected'}</span>
                         </p>
                     </div>
 

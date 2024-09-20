@@ -4,24 +4,24 @@ import { useEffect, useMemo } from 'react';
 import Modal from '../../../../Components/Modal';
 import LoadingButton from '../../../../Components/Button/LoadingButton';
 
-const PackageCreate = ({ showModal, setShowModal, products, customerId }) => {
+const PackageCreate = ({ showModal, setShowModal, productPackages, customerId }) => {
+    console.log(productPackages)
     const options = useMemo(
-        () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
-        [products]
+        () => productPackages.map((productPackage) => ({ value: productPackage.id, label: `${productPackage.name}` })),
+        [productPackages]
     );
 
-    const { data, setData, post, processing, errors, recentlySuccessful, hasErrors } = useForm({
+    const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
         product_id: null,
         qty: 0,
         note: '',
-        customer_id: customerId
+        customer_id: customerId,
     });
-    
 
     const handleSubmit = (e) => {
         e.preventDefault();
         post(`/transaksi/suratJalan`, {
-            preserveScroll: true
+            preserveScroll: true,
         });
     };
 

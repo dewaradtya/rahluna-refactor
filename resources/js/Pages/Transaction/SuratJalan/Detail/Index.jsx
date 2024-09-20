@@ -4,17 +4,18 @@ import Table from '../../../../Components/Table';
 import { router } from '@inertiajs/react';
 import Card from '../../../../Components/Card';
 import SplitButton from '../../../../Components/Button/SplitButton';
-import { FaArrowLeft, FaPlus } from 'react-icons/fa';
+import { FaArrowLeft, FaCheck, FaPlus } from 'react-icons/fa';
 import BadgeButton from '../../../../Components/Button/BadgeButton';
 import Pagination from '../../../../Components/Pagination';
 import Create from './Create';
+import InvoiceModal from './InvoiceModal';
 import PackageCreate from './PackageCreate';
 import SuratJalanNew from './SuratjalanNew';
 import Update from './Update';
 import Confirm from '../../../../Components/Confirm/Confirm';
 import { rupiah } from '../../../../utils';
 
-const Index = ({ customer, suratJalan, products }) => {
+const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages }) => {
     const [loadingButton, setLoadingButton] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showSuratJalanModal, setShowSuratJalanModal] = useState(false);
@@ -26,6 +27,8 @@ const Index = ({ customer, suratJalan, products }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [isSticky, setIsSticky] = useState(false);
+    const [selectedSuratJalanNewRows, setSelectedSuratJalanNewRows] = useState([]);
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -51,7 +54,6 @@ const Index = ({ customer, suratJalan, products }) => {
                     setShowDeleteModal(false);
                     setItemToDelete(null);
                 },
-
                 onError: () => {
                     setLoadingButton(null);
                     setShowDeleteModal(false);
@@ -72,8 +74,12 @@ const Index = ({ customer, suratJalan, products }) => {
         });
     };
 
-    const handleCheckboxChange = (rowId) => {
-        setSelectedRows((prev) => (prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId]));
+    const handleCheckboxChange = (rowId, isNew = false) => {
+        if (isNew) {
+            setSelectedSuratJalanNewRows((prev) => (prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId]));
+        } else {
+            setSelectedRows((prev) => (prev.includes(rowId) ? prev.filter((id) => id !== rowId) : [...prev, rowId]));
+        }
     };
 
     const filteredSuratJalan = suratJalan.data.filter(
@@ -152,6 +158,56 @@ const Index = ({ customer, suratJalan, products }) => {
         [loadingButton, selectedRows, filteredSuratJalan]
     );
 
+    const sortedSuratJalanNew = useMemo(() => {
+        return [...suratJalanNew.data].sort((a, b) => {
+            if (a.invoice_id && !b.invoice_id) return 1;
+            if (!a.invoice_id && b.invoice_id) return -1;
+            return 0;
+        });
+    }, [suratJalanNew]);
+
+    const suratJalanNewColumns = useMemo(
+        () => [
+            {
+                label: '#',
+                name: 'select',
+                renderCell: (row) => (
+                    <div className="text-center">
+                        {row.invoice_id != null ? (
+                            <FaCheck color="green" />
+                        ) : (
+                            <input
+                                type="checkbox"
+                                onChange={() => handleCheckboxChange(row.id, true)}
+                                checked={selectedSuratJalanNewRows.includes(row.id)}
+                            />
+                        )}
+                    </div>
+                ),
+                className: 'text-center',
+                width: '50px'
+            },
+            { label: 'No. Surat', name: 'no_surat', renderCell: (row) => row.no_surat },
+            { label: 'Tanggal Kirim', name: 'tanggal_kirim', renderCell: (row) => row.tanggal_kirim },
+            {
+                label: 'Aksi',
+                name: 'aksi',
+                renderCell: (row) => (
+                    <>
+                        <BadgeButton
+                            onClick={() => handleDeleteButton(row.id)}
+                            text="Hapus"
+                            color="danger"
+                            disabled={row.invoice_id != null}
+                        />
+                        <BadgeButton onClick={() => handleEditButton(row)} text="Edit" color="warning" />
+                    </>
+                )
+            }
+        ],
+        [loadingButton, selectedSuratJalanNewRows, suratJalanNew]
+    );
+
     return (
         <Card>
             <Card.CardHeader
@@ -212,9 +268,36 @@ const Index = ({ customer, suratJalan, products }) => {
                     entriesPerPage={entriesPerPage}
                     setEntriesPerPage={setEntriesPerPage}
                 />
-                <Table columns={columns} rows={filteredSuratJalan.slice(0, entriesPerPage)} />
-                <Pagination links={suratJalan.links} />
+
+                {/* Card for Surat Jalan */}
+                <Card>
+                    <Card.CardHeader titleText="Data Surat Jalan" />
+                    <Card.CardBody>
+                        <Table columns={columns} rows={filteredSuratJalan.slice(0, entriesPerPage)} />
+                        <Pagination links={suratJalan.links} />
+                    </Card.CardBody>
+                </Card>
+
+                {/* Card for Surat Jalan New */}
+                <Card>
+                    <Card.CardHeader titleText="Data Surat Jalan New" />
+                    <Card.CardBody>
+                        <div className="d-flex column-gap-1 align-items-start flex-wrap">
+                            <SplitButton
+                                color="success"
+                                text="Invoice"
+                                icon={<FaPlus />}
+                                onClick={() => setShowInvoiceModal(true)}
+                                disabled={selectedSuratJalanNewRows.length === 0}
+                            />
+                        </div>
+                        <Table columns={suratJalanNewColumns} rows={sortedSuratJalanNew} />
+                        <Pagination links={suratJalanNew.links} />
+                    </Card.CardBody>
+                </Card>
             </Card.CardBody>
+
+            {/* Modals */}
             {showCreateModal && (
                 <Create
                     showModal={showCreateModal}
@@ -235,12 +318,20 @@ const Index = ({ customer, suratJalan, products }) => {
                 <PackageCreate
                     showModal={showPaketModal}
                     setShowModal={setShowPaketModal}
-                    products={products}
+                    productPackages={productPackages}
                     customerId={customer.id}
                 />
             )}
             {showSuratJalanModal && (
                 <SuratJalanNew showModal={showSuratJalanModal} setShowModal={setShowSuratJalanModal} customerId={customer.id} />
+            )}
+            {showInvoiceModal && (
+                <InvoiceModal
+                    showModal={showInvoiceModal}
+                    setShowModal={setShowInvoiceModal}
+                    selectedRows={selectedSuratJalanNewRows}
+                    customerId={customer.id}
+                />
             )}
             <Confirm
                 showModal={showDeleteModal}

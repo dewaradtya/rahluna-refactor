@@ -33,8 +33,10 @@ use App\Http\Controllers\SuratJalanController;
 use App\Http\Controllers\TaxController;
 use Inertia\Inertia;
 
-Route::get('login', [LoginController::class, 'index'])->name('login');
-Route::post('login', [LoginController::class, 'store'])->name('doLogin');
+Route::middleware('guest')->group(function () {
+    Route::get('login', [LoginController::class, 'index'])->name('login');
+    Route::post('login', [LoginController::class, 'store'])->name('doLogin');
+});
 Route::post('logout', [LoginController::class, 'logout'])->name('doLogout');
 
 Route::middleware(['auth'])->group(function () {
@@ -45,10 +47,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('user/profile/change-pin', [UserController::class, 'updatePin'])->name('user.update-pin');
     Route::post('profile/update', [UserController::class, 'update'])->name('user.update');
 
-    Route::controller(UserRoleController::class)->group(function () {
-        Route::get('role', 'index')->name('role.index');
-        Route::get('role/{role:slug}', 'show')->name('role.show');
-        Route::post('role/change-access', 'changeAccess')->name('role.changeAccess');
+    Route::middleware(['role:super-admin'])->group(function () {
+        Route::controller(UserRoleController::class)->group(function () {
+            Route::get('role', 'index')->name('role.index');
+            Route::get('role/{role:slug}', 'show')->name('role.show');
+            Route::post('role/change-access', 'changeAccess')->name('role.changeAccess');
+        });
     });
 
     Route::middleware(['menu.access'])->group(function () {
@@ -83,8 +87,10 @@ Route::middleware(['auth'])->group(function () {
         Route::controller(SuratJalanController::class)->group(function () {
             Route::get('transaksi/suratJalan', 'index')->name('transaksi.suratJalan.index');
             Route::post('transaksi/suratJalan', 'store')->name('transaksi.suratJalan.store');
+            Route::post('transaksi/suratJalan', 'store')->name('transaksi.suratJalan.store');
             Route::post('transaksi/suratJalan/paket', 'addPaket')->name('transaksi.suratJalan.paket');
             Route::post('transaksi/suratJalan/sjnew', 'suratJalanNew')->name('transaksi.suratJalan.suratJalanNew');
+            Route::post('transaksi/suratJalan/invoice', 'sjNewInvoice')->name('transaksi.suratJalan.invoice');
             Route::get('transaksi/suratJalan/{suratJalan}', 'show')->name('transaksi.suratJalan.show');
             Route::put('transaksi/suratJalan/{suratJalan}', 'update')->name('transaksi.suratJalan.update');
             Route::delete('transaksi/suratJalan/{suratJalan}', 'destroy')->name('transaksi.suratJalan.destroy');
@@ -141,6 +147,7 @@ Route::middleware(['auth'])->group(function () {
             Route::put('transaksi/invoiceJual/detail/{invoiceJual}', 'update')->name('transaksi.invoiceJual.detail.update');
             Route::delete('transaksi/invoiceJual/detail/{invoiceJual}', 'destroy')->name('transaksi.invoiceJual.detail.destroy');
             Route::get('transaksi/invoiceJual/detail/{purchase}/pdf', 'generatePdf')->name('transaksi.invoiceJual.detail.generatePdf');
+            Route::get('transaksi/invoiceJual/detail/{purchase}/kwitansi', 'kwitansi')->name('transaksi.invoiceJual.detail.kwitansi');
         });
 
         Route::resource('purchase/detail', PurchaseDetailController::class);

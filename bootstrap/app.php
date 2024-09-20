@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\CheckMenuAccess;
+use App\Http\Middleware\CheckUserRole;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\UserAccess;
@@ -22,7 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth' => Authenticate::class,
             'menu.access' => CheckMenuAccess::class,
-            'guest' => RedirectIfAuthenticated::class
+            'guest' => RedirectIfAuthenticated::class,
+            'role' => CheckUserRole::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

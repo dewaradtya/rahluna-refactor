@@ -15,14 +15,9 @@ class CheckMenuAccess
         $user = Auth::user();
         $roleId = $user->user_role_id;
 
-        // Ambil bagian pertama dari URL atau gunakan nama route
         $currentUrl = $request->segment(1); 
-        // Alternatif: jika pakai route name
-        // $currentRouteName = $request->route()->getName();
 
         $menu = Menu::where('url', 'LIKE', "%$currentUrl%")->first();
-        // Alternatif: jika pakai route name
-        // $menu = Menu::where('route_name', $currentRouteName)->first();
 
         if ($menu) {
             $hasAccess = UserAccessMenu::where('user_role_id', $roleId)

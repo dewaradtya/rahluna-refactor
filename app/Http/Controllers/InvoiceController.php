@@ -7,6 +7,8 @@ use App\Http\Requests\InvoicePengurangRequest;
 use App\Http\Requests\InvoiceUpdateRequest;
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Models\SuratJalan;
+use App\Models\SuratJalanNew;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -73,18 +75,26 @@ class InvoiceController extends Controller
 
     public function destroy(int $invoiceJual): RedirectResponse
     {
+        DB::beginTransaction();
         try {
             $invoiceJual = Invoice::findOrFail($invoiceJual);
-            $invoiceJual->purchaseDetail()->delete();
-            if ($invoiceJual->tax_invoice) {
-                Storage::delete($invoiceJual->tax_invoice);
+            $invoiceJual->invoiceDetail()->delete();
+            $suratJalanNewList = SuratJalanNew::where('invoice_id', $invoiceJual->id)->get();
+
+            foreach ($suratJalanNewList as $suratJalanNew) {
+                SuratJalan::where('surat_jalan_new_id', $suratJalanNew->id)->delete();
+
+                $suratJalanNew->delete();
             }
+
             $invoiceJual->delete();
 
-            return Redirect::back()->with('success', 'Purchase order berhasil dihapus');
+            DB::commit();
+            return Redirect::back()->with('success', 'Invoice dan data terkait berhasil dihapus.');
         } catch (\Exception $e) {
-            Log::error('Error deleting projects: ', ['exception' => $e]);
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus purchase order. Silahkan coba lagi.');
+            DB::rollBack();
+            Log::error('Error deleting invoice and related data: ', ['exception' => $e]);
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus invoice dan data terkait. Silahkan coba lagi.');
         }
     }
 
