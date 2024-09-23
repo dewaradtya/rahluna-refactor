@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SuratJalanNewStoreRequest extends FormRequest
+class SuratjalanNewUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,6 @@ class SuratJalanNewStoreRequest extends FormRequest
         return [
             'no_surat' => 'required|integer|unique:surat_jalan_news,no_surat',
             'tanggal_kirim' => 'required|date',
-            'customer_id' => 'required|exists:customers,id',
         ];
     }
 }

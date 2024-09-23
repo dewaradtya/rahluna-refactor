@@ -5,7 +5,7 @@ import Modal from '../../../../Components/Modal';
 import LoadingButton from '../../../../Components/Button/LoadingButton';
 import { today } from '../../../../utils';
 
-const InvoiceModal = ({ showModal, setShowModal, customerId}) => {
+const InvoiceModal = ({ showModal, setShowModal, customerId, selectedSuratJalanNewRows }) => {
     const PpnOptions = [
         { value: 0, label: 'pilih' },
         { value: 10, label: '10%' },
@@ -23,13 +23,23 @@ const InvoiceModal = ({ showModal, setShowModal, customerId}) => {
         due_date: today(),
         ppn: '',
         faktur_pajak: null,
-        customer_id: customerId
+        customer_id: customerId,
+        selected_surat_jalan_new_rows: selectedSuratJalanNewRows
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (selectedSuratJalanNewRows.length === 0) {
+            alert('Pilih minimal satu data untuk membuat invoice.');
+            return;
+        }
+
         post(`/transaksi/suratJalan/invoice`, {
-            preserveScroll: true
+            preserveScroll: true,
+            data: {
+                ...data,
+                selected_surat_jalan_new_rows: selectedSuratJalanNewRows
+            }
         });
     };
 
@@ -38,11 +48,7 @@ const InvoiceModal = ({ showModal, setShowModal, customerId}) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal
-            title="Tambah Invoice"
-            showModal={showModal}
-            setShowModal={setShowModal}
-        >
+        <Modal title="Tambah Invoice" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <InputField

@@ -5,7 +5,6 @@ import Modal from '../../../../Components/Modal';
 import LoadingButton from '../../../../Components/Button/LoadingButton';
 
 const PackageCreate = ({ showModal, setShowModal, productPackages, customerId }) => {
-    console.log(productPackages)
     const options = useMemo(
         () => productPackages.map((productPackage) => ({ value: productPackage.id, label: `${productPackage.name}` })),
         [productPackages]
@@ -20,7 +19,7 @@ const PackageCreate = ({ showModal, setShowModal, productPackages, customerId })
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(`/transaksi/suratJalan`, {
+        post(`/transaksi/suratJalan/paket`, {
             preserveScroll: true,
         });
     };

@@ -94,6 +94,7 @@
             </tr>
             @php
                 $subtotal = 0;
+                $totalQty = 0;
                 $ppn = $invoice->ppn;
                 $nilai_ppn = $invoice->nilai_ppn;
                 $pengurang_harga = $invoice->pengurang_harga ?? 0;
@@ -112,6 +113,7 @@
                 @php
                     $total = $row->price * $row->qty;
                     $subtotal += $total;
+                    $totalQty += $row->qty;
                 @endphp
                 <tr>
                     <th scope="row">{{ $loop->iteration }}</th>
@@ -119,7 +121,7 @@
                     <td>{{ $row->qty }}</td>
                     <td>{{ $row->qty }}</td>
                     <td>{{ 'Rp. ' . number_format($row->price, 0, ',', '.') }}</td>
-                    <td>{{ 'Rp. ' . number_format($subtotal, 0, ',', '.') }}</td>
+                    <td>{{ 'Rp. ' . number_format($total, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
@@ -133,8 +135,8 @@
             </tr>
             <tr>
                 <td colspan="3" style="text-align: center;">Total</td>
-                <td>{{ $row->qty }}</td>
-                <td>{{ $row->qty }}</td>
+                <td>{{ $totalQty }}</td>
+                <td>{{ $totalQty }}</td>
                 <td></td>
                 <td>{{ 'Rp. ' . number_format($subtotal, 0, ',', '.') }}</td>
             </tr>

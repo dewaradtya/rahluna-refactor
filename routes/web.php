@@ -30,6 +30,7 @@ use App\Http\Controllers\ProjectDoneController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseDetailController;
 use App\Http\Controllers\SuratJalanController;
+use App\Http\Controllers\SuratJalanNewController;
 use App\Http\Controllers\TaxController;
 use Inertia\Inertia;
 
@@ -87,13 +88,19 @@ Route::middleware(['auth'])->group(function () {
         Route::controller(SuratJalanController::class)->group(function () {
             Route::get('transaksi/suratJalan', 'index')->name('transaksi.suratJalan.index');
             Route::post('transaksi/suratJalan', 'store')->name('transaksi.suratJalan.store');
-            Route::post('transaksi/suratJalan', 'store')->name('transaksi.suratJalan.store');
             Route::post('transaksi/suratJalan/paket', 'addPaket')->name('transaksi.suratJalan.paket');
             Route::post('transaksi/suratJalan/sjnew', 'suratJalanNew')->name('transaksi.suratJalan.suratJalanNew');
             Route::post('transaksi/suratJalan/invoice', 'sjNewInvoice')->name('transaksi.suratJalan.invoice');
             Route::get('transaksi/suratJalan/{suratJalan}', 'show')->name('transaksi.suratJalan.show');
             Route::put('transaksi/suratJalan/{suratJalan}', 'update')->name('transaksi.suratJalan.update');
             Route::delete('transaksi/suratJalan/{suratJalan}', 'destroy')->name('transaksi.suratJalan.destroy');
+        });
+
+        Route::controller(SuratJalanNewController::class)->group(function () {
+            Route::post('transaksi/suratJalanNew/invoice', 'sjNewInvoice')->name('transaksi.suratJalanNew.invoice');
+            Route::get('transaksi/suratJalanNew/{suratJalan}', 'show')->name('transaksi.suratJalanNew.show');
+            Route::put('transaksi/suratJalanNew/{suratJalan}', 'update')->name('transaksi.suratJalanNew.update');
+            Route::delete('transaksi/suratJalanNew/{suratJalan}', 'destroy')->name('transaksi.suratJalanNew.destroy');
         });
 
         Route::controller(ProjectController::class)->group(function () {

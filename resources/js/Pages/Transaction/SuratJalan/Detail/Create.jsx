@@ -5,7 +5,6 @@ import Modal from '../../../../Components/Modal';
 import LoadingButton from '../../../../Components/Button/LoadingButton';
 
 const Create = ({ showModal, setShowModal, products, customerId }) => {
-    console.log(customerId)
     const options = useMemo(
         () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
         [products]

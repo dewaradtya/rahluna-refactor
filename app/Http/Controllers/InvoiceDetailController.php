@@ -66,7 +66,7 @@ class InvoiceDetailController extends Controller
 
     public function kwitansi($id)
     {
-        try {
+        // try {
             $invoice = Invoice::with('customer')->findOrFail($id);
             $invoiceDetail = $invoice->invoiceDetail()->with('product')->get();
             
@@ -81,9 +81,9 @@ class InvoiceDetailController extends Controller
             $filename = "kwitansi.pdf";
     
             return $pdf->stream($filename);
-        } catch (\Exception $e) {
-            Log::error('Error generating invoice PDF: ', ['exception' => $e]);
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat membuka PDF invoice. Silahkan coba lagi.');
-        }
+        // } catch (\Exception $e) {
+        //     Log::error('Error generating invoice PDF: ', ['exception' => $e]);
+        //     return Redirect::back()->with('error', 'Terjadi kesalahan saat membuka PDF invoice. Silahkan coba lagi.');
+        // }
     }
 }

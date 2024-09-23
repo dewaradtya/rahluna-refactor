@@ -39,8 +39,12 @@ class SuratJalanController extends Controller
         try {
             $validatedData = $request->validated();
 
-            // Temukan produk berdasarkan product_id
             $product = Product::findOrFail($validatedData['product_id']);
+
+            if ($product->stock < $validatedData['qty']) {
+                return redirect()->back()->withErrors('Stok produk tidak mencukupi.');
+            }
+
             $validatedData['purchase_price'] = $product->purchase_price;
             $validatedData['price'] = $product->price;
             $validatedData['kategori'] = "Produk";
@@ -65,6 +69,15 @@ class SuratJalanController extends Controller
                 if ($existingProductHistory) {
                     $existingProductHistory->qty += $validatedData['qty'];
                     $existingProductHistory->save();
+                } else {
+                    ProductHistory::create([
+                        'qty' => $validatedData['qty'],
+                        'price' => $product->price,
+                        'purchase_price' => $product->purchase_price,
+                        'product_origin_id' => $product->id,
+                        'product_id' => $product->id,
+                        'status' => 'stok terpakai'
+                    ]);
                 }
             } else {
                 SuratJalan::create($validatedData);
@@ -121,18 +134,18 @@ class SuratJalanController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
-    
+
             $productPackage = ProductPackage::findOrFail($validatedData['product_id']);
             $validatedData['purchase_price'] = $productPackage->purchase_price;
             $validatedData['price'] = $productPackage->price;
-            $validatedData['kategori'] = "Paket"; // Pastikan ini diatur ke "Paket"
+            $validatedData['kategori'] = "Paket";
             $validatedData['surat_jalan_new_id'] = null;
-    
+
             foreach ($productPackage->productPackageDetails as $detail) {
                 $product = Product::findOrFail($detail->product_id);
                 $product->stock -= ($detail->qty * $validatedData['qty']);
                 $product->save();
-    
+
                 ProductHistory::create([
                     'qty' => $detail->qty * $validatedData['qty'],
                     'price' => $product->price,
@@ -142,19 +155,19 @@ class SuratJalanController extends Controller
                     'status' => 'stok terpakai'
                 ]);
             }
-    
+
             $existingSuratJalan = SuratJalan::where('product_id', $productPackage->id)
                 ->where('customer_id', $validatedData['customer_id'])
                 ->whereNull('surat_jalan_new_id')
                 ->first();
-    
+
             if ($existingSuratJalan) {
                 $existingSuratJalan->qty += $validatedData['qty'];
                 $existingSuratJalan->save();
             } else {
                 SuratJalan::create($validatedData);
             }
-    
+
             DB::commit();
             return redirect()->back()->with('success', 'Paket berhasil ditambahkan ke Surat Jalan.');
         } catch (\Exception $e) {
@@ -162,7 +175,7 @@ class SuratJalanController extends Controller
             return redirect()->back()->withErrors('Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-    
+
     public function update(SuratJalanUpdateRequest $request, int $suratJalan): RedirectResponse
     {
         try {
@@ -207,9 +220,13 @@ class SuratJalanController extends Controller
 
             $suratJalanNew = SuratJalanNew::create($validatedData);
 
-            SuratJalan::whereNull('surat_jalan_new_id')
-                ->where('customer_id', $suratJalanNew->customer_id)
-                ->update(['surat_jalan_new_id' => $suratJalanNew->id]);
+            $selectedRows = $request->input('selected_rows', []);
+
+            if (!empty($selectedRows)) {
+                SuratJalan::whereIn('id', $selectedRows)
+                    ->where('customer_id', $suratJalanNew->customer_id)
+                    ->update(['surat_jalan_new_id' => $suratJalanNew->id]);
+            }
 
             DB::commit();
             return Redirect::back()->with('success', 'Surat Jalan Baru berhasil ditambahkan.');
@@ -229,7 +246,9 @@ class SuratJalanController extends Controller
 
             $invoice = Invoice::create($validatedData);
 
-            $suratJalanNewList = SuratJalanNew::whereNull('invoice_id')
+            $selectedIds = $request->input('selected_surat_jalan_new_rows');
+            $suratJalanNewList = SuratJalanNew::whereIn('id', $selectedIds)
+                ->whereNull('invoice_id')
                 ->where('customer_id', $invoice->customer_id)
                 ->get();
 
@@ -239,17 +258,35 @@ class SuratJalanController extends Controller
                 $suratJalanDetails = SuratJalan::where('surat_jalan_new_id', $suratJalanNew->id)->get();
 
                 foreach ($suratJalanDetails as $detail) {
-                    $totalNilai += $detail->price * $detail->qty;
+                    if ($detail->kategori === "Paket") {
+                        $productPackage = ProductPackage::findOrFail($detail->product_id);
 
-                    InvoiceDetail::create([
-                        'invoice_id'     => $invoice->id,
-                        'product_id'     => $detail->product_id,
-                        'qty'            => $detail->qty,
-                        'price'          => $detail->price,
-                        'purchase_price' => $detail->purchase_price,
-                        'note'           => $detail->note,
-                        'kategori'       => $detail->kategori,
-                    ]);
+                        foreach ($productPackage->productPackageDetails as $packageDetail) {
+                            $totalNilai += $packageDetail->product->price * ($packageDetail->qty * $detail->qty);
+
+                            InvoiceDetail::create([
+                                'invoice_id'     => $invoice->id,
+                                'product_id'     => $packageDetail->product_id,
+                                'qty'            => $packageDetail->qty * $detail->qty,
+                                'price'          => $packageDetail->product->price,
+                                'purchase_price' => $packageDetail->product->purchase_price,
+                                'note'           => $detail->note,
+                                'kategori'       => $detail->kategori,
+                            ]);
+                        }
+                    } else {
+                        $totalNilai += $detail->price * $detail->qty;
+
+                        InvoiceDetail::create([
+                            'invoice_id'     => $invoice->id,
+                            'product_id'     => $detail->product_id,
+                            'qty'            => $detail->qty,
+                            'price'          => $detail->price,
+                            'purchase_price' => $detail->purchase_price,
+                            'note'           => $detail->note,
+                            'kategori'       => $detail->kategori,
+                        ]);
+                    }
                 }
 
                 $suratJalanNew->update(['invoice_id' => $invoice->id]);

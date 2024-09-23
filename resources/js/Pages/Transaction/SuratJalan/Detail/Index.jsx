@@ -4,7 +4,7 @@ import Table from '../../../../Components/Table';
 import { router } from '@inertiajs/react';
 import Card from '../../../../Components/Card';
 import SplitButton from '../../../../Components/Button/SplitButton';
-import { FaArrowLeft, FaCheck, FaPlus } from 'react-icons/fa';
+import { FaCheck, FaPlus } from 'react-icons/fa';
 import BadgeButton from '../../../../Components/Button/BadgeButton';
 import Pagination from '../../../../Components/Pagination';
 import Create from './Create';
@@ -12,6 +12,7 @@ import InvoiceModal from './InvoiceModal';
 import PackageCreate from './PackageCreate';
 import SuratJalanNew from './SuratjalanNew';
 import Update from './Update';
+import UpdateSjNew from './UpdateSjNew';
 import Confirm from '../../../../Components/Confirm/Confirm';
 import { rupiah } from '../../../../utils';
 
@@ -21,11 +22,14 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
     const [showSuratJalanModal, setShowSuratJalanModal] = useState(false);
     const [showPaketModal, setShowPaketModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, suratJalan: null });
+    const [showUpdateSjModal, setShowUpdateSjModal] = useState({ modal: false, suratJalanNew: null });
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [selectedRows, setSelectedRows] = useState([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showSjDeleteModal, setShowSjDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [sjItemToDelete, setSjItemToDelete] = useState(null);
     const [isSticky, setIsSticky] = useState(false);
     const [selectedSuratJalanNewRows, setSelectedSuratJalanNewRows] = useState([]);
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -44,11 +48,17 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
         setShowDeleteModal(true);
     };
 
+    const handleDeleteSjNewButton = (id) => {
+        setSjItemToDelete(id);
+        setShowSjDeleteModal(true);
+    };
+
     const handleConfirmDelete = () => {
         if (itemToDelete) {
             router.delete(`/transaksi/suratJalan/${itemToDelete}`, {
                 preserveScroll: true,
                 onStart: () => setLoadingButton(itemToDelete),
+
                 onFinish: () => {
                     setLoadingButton(null);
                     setShowDeleteModal(false);
@@ -62,16 +72,35 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
         }
     };
 
+    const handleConfirmDeleteSj = () => {
+        if (sjItemToDelete) {
+            router.delete(`/transaksi/suratJalanNew/${sjItemToDelete}`, {
+                preserveScroll: true,
+                onStart: () => setLoadingButton(sjItemToDelete),
+
+                onFinish: () => {
+                    setLoadingButton(null);
+                    setShowSjDeleteModal(false);
+                    setSjItemToDelete(null);
+                },
+                onError: () => {
+                    setLoadingButton(null);
+                    setShowSjDeleteModal(false);
+                }
+            });
+        }
+    };
+
     const handleEditButton = (suratJalan) => {
         setShowUpdateModal({ modal: true, suratJalan });
     };
 
-    const handleBackButton = () => {
-        router.get('/transaksi/suratJalan', {
-            preserveScroll: true,
-            onStart: () => setLoadingButton(null),
-            onFinish: () => setLoadingButton(null)
-        });
+    const handleEditSjButton = (suratJalanNew) => {
+        setShowUpdateSjModal({ modal: true, suratJalanNew });
+    };
+
+    const handleLihatButton = (id) => {
+        router.get(`/transaksi/suratJalanNew/${id}`);
     };
 
     const handleCheckboxChange = (rowId, isNew = false) => {
@@ -83,10 +112,12 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
     };
 
     const filteredSuratJalan = suratJalan.data.filter(
-        (product) =>
-            product.surat_jalan_new_id === null &&
-            (product.product?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.product?.model_number.toLowerCase().includes(searchTerm.toLowerCase()))
+        (suratJalan) =>
+            suratJalan.surat_jalan_new_id === null &&
+            (suratJalan.product?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                suratJalan.product?.model_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (suratJalan.kategori === 'Paket' &&
+                    suratJalan.product_package?.name.toLowerCase().includes(searchTerm.toLowerCase())))
     );
 
     const columns = useMemo(
@@ -107,7 +138,13 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
             {
                 label: 'Produk / Paket',
                 name: 'product_package',
-                renderCell: (row) => row.product?.name || 'N/A'
+                renderCell: (row) => {
+                    if (row.kategori === 'Produk') {
+                        return row.product?.name || 'N/A';
+                    } else if (row.kategori === 'Paket') {
+                        return row.product_package?.name || 'N/A';
+                    }
+                }
             },
             {
                 label: 'Qty',
@@ -117,7 +154,13 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
             {
                 label: 'Satuan',
                 name: 'unit',
-                renderCell: (row) => row.product?.unit || 'N/A'
+                renderCell: (row) => {
+                    if (row.kategori === 'Produk') {
+                        return row.product?.unit || 'N/A';
+                    } else if (row.kategori === 'Paket') {
+                        return row.product_package?.unit || 'N/A';
+                    }
+                }
             },
             {
                 label: 'Harga Beli',
@@ -195,12 +238,19 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
                 renderCell: (row) => (
                     <>
                         <BadgeButton
-                            onClick={() => handleDeleteButton(row.id)}
-                            text="Hapus"
+                            onClick={() => handleDeleteSjNewButton(row.id)}
+                            text={`${loadingButton === row.id ? 'Loading...' : 'Hapus'}`}
                             color="danger"
                             disabled={row.invoice_id != null}
                         />
-                        <BadgeButton onClick={() => handleEditButton(row)} text="Edit" color="warning" />
+                        <BadgeButton onClick={() => handleEditSjButton(row)} text="Edit" color="warning" />
+                        <BadgeButton
+                            onClick={() => handleLihatButton(row.id)}
+                            text="lihat"
+                            color="info"
+                            disabled={loadingButton !== null}
+                        />{' '}
+                        <BadgeButton onClick={() => handleEditButton(row)} text="Print" color="dark" />
                     </>
                 )
             }
@@ -213,9 +263,8 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
             <Card.CardHeader
                 titleText="Table Surat Jalan"
                 additionalInfo={
-                    customer ? `${customer.name} - ${customer.pic} - ${customer.telp} - ${customer.email}` : 'No Product Selected'
+                    customer ? `${customer.name} - ${customer.pic} - ${customer.telp} - ${customer.email}` : 'No customer Selected'
                 }
-                rightComponent={<SplitButton color="danger" text="Kembali" icon={<FaArrowLeft />} onClick={handleBackButton} />}
             />
             <Card.CardBody>
                 <div className="d-sm-flex align-items-center justify-content-between mb-2">
@@ -314,6 +363,14 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
                     suratJalan={showUpdateModal.suratJalan}
                 />
             )}
+
+            {showUpdateSjModal.modal && (
+                <UpdateSjNew
+                    showModal={showUpdateSjModal.modal}
+                    setShowModal={setShowUpdateSjModal}
+                    suratJalanNew={showUpdateSjModal.suratJalanNew}
+                />
+            )}
             {showPaketModal && (
                 <PackageCreate
                     showModal={showPaketModal}
@@ -323,7 +380,12 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
                 />
             )}
             {showSuratJalanModal && (
-                <SuratJalanNew showModal={showSuratJalanModal} setShowModal={setShowSuratJalanModal} customerId={customer.id} />
+                <SuratJalanNew
+                    showModal={showSuratJalanModal}
+                    setShowModal={setShowSuratJalanModal}
+                    customerId={customer.id}
+                    selectedRows={selectedRows}
+                />
             )}
             {showInvoiceModal && (
                 <InvoiceModal
@@ -331,6 +393,7 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
                     setShowModal={setShowInvoiceModal}
                     selectedRows={selectedSuratJalanNewRows}
                     customerId={customer.id}
+                    selectedSuratJalanNewRows={selectedSuratJalanNewRows}
                 />
             )}
             <Confirm
@@ -338,6 +401,13 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
                 setShowModal={setShowDeleteModal}
                 onDelete={handleConfirmDelete}
                 dataType="surat jalan"
+            />
+
+            <Confirm
+                showModal={showSjDeleteModal}
+                setShowModal={setShowSjDeleteModal}
+                onDelete={handleConfirmDeleteSj}
+                dataType="surat jalan new"
             />
         </Card>
     );

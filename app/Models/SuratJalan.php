@@ -20,6 +20,11 @@ class SuratJalan extends Model
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    public function productPackage()
+    {
+        return $this->belongsTo(ProductPackage::class, 'product_id');
+    }
+
     public function suratJalanNew()
     {
         return $this->belongsTo(SuratJalanNew::class, 'surat_jalan_new_id');
@@ -45,5 +50,31 @@ class SuratJalan extends Model
     public function productHistories(): HasMany
     {
         return $this->hasMany(ProductHistory::class, 'product_id', 'product_id');
+    }
+
+    public function getProductNameAttribute()
+    {
+        if ($this->kategori === 'Produk') {
+            return $this->product ? $this->product->name : null;
+        }
+
+        if ($this->kategori === 'Paket') {
+            return $this->productPackage ? $this->productPackage->name : null;
+        }
+
+        return null;
+    }
+
+    public function getUnitAttribute()
+    {
+        if ($this->kategori === 'Produk') {
+            return $this->product ? $this->product->unit : null;
+        }
+
+        if ($this->kategori === 'Paket') {
+            return $this->productPackage ? $this->productPackage->unit : null;
+        }
+
+        return null;
     }
 }
