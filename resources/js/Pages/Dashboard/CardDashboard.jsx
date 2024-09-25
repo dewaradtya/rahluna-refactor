@@ -1,8 +1,13 @@
+import { Link } from '@inertiajs/react';
 import React from 'react';
 
-const CardDashboard = ({ color, textTitle, text, textFooter, icon }) => {
+const CardDashboard = ({ color, textTitle, text, textFooter, icon, link }) => {
     return (
-        <div className={`card border-left-${color} shadow h-100 py-2`}>
+        <Link
+            href={link}
+            className={`card border-left-${color} shadow h-100 py-2`} 
+            style={{ textDecoration: 'none' }}
+        >
             <div className="card-body">
                 <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
@@ -15,7 +20,7 @@ const CardDashboard = ({ color, textTitle, text, textFooter, icon }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
