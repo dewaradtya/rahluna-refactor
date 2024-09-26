@@ -40,7 +40,7 @@ class DashboardController extends Controller
 
         for ($month = 1; $month <= 12; $month++) {
             $penjualan = $this->sumProductHistory('stok terpakai', $month, $currentYear);
-            $penjualanInv = $this->sumInvoicesWithDetails($month, $currentYear);
+            $penjualanInv = $this->sumInvoiceSales($month, $currentYear);
 
             $pengeluaran = $this->calculateUangKeluar($month, $currentYear);
 
@@ -128,7 +128,7 @@ class DashboardController extends Controller
             ->where('cashflow', 1)
             ->where('amount', '>', 0)
             ->where('date', $isOvertime ? '<' : '>=', Carbon::now()->toDateString())
-            ->sum('amount');
+            ->sum(DB::raw('amount - total_payment'));
     }
 
     private function sumManageDebt()
@@ -148,6 +148,6 @@ class DashboardController extends Controller
         return Invoice::when($month, fn($query) => $query->whereMonth('first_create', $month))
             ->when($year, fn($query) => $query->whereYear('first_create', $year))
             ->get()
-            ->sum(fn($invoice) => $invoice->total_invoice - $invoice->total_bayar + $invoice->nilai_ppn);
+            ->sum(fn($invoice) => $invoice->total_invoice + $invoice->nilai_ppn);
     }
 }

@@ -56,7 +56,12 @@ const Index = ({ userRoles }) => {
                     />
 
                     <Table columns={columns} rows={filteredUserRoles.slice(0, entriesPerPage)} />
-                    <Pagination links={userRoles.links} />
+                    <Pagination
+                        links={userRoles.links}
+                        currentPage={userRoles.current_page}
+                        totalEntries={userRoles.total}
+                        perPage={userRoles.per_page}
+                    />
                 </Card.CardBody>
             </Card>
         </>

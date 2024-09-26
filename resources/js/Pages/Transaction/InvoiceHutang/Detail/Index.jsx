@@ -151,7 +151,7 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
                                 top: isSticky ? '10px' : '5px',
                                 right: '0px',
                                 zIndex: 1000,
-                                transition: 'position 0.3s ease, top 0.3s ease',
+                                transition: 'position 0.3s ease, top 0.3s ease'
                             }}
                         />
                     }
@@ -182,7 +182,12 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
                         footer={totals}
                         footerColumns={footerColumns}
                     />
-                    <Pagination links={debtInvoiceDetails.links} />
+                    <Pagination
+                        links={debtInvoiceDetails.links}
+                        currentPage={debtInvoiceDetails.current_page}
+                        totalEntries={debtInvoiceDetails.total}
+                        perPage={debtInvoiceDetails.per_page}
+                    />
                 </Card.CardBody>
 
                 {showCreateModal && (
@@ -195,7 +200,12 @@ const Index = ({ debtInvoice, debtInvoiceDetails }) => {
                         debtInvoiceDetail={showUpdateModal.debtInvoiceDetail}
                     />
                 )}
-                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="debt invoice detail"/>
+                <Confirm
+                    showModal={showDeleteModal}
+                    setShowModal={setShowDeleteModal}
+                    onDelete={handleConfirmDelete}
+                    dataType="debt invoice detail"
+                />
             </Card>
         </>
     );

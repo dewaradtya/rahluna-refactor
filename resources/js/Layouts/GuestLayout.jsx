@@ -12,7 +12,7 @@ const GuestLayout = ({ children, title }) => {
                     <div className="row align-content-center min-vh-100">
                         <div className="col-md-6 align-self-center">
                             <img
-                                src="https://nugroho.laporanusaha.com/assets2/images/ilustrasi.png"
+                                src="/img/ilustrasi.png"
                                 alt="image"
                                 className="img-fluid"
                             />

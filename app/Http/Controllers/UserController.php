@@ -18,9 +18,10 @@ class UserController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $users = User::paginate($perPage)->appends($request->query());
+        $users = User::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('User/Index', compact('users'));
     }

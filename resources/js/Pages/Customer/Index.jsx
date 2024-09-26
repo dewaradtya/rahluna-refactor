@@ -136,7 +136,7 @@ const Index = ({ customers }) => {
                         top: isSticky ? '10px' : '5px',
                         right: '0px',
                         zIndex: 1000,
-                        transition: 'position 0.3s ease, top 0.3s ease',
+                        transition: 'position 0.3s ease, top 0.3s ease'
                     }}
                 />
 
@@ -149,7 +149,12 @@ const Index = ({ customers }) => {
                 />
 
                 <Table columns={columns} rows={filteredCustomers.slice(0, entriesPerPage)} />
-                <Pagination links={customers.links} />
+                <Pagination
+                    links={customers.links}
+                    currentPage={customers.current_page}
+                    totalEntries={customers.total}
+                    perPage={customers.per_page}
+                />
             </Card.CardBody>
 
             {showModalCreate && <Create showModal={showModalCreate} setShowModal={setShowModalCreate} />}
@@ -163,7 +168,12 @@ const Index = ({ customers }) => {
                     </Modal.Body>
                 </Modal>
             )}
-            <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="customer"/>
+            <Confirm
+                showModal={showDeleteModal}
+                setShowModal={setShowDeleteModal}
+                onDelete={handleConfirmDelete}
+                dataType="customer"
+            />
         </Card>
     );
 };

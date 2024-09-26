@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Imports\ProductImport;
@@ -25,9 +24,10 @@ class ProductController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $products = Product::paginate($perPage)->appends($request->query());
+        $products = Product::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
         $units = Unit::all();
 
         return Inertia::render('Product/Index', compact('products', 'units'));

@@ -168,7 +168,12 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
                     footer={footer}
                     footerColumns={footerColumns}
                 />
-                <Pagination links={productPackageDetail.links} />
+                <Pagination
+                    links={productPackageDetail.links}
+                    currentPage={productPackageDetail.current_page}
+                    totalEntries={productPackageDetail.total}
+                    perPage={productPackageDetail.per_page}
+                />
             </Card.CardBody>
 
             {showCreateModal && (

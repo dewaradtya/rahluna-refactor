@@ -16,9 +16,10 @@ class ManageDebtController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $debts = ManageDebt::paginate($perPage)->appends($request->query());
+        $debts = ManageDebt::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('Manage/Debt/Index', compact('debts'));
     }
@@ -26,10 +27,11 @@ class ManageDebtController extends Controller
     public function show(Request $request, int $hutang): Response|RedirectResponse
     {
         try {
-            $perPage = $request->query('perPage') ?? 100;
+            $perPage = $request->query('perPage', 200);
+            $currentPage = $request->query('page', 1);
 
             $debt = ManageDebt::findOrFail($hutang);
-            $debtDetails = $debt->debtDetails()->paginate($perPage)->appends($request->query());
+            $debtDetails = $debt->debtDetails()->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
             return Inertia::render('Manage/Debt/Detail/Index', compact('debt', 'debtDetails'));
         } catch (\Exception $e) {

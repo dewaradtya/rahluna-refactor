@@ -157,7 +157,12 @@ const Index = ({ productPackages, units }) => {
                     setEntriesPerPage={setEntriesPerPage}
                 />
                 <Table columns={columns} rows={filteredProductsPackage.slice(0, entriesPerPage)} />
-                <Pagination links={productPackages.links} />
+                <Pagination
+                    links={productPackages.links}
+                    currentPage={productPackages.current_page}
+                    totalEntries={productPackages.total}
+                    perPage={productPackages.per_page}
+                />
             </Card.CardBody>
 
             {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} units={units} />}

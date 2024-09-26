@@ -24,16 +24,12 @@ const Index = ({ histories }) => {
             {
                 label: 'Tanggal/Waktu',
                 name: 'first_create',
-                renderCell: (row) => (row.first_create)
+                renderCell: (row) => row.first_create
             },
             {
                 label: 'Nama Produk',
                 name: 'product.name',
-                renderCell: (row) => (
-                    <Link href={`/products/history/${row.id}`}>
-                        {row.product.name}
-                    </Link>
-                )
+                renderCell: (row) => <Link href={`/products/history/${row.id}`}>{row.product.name}</Link>
             },
             {
                 label: 'QTY',
@@ -91,7 +87,7 @@ const Index = ({ histories }) => {
 
         return {
             total_pembelian: rupiah(totalPembelian),
-            total_penjualan: rupiah(totalPenjualan),
+            total_penjualan: rupiah(totalPenjualan)
         };
     }, [histories]);
 
@@ -110,8 +106,18 @@ const Index = ({ histories }) => {
                     entriesPerPage={entriesPerPage}
                     setEntriesPerPage={setEntriesPerPage}
                 />
-                <Table columns={columns} rows={filteredProductsHistory.slice(0, entriesPerPage)} footer={footer} footerColumns={footerColumns} />
-                <Pagination links={histories.links} />
+                <Table
+                    columns={columns}
+                    rows={filteredProductsHistory.slice(0, entriesPerPage)}
+                    footer={footer}
+                    footerColumns={footerColumns}
+                />
+                <Pagination
+                    links={histories.links}
+                    currentPage={histories.current_page}
+                    totalEntries={histories.total}
+                    perPage={histories.per_page}
+                />
             </Card.CardBody>
         </Card>
     );

@@ -14,7 +14,6 @@ import { usePage } from '@inertiajs/react';
 import { rupiah } from '../../utils';
 
 const Index = ({ chartData }) => {
-    console.log(chartData)
     const { totalCashflow } = usePage().props;
     const { totalPembelianProdukBulan, totalPembelianProdukTahun } = usePage().props;
     const { totalPenjualanProdukBulan, totalPenjualanProdukTahun } = usePage().props;
@@ -104,7 +103,7 @@ const Index = ({ chartData }) => {
 
             <div className="row">
                 <div className="col-xl-12 col-lg-12">
-                <ChartDashboard chartData={chartData} />
+                    <ChartDashboard chartData={chartData} />
                 </div>
             </div>
         </>

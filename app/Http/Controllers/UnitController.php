@@ -16,9 +16,10 @@ class UnitController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $units = Unit::paginate($perPage)->appends($request->query());
+        $units = Unit::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('Unit/Index', compact('units'));
     }

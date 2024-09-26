@@ -298,7 +298,12 @@ const Index = ({ projects, customers, product }) => {
                     footer={totals}
                     footerColumns={footerColumns}
                 />
-                <Pagination links={projects.links} />
+                <Pagination
+                    links={projects.links}
+                    currentPage={projects.current_page}
+                    totalEntries={projects.total}
+                    perPage={projects.per_page}
+                />
             </Card.CardBody>
 
             {showModalMenu && (

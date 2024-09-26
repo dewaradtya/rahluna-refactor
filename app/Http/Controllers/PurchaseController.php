@@ -20,9 +20,10 @@ class PurchaseController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $purchase = Purchase::with(['customer', 'project'])->paginate($perPage)->appends($request->query());
+        $purchase = Purchase::with(['customer', 'project'])->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
         $project = Project::all();
 
         return Inertia::render('Purchase/Index', compact('purchase', 'project'));
@@ -111,10 +112,11 @@ class PurchaseController extends Controller
     public function show(Request $request, int $id): Response|RedirectResponse
     {
         try {
-            $perPage = $request->query('perPage') ?? 100;
+            $perPage = $request->query('perPage', 200);
+            $currentPage = $request->query('page', 1);
 
             $purchase = Purchase::findOrFail($id);
-            $purchaseDetails = $purchase->purchaseDetail()->paginate($perPage)->appends($request->query());
+            $purchaseDetails = $purchase->purchaseDetail()->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
             return Inertia::render('Purchase/Detail/Index', [
                 'purchase' => $purchase,

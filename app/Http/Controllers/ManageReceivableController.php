@@ -16,9 +16,10 @@ class ManageReceivableController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $receivables = ManageReceivable::paginate($perPage)->appends($request->query());
+        $receivables = ManageReceivable::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('Manage/Receivable/Index', compact('receivables'));
     }
@@ -26,10 +27,11 @@ class ManageReceivableController extends Controller
     public function show(Request $request, int $piutang): Response|RedirectResponse
     {
         try {
-            $perPage = $request->query('perPage') ?? 100;
+            $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
             $receivable = ManageReceivable::findOrFail($piutang);
-            $receivableDetails = $receivable->receivableDetails()->paginate($perPage)->appends($request->query());
+            $receivableDetails = $receivable->receivableDetails()->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
             return Inertia::render('Manage/Receivable/Detail/Index', compact('receivable', 'receivableDetails'));
         } catch (\Exception $e) {

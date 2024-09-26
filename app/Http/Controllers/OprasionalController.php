@@ -17,9 +17,10 @@ class OprasionalController extends Controller
 {
     public function index(Request $request): InertiaResponse
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $oprasionals = Oprasional::with(['tax'])->paginate($perPage)->appends($request->query());
+        $oprasionals = Oprasional::with(['tax'])->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
         return Inertia::render('Oprasional/Index', compact('oprasionals'));
     }
 

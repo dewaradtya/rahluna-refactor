@@ -19,9 +19,10 @@ class ProductPackageController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $productPackages = ProductPackage::paginate($perPage)->appends($request->query());
+        $productPackages = ProductPackage::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
         $units = Unit::all();
 
         return Inertia::render('Product/Package/Index', compact('productPackages', 'units'));
@@ -47,10 +48,11 @@ class ProductPackageController extends Controller
     public function show(Request $request, int $id): Response|RedirectResponse
     {
         try {
-            $perPage = $request->query('perPage') ?? 100;
+            $perPage = $request->query('perPage', 200);
+            $currentPage = $request->query('page', 1);
 
             $productPackage = ProductPackage::findOrFail($id);
-            $productPackageDetail = $productPackage->productPackageDetails()->with('product')->paginate($perPage)->appends($request->query());
+            $productPackageDetail = $productPackage->productPackageDetails()->with('product')->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
             $products = Product::all();
 
             return Inertia::render('Product/Package/Detail/Index', [

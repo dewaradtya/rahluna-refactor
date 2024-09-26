@@ -108,7 +108,7 @@ const Index = ({ units }) => {
                                     top: isSticky ? '10px' : '5px',
                                     right: '0px',
                                     zIndex: 1000,
-                                    transition: 'position 0.3s ease, top 0.3s ease',
+                                    transition: 'position 0.3s ease, top 0.3s ease'
                                 }}
                             />
                         </div>
@@ -121,14 +121,24 @@ const Index = ({ units }) => {
                     />
 
                     <Table columns={columns} rows={filteredUnit.slice(0, entriesPerPage)} />
-                    <Pagination links={units.links} />
+                    <Pagination
+                        links={units.links}
+                        currentPage={units.current_page}
+                        totalEntries={units.total}
+                        perPage={units.per_page}
+                    />
                 </Card.CardBody>
 
                 {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
                 {showUpdateModal.modal && (
                     <Update showModal={showUpdateModal.modal} setShowModal={setShowUpdateModal} unit={showUpdateModal.unit} />
                 )}
-                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="unit"/>
+                <Confirm
+                    showModal={showDeleteModal}
+                    setShowModal={setShowDeleteModal}
+                    onDelete={handleConfirmDelete}
+                    dataType="unit"
+                />
             </Card>
         </>
     );

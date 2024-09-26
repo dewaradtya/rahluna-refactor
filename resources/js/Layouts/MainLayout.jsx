@@ -35,7 +35,14 @@ const Footer = () => {
         <footer className="sticky-footer bg-white">
             <div className="container my-auto">
                 <div className="copyright text-center my-auto">
-                    <span>Copyright &copy; Dewa Raditya {new Date().getFullYear()}</span>
+                    <span>
+                        &copy; {new Date().getFullYear()} <strong>BGroup</strong>. All Rights Reserved.
+                    </span>
+                    <br />
+                    <span>
+                        Designed by
+                        <img src="/img/logo.png" alt="Brand Icon" style={{ width: '90px', height: '30px', marginLeft: '5px' }} />
+                    </span>
                 </div>
             </div>
         </footer>

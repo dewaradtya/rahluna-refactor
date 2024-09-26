@@ -31,10 +31,11 @@ class SuratJalanNewController extends Controller
     public function show(Request $request, int $id): Response|RedirectResponse
     {
         try {
-            $perPage = $request->query('perPage') ?? 100;
+            $perPage = $request->query('perPage', 200);
+            $currentPage = $request->query('page', 1);
 
             $suratJalanNew = SuratJalanNew::with('customer')->findOrFail($id);
-            $suratJalan = $suratJalanNew->suratJalan()->with(['product', 'productPackage'])->paginate($perPage)->appends($request->query());
+            $suratJalan = $suratJalanNew->suratJalan()->with(['product', 'productPackage'])->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
             return Inertia::render('Transaction/SuratJalan/Detail/SjNewDetail/Index', [
                 'suratJalanNew' => $suratJalanNew,

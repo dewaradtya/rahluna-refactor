@@ -6,6 +6,7 @@ import { InputCheckbox } from '../../Components/FieldInput';
 import Card from '../../Components/Card';
 import { FaArrowLeft } from 'react-icons/fa';
 import SplitButton from '../../Components/Button/SplitButton';
+import Pagination from '../../Components/Pagination';
 
 const Index = ({ menus, userRole }) => {
     const [loadingButton, setLoadingButton] = useState(null);
@@ -29,9 +30,7 @@ const Index = ({ menus, userRole }) => {
         router.get('/role');
     };
 
-    const filteredMenus = menus.filter((menu) =>
-        menu.menu.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredMenus = menus.data.filter((menu) => menu.menu.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const columns = useMemo(
         () => [
@@ -63,7 +62,12 @@ const Index = ({ menus, userRole }) => {
                 <Card.CardHeader
                     titleText={`Detail Role ${userRole.name}`}
                     rightComponent={
-                        <SplitButton color="danger" text="Kembali" icon={<FaArrowLeft />} onClick={() => handleBackButton(true)} />
+                        <SplitButton
+                            color="danger"
+                            text="Kembali"
+                            icon={<FaArrowLeft />}
+                            onClick={() => handleBackButton(true)}
+                        />
                     }
                 />
                 <Card.CardBody>
@@ -74,6 +78,12 @@ const Index = ({ menus, userRole }) => {
                         setEntriesPerPage={setEntriesPerPage}
                     />
                     <Table columns={columns} rows={filteredMenus.slice(0, entriesPerPage)} />
+                    <Pagination
+                        links={menus.links}
+                        currentPage={menus.current_page}
+                        totalEntries={menus.total}
+                        perPage={menus.per_page}
+                    />
                 </Card.CardBody>
             </Card>
         </>

@@ -17,9 +17,10 @@ class CustomerController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $customers = Customer::paginate($perPage)->appends($request->query());
+        $customers = Customer::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('Customer/Index', compact('customers'));
     }

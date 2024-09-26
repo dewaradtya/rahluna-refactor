@@ -178,7 +178,12 @@ const Index = ({ receivable, receivableDetails }) => {
                         footer={totals}
                         footerColumns={footerColumns}
                     />
-                    <Pagination links={receivableDetails.links} />
+                    <Pagination
+                        links={receivableDetails.links}
+                        currentPage={receivableDetails.current_page}
+                        totalEntries={receivableDetails.total}
+                        perPage={receivableDetails.per_page}
+                    />
                 </Card.CardBody>
 
                 {showCreateModal && (
@@ -191,7 +196,12 @@ const Index = ({ receivable, receivableDetails }) => {
                         receivableDetail={showUpdateModal.receivableDetail}
                     />
                 )}
-                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="receivable detail"/>
+                <Confirm
+                    showModal={showDeleteModal}
+                    setShowModal={setShowDeleteModal}
+                    onDelete={handleConfirmDelete}
+                    dataType="receivable detail"
+                />
             </Card>
         </>
     );

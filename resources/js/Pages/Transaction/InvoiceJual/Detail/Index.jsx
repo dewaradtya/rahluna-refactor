@@ -211,7 +211,12 @@ const Index = ({ invoice, invoiceDetail, products }) => {
                         footer={totals}
                         footerColumns={footerColumns}
                     />
-                    <Pagination links={invoiceDetail.links} />
+                    <Pagination
+                        links={invoiceDetail.links}
+                        currentPage={invoiceDetail.current_page}
+                        totalEntries={invoiceDetail.total}
+                        perPage={invoiceDetail.per_page}
+                    />
                 </Card.CardBody>
 
                 {showPengurangModal && (

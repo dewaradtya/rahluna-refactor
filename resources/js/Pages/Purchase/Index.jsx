@@ -102,15 +102,14 @@ const Index = ({ purchase, project }) => {
                 name: 'nilai_po',
                 renderCell: (row) => {
                     const discount = row.discount || 0;
-                    const finalValue = row.total_value - (row.total_value * (discount / 100));
+                    const finalValue = row.total_value - row.total_value * (discount / 100);
                     return rupiah(finalValue);
                 }
             },
             {
                 label: 'Discount',
                 name: 'discount',
-                renderCell: (row) => (row.discount + '%' || 0)
-
+                renderCell: (row) => row.discount + '%' || 0
             },
             {
                 label: 'Delivery Date',
@@ -141,7 +140,12 @@ const Index = ({ purchase, project }) => {
                 />
 
                 <Table columns={columns} rows={filteredpurchase.slice(0, entriesPerPage)} />
-                <Pagination links={purchase.links} />
+                <Pagination
+                    links={purchase.links}
+                    currentPage={purchase.current_page}
+                    totalEntries={purchase.total}
+                    perPage={purchase.per_page}
+                />
             </Card.CardBody>
 
             {showModalCreate && <Create showModal={showModalCreate} setShowModal={setShowModalCreate} project={project} />}

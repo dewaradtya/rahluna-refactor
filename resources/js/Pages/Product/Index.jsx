@@ -131,9 +131,7 @@ const Index = ({ products, units }) => {
         <Card>
             <Card.CardHeader titleText="Table Produk" />
             <Card.CardBody>
-                <div
-                    className={`d-sm-flex align-items-center justify-content-between mb-2 ${isSticky ? 'sticky-header' : ''}`}
-                >
+                <div className={`d-sm-flex align-items-center justify-content-between mb-2 ${isSticky ? 'sticky-header' : ''}`}>
                     <div className="d-flex column-gap-1 align-items-start flex-wrap">
                         <SplitButton
                             color="primary"
@@ -145,7 +143,7 @@ const Index = ({ products, units }) => {
                                 top: isSticky ? '10px' : '5px',
                                 right: '0px',
                                 zIndex: 1000,
-                                transition: 'position 0.3s ease, top 0.3s ease',
+                                transition: 'position 0.3s ease, top 0.3s ease'
                             }}
                         />
                         <SplitButton
@@ -158,7 +156,7 @@ const Index = ({ products, units }) => {
                                 top: isSticky ? '50px' : '5px',
                                 right: '0px',
                                 zIndex: 1000,
-                                transition: 'position 0.3s ease, top 0.3s ease',
+                                transition: 'position 0.3s ease, top 0.3s ease'
                             }}
                         />
                         <SplitButton
@@ -171,7 +169,7 @@ const Index = ({ products, units }) => {
                                 top: isSticky ? '90px' : '5px',
                                 right: '0px',
                                 zIndex: 1000,
-                                transition: 'position 0.3s ease, top 0.3s ease',
+                                transition: 'position 0.3s ease, top 0.3s ease'
                             }}
                         />
                         <SplitButtonGroup
@@ -186,7 +184,7 @@ const Index = ({ products, units }) => {
                                 top: isSticky ? '130px' : '5px',
                                 right: '0px',
                                 zIndex: 1000,
-                                transition: 'position 0.3s ease, top 0.3s ease',
+                                transition: 'position 0.3s ease, top 0.3s ease'
                             }}
                         >
                             <SplitButtonGroup.Link
@@ -206,7 +204,12 @@ const Index = ({ products, units }) => {
                     setEntriesPerPage={setEntriesPerPage}
                 />
                 <Table columns={columns} rows={filteredProducts.slice(0, entriesPerPage)} />
-                <Pagination links={products.links} />
+                <Pagination
+                    links={products.links}
+                    currentPage={products.current_page}
+                    totalEntries={products.total}
+                    perPage={products.per_page}
+                />
             </Card.CardBody>
 
             {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} units={units} />}

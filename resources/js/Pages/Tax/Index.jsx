@@ -60,7 +60,7 @@ const Index = ({ invoice }) => {
                 label: 'Proggres',
                 name: 'pph',
                 renderCell: (row) => rupiah(row.pph_customer)
-            },
+            }
         ],
         [loadingButton]
     );
@@ -78,7 +78,12 @@ const Index = ({ invoice }) => {
                 />
 
                 <Table columns={columns} rows={filteredInvoice.slice(0, entriesPerPage)} />
-                <Pagination links={invoice.links} />
+                <Pagination
+                    links={invoice.links}
+                    currentPage={invoice.current_page}
+                    totalEntries={invoice.total}
+                    perPage={invoice.per_page}
+                />
             </Card.CardBody>
 
             {/* Modal untuk Update Invoice */}

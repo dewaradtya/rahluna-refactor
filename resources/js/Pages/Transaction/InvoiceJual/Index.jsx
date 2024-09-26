@@ -76,7 +76,7 @@ const Index = ({ invoiceJual }) => {
             {
                 label: 'Nilai Invoice',
                 name: 'total_nilai',
-                renderCell: (row) =>  rupiah(row.totalinvoice)
+                renderCell: (row) => rupiah(row.totalinvoice)
             },
             {
                 label: 'PPN',
@@ -137,7 +137,12 @@ const Index = ({ invoiceJual }) => {
                 />
 
                 <Table columns={columns} rows={filteredInvoices.slice(0, entriesPerPage)} />
-                <Pagination links={invoiceJual.links} />
+                <Pagination
+                    links={invoiceJual.links}
+                    currentPage={invoiceJual.current_page}
+                    totalEntries={invoiceJual.total}
+                    perPage={invoiceJual.per_page}
+                />
             </Card.CardBody>
             {showModalMenu && (
                 <Menu

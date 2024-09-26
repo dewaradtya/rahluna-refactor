@@ -11,11 +11,12 @@ class TaxController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
         $invoice = Invoice::whereNotNull('ppn_pph_customer')
             ->where('ppn_pph_customer', '>', 0)
-            ->paginate($perPage)
+            ->paginate($perPage, ['*'], 'page', $currentPage)
             ->appends($request->query());
 
         return Inertia::render('Tax/Index', compact('invoice'));

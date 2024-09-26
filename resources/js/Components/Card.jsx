@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import React from 'react';
 
 const Card = ({ children }) => {
@@ -26,12 +27,25 @@ const CardBody = ({ children }) => {
 };
 
 const CardFilter = ({ searchTerm, setSearchTerm, entriesPerPage, setEntriesPerPage }) => {
+    const handleEntriesChange = (e) => {
+        const newEntriesPerPage = Number(e.target.value);
+        setEntriesPerPage(newEntriesPerPage);
+
+        // Kirim request ke server dengan perPage yang baru
+        router.visit(window.location.pathname, {
+            method: 'get',
+            data: { perPage: newEntriesPerPage },
+            preserveScroll: true,
+            preserveState: true,
+        });
+    };
+
     return (
         <div className="my-2 d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
                 <select
                     value={entriesPerPage}
-                    onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+                    onChange={handleEntriesChange}
                     className="p-2 border rounded me-2"
                 >
                     <option value={5}>5</option>

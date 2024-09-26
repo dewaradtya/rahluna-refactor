@@ -25,9 +25,10 @@ class InvoiceController extends Controller
      */
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $invoiceJual = Invoice::with('customer')->paginate($perPage)->appends($request->query());
+        $invoiceJual = Invoice::with('customer')->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('Transaction/InvoiceJual/Index', compact('invoiceJual'));
     }
@@ -40,10 +41,11 @@ class InvoiceController extends Controller
     public function show(Request $request, int $id): Response|RedirectResponse
     {
         try {
-            $perPage = $request->query('perPage') ?? 100;
+            $perPage = $request->query('perPage', 200);
+            $currentPage = $request->query('page', 1);
 
             $invoice = Invoice::with('customer')->findOrFail($id);
-            $invoiceDetail = $invoice->invoiceDetail()->with('product')->paginate($perPage)->appends($request->query());
+            $invoiceDetail = $invoice->invoiceDetail()->with('product')->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
             $products = Product::all();
 
             return Inertia::render('Transaction/InvoiceJual/Detail/Index', [
@@ -104,8 +106,8 @@ class InvoiceController extends Controller
             $validatedData = $request->validated();
 
             $invoice = Invoice::findOrFail($invoice);
-            $invoice->update(['total_bayar' => $invoice->total_bayar + $validatedData['total_bayar']]);
-            $invoice->update(['ppn_pph_customer' => $invoice->ppn_pph_customer + $validatedData['ppn_pph_customer']]);
+            $invoice->update($validatedData);
+
 
             return Redirect::back()->with('success', 'bayar invoice berhasil diubah');
         } catch (\Exception $e) {

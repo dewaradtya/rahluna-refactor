@@ -136,7 +136,12 @@ const Index = ({ capitals }) => {
                     />
 
                     <Table columns={columns} rows={filteredCapital.slice(0, entriesPerPage)} />
-                    <Pagination links={capitals.links} />
+                    <Pagination
+                        links={capitals.links}
+                        currentPage={capitals.current_page}
+                        totalEntries={capitals.total}
+                        perPage={capitals.per_page}
+                    />
                 </Card.CardBody>
 
                 {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
@@ -147,7 +152,12 @@ const Index = ({ capitals }) => {
                         capital={showUpdateModal.capital}
                     />
                 )}
-                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="capital"/>
+                <Confirm
+                    showModal={showDeleteModal}
+                    setShowModal={setShowDeleteModal}
+                    onDelete={handleConfirmDelete}
+                    dataType="capital"
+                />
             </Card>
         </>
     );

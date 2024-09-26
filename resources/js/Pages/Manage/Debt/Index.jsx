@@ -168,14 +168,24 @@ const Index = ({ debts }) => {
                         footer={totals}
                         footerColumns={footerColumns}
                     />
-                    <Pagination links={debts.links} />
+                    <Pagination
+                        links={debts.links}
+                        currentPage={debts.current_page}
+                        totalEntries={debts.total}
+                        perPage={debts.per_page}
+                    />
                 </Card.CardBody>
 
                 {showCreateModal && <Create showModal={showCreateModal} setShowModal={setShowCreateModal} />}
                 {showUpdateModal.modal && (
                     <Update showModal={showUpdateModal.modal} setShowModal={setShowUpdateModal} debt={showUpdateModal.debt} />
                 )}
-                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="debt"/>
+                <Confirm
+                    showModal={showDeleteModal}
+                    setShowModal={setShowDeleteModal}
+                    onDelete={handleConfirmDelete}
+                    dataType="debt"
+                />
             </Card>
         </>
     );

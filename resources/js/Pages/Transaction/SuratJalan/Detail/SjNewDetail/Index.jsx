@@ -127,7 +127,12 @@ const Index = ({ invoice, suratJalan, suratJalanNew }) => {
                     />
 
                     <Table columns={columns} rows={filteredSuratJalan.slice(0, entriesPerPage)} />
-                    <Pagination links={suratJalan.links} />
+                    <Pagination
+                        links={suratJalan.links}
+                        currentPage={suratJalan.current_page}
+                        totalEntries={suratJalan.total}
+                        perPage={suratJalan.per_page}
+                    />
                 </Card.CardBody>
             </Card>
         </>

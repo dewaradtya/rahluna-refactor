@@ -263,7 +263,9 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
             <Card.CardHeader
                 titleText="Table Surat Jalan"
                 additionalInfo={
-                    customer ? `${customer.name} - ${customer.pic} - ${customer.telp} - ${customer.email}` : 'No customer Selected'
+                    customer
+                        ? `${customer.name} - ${customer.pic} - ${customer.telp} - ${customer.email}`
+                        : 'No customer Selected'
                 }
             />
             <Card.CardBody>
@@ -323,7 +325,12 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
                     <Card.CardHeader titleText="Data Surat Jalan" />
                     <Card.CardBody>
                         <Table columns={columns} rows={filteredSuratJalan.slice(0, entriesPerPage)} />
-                        <Pagination links={suratJalan.links} />
+                        <Pagination
+                            links={suratJalan.links}
+                            currentPage={suratJalan.current_page}
+                            totalEntries={suratJalan.total}
+                            perPage={suratJalan.per_page}
+                        />
                     </Card.CardBody>
                 </Card>
 
@@ -341,7 +348,12 @@ const Index = ({ customer, suratJalan, suratJalanNew, products, productPackages 
                             />
                         </div>
                         <Table columns={suratJalanNewColumns} rows={sortedSuratJalanNew} />
-                        <Pagination links={suratJalanNew.links} />
+                        <Pagination
+                            links={suratJalanNew.links}
+                            currentPage={suratJalanNew.current_page}
+                            totalEntries={suratJalanNew.total}
+                            perPage={suratJalanNew.per_page}
+                        />
                     </Card.CardBody>
                 </Card>
             </Card.CardBody>

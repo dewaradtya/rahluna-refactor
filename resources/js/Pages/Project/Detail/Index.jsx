@@ -269,7 +269,12 @@ const Index = ({ projectDetail, project, product }) => {
                     footer={totals}
                     footerColumns={footerColumns}
                 />
-                <Pagination links={projectDetail.links} />
+                <Pagination
+                    links={projectDetail.links}
+                    currentPage={projectDetail.current_page}
+                    totalEntries={projectDetail.total}
+                    perPage={projectDetail.per_page}
+                />
             </Card.CardBody>
 
             {showModalCreate && <Create showModal={showModalCreate} setShowModal={setShowModalCreate} />}

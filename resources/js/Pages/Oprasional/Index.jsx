@@ -143,7 +143,7 @@ const Index = ({ oprasionals }) => {
         const totalNilai = oprasionals.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
         const totalGaji = oprasionals.data
             .filter((row) => row.funding === 'Gaji')
-            .reduce((total, row) => total + (Number(row.total_payment) || 0), 0);
+            .reduce((total, row) => total + (Number(row.amount) || 0), 0);
         const totalFee = oprasionals.data
             .filter((row) => row.funding === 'Fee')
             .reduce((total, row) => total + (Number(row.amount) || 0), 0);
@@ -154,8 +154,11 @@ const Index = ({ oprasionals }) => {
             .filter((row) => row.funding === 'Entertaint Cost')
             .reduce((total, row) => total + (Number(row.amount) || 0), 0);
         const totalPajakMasukan = oprasionals.data.reduce((total, row) => {
-            const taxValue = row.tax && row.tax.tax_value ? Number(row.tax.tax_value) : 0;
-            return total + taxValue;
+            if (row.tax && row.tax.tax_value) {
+                const taxValue = Number(row.amount) / Number(row.tax.tax_value);
+                return total + taxValue;
+            }
+            return total;
         }, 0);
 
         return {
@@ -191,7 +194,7 @@ const Index = ({ oprasionals }) => {
                         top: isSticky ? '10px' : '5px',
                         right: '0px',
                         zIndex: 1000,
-                        transition: 'position 0.3s ease, top 0.3s ease',
+                        transition: 'position 0.3s ease, top 0.3s ease'
                     }}
                 />
                 <Card.CardFilter
@@ -206,7 +209,12 @@ const Index = ({ oprasionals }) => {
                     footer={totals}
                     footerColumns={footerColumns}
                 />
-                <Pagination links={oprasionals.links} />
+                <Pagination
+                    links={oprasionals.links}
+                    currentPage={oprasionals.current_page}
+                    totalEntries={oprasionals.total}
+                    perPage={oprasionals.per_page}
+                />
             </Card.CardBody>
 
             {showModalCreate && <Create showModal={showModalCreate} setShowModal={setShowModalCreate} />}

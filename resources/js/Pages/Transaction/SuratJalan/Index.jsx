@@ -9,20 +9,14 @@ const Index = ({ customers }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
 
-    const filteredCustomers = customers.data.filter(customer =>
-        customer.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredCustomers = customers.data.filter((customer) => customer.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const columns = useMemo(
         () => [
             {
                 label: 'Nama CV / Industri',
                 name: 'name',
-                renderCell: (row) => (
-                    <Link href={`/transaksi/suratJalan/${row.id}`}>
-                        {row.name}
-                    </Link>
-                )
+                renderCell: (row) => <Link href={`/transaksi/suratJalan/${row.id}`}>{row.name}</Link>
             }
         ],
         []
@@ -39,9 +33,14 @@ const Index = ({ customers }) => {
                     entriesPerPage={entriesPerPage}
                     setEntriesPerPage={setEntriesPerPage}
                 />
-                
+
                 <Table columns={columns} rows={filteredCustomers.slice(0, entriesPerPage)} />
-                <Pagination links={customers.links} />
+                <Pagination
+                    links={customers.links}
+                    currentPage={customers.current_page}
+                    totalEntries={customers.total}
+                    perPage={customers.per_page}
+                />
             </Card.CardBody>
         </Card>
     );

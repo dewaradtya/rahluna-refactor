@@ -115,7 +115,12 @@ const Index = ({ menus, groupMenus }) => {
                         setEntriesPerPage={setEntriesPerPage}
                     />
                     <Table columns={columns} rows={filteredMenus.slice(0, entriesPerPage)} />
-                    <Pagination links={menus.links} />
+                    <Pagination
+                        links={menus.links}
+                        currentPage={menus.current_page}
+                        totalEntries={menus.total}
+                        perPage={menus.per_page}
+                    />
                 </Card.CardBody>
                 {showCreateModal && (
                     <Create
@@ -134,7 +139,12 @@ const Index = ({ menus, groupMenus }) => {
                         groupMenus={groupMenus}
                     />
                 )}
-                <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="menu"/>
+                <Confirm
+                    showModal={showDeleteModal}
+                    setShowModal={setShowDeleteModal}
+                    onDelete={handleConfirmDelete}
+                    dataType="menu"
+                />
             </Card>
         </>
     );

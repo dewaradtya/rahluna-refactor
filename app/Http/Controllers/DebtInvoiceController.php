@@ -16,20 +16,22 @@ class DebtInvoiceController extends Controller
 {
     public function index(Request $request): Response
     {
-        $perPage = $request->query('perPage') ?? 100;
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
 
-        $debtInvoices = DebtInvoice::paginate($perPage)->appends($request->query());
+        $debtInvoices = DebtInvoice::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('Transaction/InvoiceHutang/Index', compact('debtInvoices'));
     }
 
     public function show(Request $request, int $invhutang): Response|RedirectResponse
     {
-        try {
-            $perPage = $request->query('perPage') ?? 100;
+        try { 
+            $perPage = $request->query('perPage', 200);
+            $currentPage = $request->query('page', 1);
 
             $debtInvoice = DebtInvoice::findOrFail($invhutang);
-            $debtInvoiceDetails = $debtInvoice->debtInvoiceDetails()->paginate($perPage)->appends($request->query());
+            $debtInvoiceDetails = $debtInvoice->debtInvoiceDetails()->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
             return Inertia::render('Transaction/InvoiceHutang/Detail/Index', compact('debtInvoice', 'debtInvoiceDetails'));
         } catch (\Exception $e) {

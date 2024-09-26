@@ -109,7 +109,6 @@ const Index = ({ users }) => {
         <Card>
             <Card.CardHeader titleText="All User" />
             <Card.CardBody>
-
                 {/* Input pencarian dan dropdown entri per halaman */}
                 <Card.CardFilter
                     searchTerm={searchTerm}
@@ -119,7 +118,12 @@ const Index = ({ users }) => {
                 />
 
                 <Table columns={columns} rows={filteredusers.slice(0, entriesPerPage)} />
-                <Pagination links={users.links} />
+                <Pagination
+                    links={users.links}
+                    currentPage={users.current_page}
+                    totalEntries={users.total}
+                    perPage={users.per_page}
+                />
             </Card.CardBody>
 
             {/* {imageModal.visible && (
@@ -129,7 +133,12 @@ const Index = ({ users }) => {
                     </Modal.Body>
                 </Modal>
             )} */}
-            <Confirm showModal={showDeleteModal} setShowModal={setShowDeleteModal} onDelete={handleConfirmDelete} dataType="user"/>
+            <Confirm
+                showModal={showDeleteModal}
+                setShowModal={setShowDeleteModal}
+                onDelete={handleConfirmDelete}
+                dataType="user"
+            />
         </Card>
     );
 };

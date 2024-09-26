@@ -53,13 +53,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('role', 'index')->name('role.index');
             Route::get('role/{role:slug}', 'show')->name('role.show');
             Route::post('role/change-access', 'changeAccess')->name('role.changeAccess');
+            Route::resource('menu', MenuController::class);
         });
     });
 
     Route::middleware(['menu.access'])->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-        Route::resource('menu', MenuController::class);
         Route::resource('oprasional', OprasionalController::class);
         Route::resource('modal', ManageCapitalController::class);
         Route::resource('hutang', ManageDebtController::class);
@@ -143,7 +142,7 @@ Route::middleware(['auth'])->group(function () {
         Route::controller(InvoiceController::class)->group(function () {
             Route::get('transaksi/invoiceJual', 'index')->name('transaksi.invoiceJual.index');
             Route::post('transaksi/invoiceJual', 'store')->name('transaksi.invoiceJual.store');
-            Route::post('transaksi/invoiceJual/pay/{invoiceJual}', 'pay')->name('transaksi.invoiceJual.pay');
+            Route::put('transaksi/invoiceJual/pay/{invoiceJual}', 'pay')->name('transaksi.invoiceJual.pay');
             Route::post('transaksi/invoiceJual/pengurang/{invoiceJual}', 'pengurangHarga')->name('transaksi.invoiceJual.pengurangHarga');
             Route::get('transaksi/invoiceJual/{invoiceJual}', 'show')->name('transaksi.invoiceJual.show');
             Route::put('transaksi/invoiceJual/{invoiceJual}', 'update')->name('transaksi.invoiceJual.update');

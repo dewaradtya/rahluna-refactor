@@ -18,31 +18,32 @@ class UserRoleController extends Controller
 {
     public function index(Request $request): Response
     {
-        $userRoles = UserRole::all();
+        $perPage = $request->query('perPage', 200);
+        $currentPage = $request->query('page', 1);
+
+        $userRoles = UserRole::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('Role/Index', [
-            'userRoles' => [
-                'data' => $userRoles,
-                'links' => [],
-            ],
+            'userRoles' => $userRoles,
         ]);
     }
 
     public function show(Request $request, string $role): Response|RedirectResponse
     {
         try {
+            $perPage = $request->query('perPage', 200);
+            $currentPage = $request->query('page', 1);
+
             $userRole = UserRole::where('slug', $role)->firstOrFail();
+
             $menus = Menu::leftJoin('user_access_menus', function ($join) use ($userRole) {
                 $join->on('menus.id', '=', 'user_access_menus.menu_id')
                     ->where('user_access_menus.user_role_id', '=', $userRole->id);
             })
                 ->select('menus.*', DB::raw('IF(user_access_menus.id IS NULL, false, true) as user_access_is_active'))
                 ->latest()
-                ->get();
-
-            // if ($userRoles->id != 1) {
-            //     $menus->whereIn('name', ['user', 'project', 'oprasional', 'purchase', 'invoice', 'pembayaran', 'partner', 'product', 'cashflow']);
-            // }
+                ->paginate($perPage, ['*'], 'page', $currentPage)
+                ->appends($request->query());
 
             return Inertia::render('Role/Detail', compact('userRole', 'menus'));
         } catch (\Exception $e) {
