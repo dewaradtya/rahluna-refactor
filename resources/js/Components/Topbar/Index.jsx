@@ -86,12 +86,15 @@ const Topbar = () => {
                             </i>
                             Profile
                         </Link>
-                        <Link className="dropdown-item" href="/role" onClick={closeDropdowns}>
-                            <i className="mr-2 text-gray-400">
-                                <FaCogs />
-                            </i>
-                            Setting Access
-                        </Link>
+                        {auth &&
+                            auth.user.role.slug === 'super-admin' && (
+                                <Link className="dropdown-item" href="/role" onClick={closeDropdowns}>
+                                    <i className="mr-2 text-gray-400">
+                                        <FaCogs />
+                                    </i>
+                                    Setting Access
+                                </Link>
+                            )}
                         <div className="dropdown-divider"></div>
                         <button
                             className="dropdown-item"

@@ -1,5 +1,6 @@
+import React, { useState } from 'react';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import {
     FaBalanceScale,
     FaBoxes,
@@ -9,11 +10,11 @@ import {
     FaHardHat,
     FaHome,
     FaShoppingCart,
-    FaSignOutAlt,
-    FaUser
+    FaUser,
+    FaSignOutAlt
 } from 'react-icons/fa';
 import { SidebarToggle } from '../../context/SidebarToggleContext';
-import { ImCross } from 'react-icons/im';
+import LogoutConfirm from '../Confirm/LogoutConfirm';
 
 const Sidebar = () => {
     const {
@@ -22,12 +23,26 @@ const Sidebar = () => {
 
     const { sidebarToggled, setSidebarToggled } = useContext(SidebarToggle);
     const [collapsedItems, setCollapsedItems] = useState({});
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+    const { post } = useForm();
+
+    const handleLogout = () => {
+        post('/logout');
+    };
 
     const handleCollapseClick = (item) => {
         setCollapsedItems((prevState) => ({
             ...prevState,
             [item]: !prevState[item]
         }));
+    };
+
+    const openLogoutModal = () => {
+        setIsLogoutModalOpen(true);
+    };
+
+    const closeLogoutModal = () => {
+        setIsLogoutModalOpen(false);
     };
 
     return (
@@ -39,45 +54,49 @@ const Sidebar = () => {
                 <div className="sidebar-brand-icon mx-3">
                     <img src="/img/logo-f.png" alt="Brand Icon" style={{ width: '50px', height: '60px' }} />
                 </div>
-                <ImCross /> 
                 <div className="sidebar-brand-text mx-3">
                     <img src="/img/apple-touch-icon.png" alt="Brand Icon" style={{ width: '70px', height: '70px' }} />
                 </div>
             </Link>
 
-            <div className="sidebar-heading">Admin</div>
+            {Object.entries(sidebar).map(([category, items]) => (
+                <div key={category}>
+                    <div className="sidebar-heading">{category}</div>
+                    <hr className="sidebar-divider my-0" />
+                    <SidebarLink rows={items} collapsedItems={collapsedItems} handleCollapseClick={handleCollapseClick} />
+                </div>
+            ))}
+
             <hr className="sidebar-divider my-0" />
-            {sidebar.Admin && (
-                <SidebarLink rows={sidebar.Admin} collapsedItems={collapsedItems} handleCollapseClick={handleCollapseClick} />
-            )}
 
-            <div className="sidebar-heading">Sales</div>
-            <hr className="sidebar-divider my-0" />
-            {sidebar.Sales && (
-                <SidebarLink rows={sidebar.Sales} collapsedItems={collapsedItems} handleCollapseClick={handleCollapseClick} />
-            )}
+            <li className="nav-item">
+                <button className="nav-link" onClick={openLogoutModal}>
+                    <FaSignOutAlt size={16} />
+                    <span>Logout</span>
+                </button>
+            </li>
 
-            <div className="sidebar-heading">General</div>
-            <hr className="sidebar-divider my-0" />
-            {sidebar.General && (
-                <SidebarLink rows={sidebar.General} collapsedItems={collapsedItems} handleCollapseClick={handleCollapseClick} />
-            )}
-
-            <hr className="sidebar-divider d-none d-md-block" />
-
-            <div className="text-center d-none d-md-inline ">
+            <div className="text-center d-none d-md-inline">
                 <button
                     className="rounded-circle border-0 position-relative"
                     id="sidebarToggle"
                     onClick={() => setSidebarToggled(!sidebarToggled)}
                 ></button>
             </div>
+
+            <LogoutConfirm
+                isOpen={isLogoutModalOpen}
+                onClose={closeLogoutModal}
+                onConfirm={() => {
+                    closeLogoutModal();
+                    handleLogout();
+                }}
+            />
         </ul>
     );
 };
 
 const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
-    const { post } = useForm();
     const iconMapping = {
         'fa fa-home': <FaHome size={16} />,
         'fa fa-users': <FaUser size={16} />,
@@ -87,13 +106,7 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
         'fa fa-shopping-cart': <FaShoppingCart size={16} />,
         'fa fa-exchange-alt': <FaExchangeAlt size={16} />,
         'fa fa-salance-scale': <FaBalanceScale size={16} />,
-        'fa fa-cog': <FaCog size={16} />,
-        'fa fa-sign-out-alt': <FaSignOutAlt size={16} />
-    };
-
-    const handleLogout = (e) => {
-        e.preventDefault();
-        post('/logout');
+        'fa fa-cog': <FaCog size={16} />
     };
 
     return (
@@ -129,21 +142,10 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
                             </div>
                         </>
                     ) : (
-                        row.url === '/logout' ? (
-                            <a
-                                className="nav-link"
-                                href={row.url}
-                                onClick={handleLogout}
-                            >
-                                {iconMapping[row.icon]}
-                                <span>{row.menu}</span>
-                            </a>
-                        ) : (
-                            <Link className="nav-link" href={row.url}>
-                                {iconMapping[row.icon]}
-                                <span>{row.menu}</span>
-                            </Link>
-                        )
+                        <Link className="nav-link" href={row.url}>
+                            {iconMapping[row.icon]}
+                            <span>{row.menu}</span>
+                        </Link>
                     )}
                 </li>
             ))}

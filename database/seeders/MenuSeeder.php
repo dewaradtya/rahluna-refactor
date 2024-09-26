@@ -182,12 +182,5 @@ class MenuSeeder extends Seeder
             'main_menu' => 19,
             'is_active' => true,
         ]);
-        Menu::create([
-            'menu' => 'Logout',
-            'url' => '/logout',
-            'group_menu' => 'General',
-            'icon' => 'fa fa-sign-out-alt',
-            'is_active' => true,
-        ]);
     }
 }
