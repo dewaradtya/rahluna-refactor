@@ -136,9 +136,9 @@ class InvoiceController extends Controller
     {
         if ($request->hasFile('faktur_pajak')) {
             if ($invoiceJual && $invoiceJual->faktur_pajak) {
-                Storage::delete($invoiceJual->faktur_pajak);
+                Storage::disk('public')->delete($invoiceJual->faktur_pajak);
             }
-            return $request->file('faktur_pajak')->store('invoiceJuals');
+            return $request->file('faktur_pajak')->store('invoiceJual', 'public');
         }
         if ($invoiceJual && $invoiceJual->faktur_pajak) {
             return $invoiceJual->faktur_pajak;

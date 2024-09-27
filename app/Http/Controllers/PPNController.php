@@ -27,7 +27,7 @@ class PPNController extends Controller
         return Inertia::render('Tax/PPN/Index', compact('invoice'));
     }
 
-     public function update(PPNUpdateRequest $request, int $invoice): RedirectResponse
+    public function update(PPNUpdateRequest $request, int $invoice): RedirectResponse
     {
         try {
             $invoice = Invoice::findOrFail($invoice);
@@ -47,9 +47,9 @@ class PPNController extends Controller
     {
         if ($request->hasFile('bukti_customer')) {
             if ($invoice && $invoice->bukti_customer) {
-                Storage::delete($invoice->bukti_customer);
+                Storage::disk('public')->delete($invoice->bukti_customer);
             }
-            return $request->file('bukti_customer')->store('invoices');
+            return $request->file('bukti_customer')->store('invoices', 'public');
         }
         if ($invoice && $invoice->bukti_customer) {
             return $invoice->bukti_customer;

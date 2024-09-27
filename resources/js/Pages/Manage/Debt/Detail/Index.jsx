@@ -1,5 +1,5 @@
 import MainLayout from '../../../../Layouts/MainLayout';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Create from './Create';
 import Update from './Update';
 import Table from '../../../../Components/Table';
@@ -11,6 +11,7 @@ import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../../utils';
 import Card from '../../../../Components/Card';
 import Confirm from '../../../../Components/Confirm/Confirm';
+import Modal from '../../../../Components/Modal';
 
 const Index = ({ debt, debtDetails }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -20,6 +21,17 @@ const Index = ({ debt, debtDetails }) => {
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [isSticky, setIsSticky] = useState(false);
+    const [imageModal, setImageModal] = useState({ visible: false, src: '' });
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsSticky(window.scrollY > 80);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleDeleteButton = (id) => {
         setItemToDelete(id);
@@ -47,6 +59,16 @@ const Index = ({ debt, debtDetails }) => {
 
     const handleEditButton = (debtDetail) => {
         setShowUpdateModal({ modal: true, debtDetail: debtDetail });
+    };
+
+    const handleImageModalOpen = (imageSrc) => {
+        const fullImageUrl = `http://localhost:8000/storage/${imageSrc}`;
+        setImageModal({ visible: true, src: fullImageUrl });
+        console.log(fullImageUrl);
+    };
+
+    const handleImageModalClose = () => {
+        setImageModal({ visible: false, src: '' });
     };
 
     const handleBackButton = () => {
@@ -92,7 +114,7 @@ const Index = ({ debt, debtDetails }) => {
                         />
                         {row.proof && (
                             <BadgeButton
-                                onClick={() => console.log('lihat bukti')}
+                                onClick={() => handleImageModalOpen(row.proof)}
                                 text="lihat bukti"
                                 color="dark"
                                 disabled={loadingButton !== null}
@@ -140,6 +162,13 @@ const Index = ({ debt, debtDetails }) => {
                                 text="Bayar Hutang"
                                 icon={<FaPlus />}
                                 onClick={() => setShowCreateModal(true)}
+                                style={{
+                                    position: isSticky ? 'fixed' : 'relative',
+                                    top: isSticky ? '10px' : '5px',
+                                    right: '0px',
+                                    zIndex: 1000,
+                                    transition: 'position 0.3s ease, top 0.3s ease'
+                                }}
                             />
                         </div>
                     </div>
@@ -172,6 +201,18 @@ const Index = ({ debt, debtDetails }) => {
                         debtDetail={showUpdateModal.debtDetail}
                     />
                 )}
+                {imageModal.visible && (
+                <Modal title="Bukti" showModal={imageModal.visible} setShowModal={handleImageModalClose}>
+                    <Modal.Body className="text-center">
+                        <img
+                            src={imageModal.src}
+                            alt="Bukti"
+                            className="img-fluid"
+                            style={{ maxHeight: '80vh', objectFit: 'contain' }}
+                        />
+                    </Modal.Body>
+                </Modal>
+            )}
                 <Confirm
                     showModal={showDeleteModal}
                     setShowModal={setShowDeleteModal}

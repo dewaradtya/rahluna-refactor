@@ -20,7 +20,9 @@ const Index = ({ invoice }) => {
     };
 
     const handleImageModalOpen = (imageSrc) => {
-        setImageModal({ visible: true, src: imageSrc });
+        const fullImageUrl = `http://localhost:8000/storage/${imageSrc}`;
+        setImageModal({ visible: true, src: fullImageUrl });
+        console.log(fullImageUrl);
     };
 
     const handleImageModalClose = () => {
@@ -120,8 +122,13 @@ const Index = ({ invoice }) => {
             )}
             {imageModal.visible && (
                 <Modal title="Bukti" showModal={imageModal.visible} setShowModal={handleImageModalClose}>
-                    <Modal.Body>
-                        <img src={imageModal.src} alt="Bukti" className="w-full" />
+                    <Modal.Body className="text-center">
+                        <img
+                            src={imageModal.src}
+                            alt="Bukti"
+                            className="img-fluid"
+                            style={{ maxHeight: '80vh', objectFit: 'contain' }}
+                        />
                     </Modal.Body>
                 </Modal>
             )}

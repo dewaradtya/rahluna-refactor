@@ -11,6 +11,7 @@ import { router } from '@inertiajs/react';
 import { formatDate, rupiah } from '../../../../utils';
 import Card from '../../../../Components/Card';
 import Confirm from '../../../../Components/Confirm/Confirm';
+import Modal from '../../../../Components/Modal';
 
 const Index = ({ receivable, receivableDetails }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -21,6 +22,7 @@ const Index = ({ receivable, receivableDetails }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [isSticky, setIsSticky] = useState(false);
+    const [imageModal, setImageModal] = useState({ visible: false, src: '' });
 
     useEffect(() => {
         const handleScroll = () => {
@@ -57,6 +59,16 @@ const Index = ({ receivable, receivableDetails }) => {
 
     const handleEditButton = (receivableDetail) => {
         setShowUpdateModal({ modal: true, receivableDetail: receivableDetail });
+    };
+
+    const handleImageModalOpen = (imageSrc) => {
+        const fullImageUrl = `http://localhost:8000/storage/${imageSrc}`;
+        setImageModal({ visible: true, src: fullImageUrl });
+        console.log(fullImageUrl);
+    };
+
+    const handleImageModalClose = () => {
+        setImageModal({ visible: false, src: '' });
     };
 
     const handleBackButton = () => {
@@ -101,7 +113,7 @@ const Index = ({ receivable, receivableDetails }) => {
                         />
                         {row.proof && (
                             <BadgeButton
-                                onClick={() => console.log('lihat bukti')}
+                                onClick={() => handleImageModalOpen(row.proof)}
                                 text="lihat bukti"
                                 color="dark"
                                 disabled={loadingButton !== null}
@@ -143,13 +155,6 @@ const Index = ({ receivable, receivableDetails }) => {
                             text="Piutang"
                             icon={<FaArrowLeft />}
                             onClick={() => handleBackButton(true)}
-                            style={{
-                                position: isSticky ? 'fixed' : 'relative',
-                                top: isSticky ? '10px' : '5px',
-                                right: '0px',
-                                zIndex: 1000,
-                                transition: 'position 0.3s ease, top 0.3s ease'
-                            }}
                         />
                     }
                 />
@@ -162,6 +167,13 @@ const Index = ({ receivable, receivableDetails }) => {
                                 text="Bayar Piutang"
                                 icon={<FaPlus />}
                                 onClick={() => setShowCreateModal(true)}
+                                style={{
+                                    position: isSticky ? 'fixed' : 'relative',
+                                    top: isSticky ? '10px' : '5px',
+                                    right: '0px',
+                                    zIndex: 1000,
+                                    transition: 'position 0.3s ease, top 0.3s ease'
+                                }}
                             />
                         </div>
                     </div>
@@ -195,6 +207,18 @@ const Index = ({ receivable, receivableDetails }) => {
                         setShowModal={setShowUpdateModal}
                         receivableDetail={showUpdateModal.receivableDetail}
                     />
+                )}
+                {imageModal.visible && (
+                    <Modal title="Bukti" showModal={imageModal.visible} setShowModal={handleImageModalClose}>
+                        <Modal.Body className="text-center">
+                            <img
+                                src={imageModal.src}
+                                alt="Bukti"
+                                className="img-fluid"
+                                style={{ maxHeight: '80vh', objectFit: 'contain' }}
+                            />
+                        </Modal.Body>
+                    </Modal>
                 )}
                 <Confirm
                     showModal={showDeleteModal}
