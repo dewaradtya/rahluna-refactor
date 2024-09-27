@@ -56,21 +56,34 @@ class SuratJalanController extends Controller
 
             $existingSuratJalan = SuratJalan::where('product_id', $product->id)
                 ->where('customer_id', $validatedData['customer_id'])
+                ->where('kategori', 'Produk')
                 ->whereNull('surat_jalan_new_id')
                 ->first();
 
-            if ($existingSuratJalan) {
-                $existingSuratJalan->qty += $validatedData['qty'];
-                $existingSuratJalan->save();
-
-                $existingProductHistory = ProductHistory::where('product_id', $product->id)
-                    ->where('status', 'stok terpakai')
-                    ->first();
-
-                if ($existingProductHistory) {
-                    $existingProductHistory->qty += $validatedData['qty'];
-                    $existingProductHistory->save();
+                if ($existingSuratJalan) {
+                    $existingSuratJalan->qty += $validatedData['qty'];
+                    $existingSuratJalan->save();
+    
+                    $existingProductHistory = ProductHistory::where('product_id', $product->id)
+                        ->where('status', 'stok terpakai')
+                        ->first();
+    
+                    if ($existingProductHistory) {
+                        $existingProductHistory->qty += $validatedData['qty'];
+                        $existingProductHistory->save();
+                    } else {
+                        ProductHistory::create([
+                            'qty' => $validatedData['qty'],
+                            'price' => $product->price,
+                            'purchase_price' => $product->purchase_price,
+                            'product_origin_id' => $product->id,
+                            'product_id' => $product->id,
+                            'status' => 'stok terpakai'
+                        ]);
+                    }
                 } else {
+                    SuratJalan::create($validatedData);
+    
                     ProductHistory::create([
                         'qty' => $validatedData['qty'],
                         'price' => $product->price,
@@ -80,18 +93,6 @@ class SuratJalanController extends Controller
                         'status' => 'stok terpakai'
                     ]);
                 }
-            } else {
-                SuratJalan::create($validatedData);
-
-                ProductHistory::create([
-                    'qty' => $validatedData['qty'],
-                    'price' => $product->price,
-                    'purchase_price' => $product->purchase_price,
-                    'product_origin_id' => $product->id,
-                    'product_id' => $product->id,
-                    'status' => 'stok terpakai'
-                ]);
-            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke Surat Jalan.');
@@ -160,6 +161,7 @@ class SuratJalanController extends Controller
 
             $existingSuratJalan = SuratJalan::where('product_id', $productPackage->id)
                 ->where('customer_id', $validatedData['customer_id'])
+                ->where('kategori', 'Paket')
                 ->whereNull('surat_jalan_new_id')
                 ->first();
 

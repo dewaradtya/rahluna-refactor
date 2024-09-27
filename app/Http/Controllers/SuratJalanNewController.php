@@ -37,7 +37,7 @@ class SuratJalanNewController extends Controller
             $suratJalanNew = SuratJalanNew::with('customer')->findOrFail($id);
             $suratJalan = $suratJalanNew->suratJalan()->with(['product', 'productPackage'])->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
-            return Inertia::render('Transaction/SuratJalan/Detail/SjNewDetail/Index', [
+            return Inertia::render('Transaction/SuratJalan/Detail/SuratJalanNew/Detail/Index', [
                 'suratJalanNew' => $suratJalanNew,
                 'suratJalan' => $suratJalan,
             ]);

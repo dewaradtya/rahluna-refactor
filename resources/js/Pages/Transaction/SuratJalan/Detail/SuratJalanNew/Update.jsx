@@ -1,31 +1,24 @@
 import { useForm } from '@inertiajs/react';
-import { InputField } from '../../../../Components/FieldInput';
-import { useEffect } from 'react';
-import Modal from '../../../../Components/Modal';
-import LoadingButton from '../../../../Components/Button/LoadingButton';
-import { today } from '../../../../utils';
+import { InputField } from '../../../../../Components/FieldInput';
+import { useEffect, useState } from 'react';
+import Modal from '../../../../../Components/Modal';
+import LoadingButton from '../../../../../Components/Button/LoadingButton';
+import { today } from '../../../../../utils';
 
-const suratJalanNew = ({ showModal, setShowModal, customerId, selectedRows }) => {
-    const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
-        no_surat: 0,
-        tanggal_kirim: today(),
-        customer_id: customerId,
-        selected_rows: selectedRows 
+const Update = ({ showModal, setShowModal,suratJalanNew}) => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const { data, setData, put, errors, recentlySuccessful } = useForm({
+        no_surat: suratJalanNew?.no_surat||0,
+        tanggal_kirim: suratJalanNew?.tanggal_kirim||today(),
     });
-
+ 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (selectedRows.length === 0) {
-            alert('Pilih minimal satu data untuk membuat surat jalan.');
-            return;
-        }
-
-        post(`/transaksi/suratJalan/sjnew`, {
+        setIsLoading(true);
+        put(`/transaksi/suratJalanNew/${suratJalanNew?.id}`, {
             preserveScroll: true,
-            data: {
-                ...data,
-                selected_rows: selectedRows
-            }
+            onFinish: () => setIsLoading(false),
         });
     };
 
@@ -56,10 +49,10 @@ const suratJalanNew = ({ showModal, setShowModal, customerId, selectedRows }) =>
                         required
                     />
                     <Modal.Footer>
-                        <LoadingButton type="button" onClick={() => setShowModal(false)} loading={processing}>
+                        <LoadingButton type="button" onClick={() => setShowModal(false)} loading={isLoading}>
                             Tutup
                         </LoadingButton>
-                        <LoadingButton type="submit" loading={processing}>
+                        <LoadingButton type="submit" loading={isLoading}>
                             Simpan
                         </LoadingButton>
                     </Modal.Footer>
@@ -69,4 +62,4 @@ const suratJalanNew = ({ showModal, setShowModal, customerId, selectedRows }) =>
     );
 };
 
-export default suratJalanNew;
+export default Update;

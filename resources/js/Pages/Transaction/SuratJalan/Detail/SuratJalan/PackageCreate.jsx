@@ -1,29 +1,27 @@
 import { useForm } from '@inertiajs/react';
-import { Select, InputField, InputTextarea } from '../../../../Components/FieldInput';
-import { useEffect, useMemo, useState } from 'react';
-import Modal from '../../../../Components/Modal';
-import LoadingButton from '../../../../Components/Button/LoadingButton';
+import { InputField, InputTextarea, Select } from '../../../../../Components/FieldInput';
+import { useEffect, useMemo } from 'react';
+import Modal from '../../../../../Components/Modal';
+import LoadingButton from '../../../../../Components/Button/LoadingButton';
 
-const Update = ({ showModal, setShowModal, suratJalan, products }) => {
-    const [isLoading, setIsLoading] = useState(false);
-
+const PackageCreate = ({ showModal, setShowModal, productPackages, customerId }) => {
     const options = useMemo(
-        () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
-        [products]
+        () => productPackages.map((productPackage) => ({ value: productPackage.id, label: `${productPackage.name}` })),
+        [productPackages]
     );
 
-    const { data, setData, put, errors, recentlySuccessful } = useForm({
-        product_id: suratJalan?.product_id || null,
-        qty: suratJalan?.qty || 0,
-        note: suratJalan?.note,
+    const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
+        product_id: null,
+        qty: 0,
+        note: '',
+        customer_id: customerId,
+        kategori: 'Paket'
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setIsLoading(true);
-        put(`/transaksi/suratJalan/${suratJalan?.id}`, {
-            preserveScroll: true,
-            onFinish: () => setIsLoading(false),
+        post(`/transaksi/suratJalan/paket`, {
+            preserveScroll: true
         });
     };
 
@@ -32,14 +30,13 @@ const Update = ({ showModal, setShowModal, suratJalan, products }) => {
     }, [recentlySuccessful, setShowModal]);
 
     return (
-        <Modal title="Edit Paket" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Tambah Paket Surat Jalan" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <Select
-                        label="Product"
-                        id="product-update"
+                        label="Paket"
+                        id="product-create"
                         error={errors?.product_id}
-                        value={options.find((option) => option.value === data.product_id)}
                         onChange={(option) => setData('product_id', option ? option.value : null)}
                         options={options}
                         required
@@ -47,25 +44,24 @@ const Update = ({ showModal, setShowModal, suratJalan, products }) => {
                     <InputField
                         type="number"
                         label="Qty"
-                        id="qty-update"
-                        value={data.qty}
+                        id="qty-create"
                         error={errors?.qty}
                         onChange={(e) => setData('qty', e.target.value)}
                         required
                     />
                     <InputTextarea
                         label="Keterangan"
-                        id="note-update"
+                        id="note-create"
                         error={errors?.note}
                         value={data.note}
                         onChange={(e) => setData('note', e.target.value)}
                         required
                     />
                     <Modal.Footer>
-                        <LoadingButton type="button" onClick={() => setShowModal(false)} loading={isLoading}>
+                        <LoadingButton type="button" onClick={() => setShowModal(false)} loading={processing}>
                             Tutup
                         </LoadingButton>
-                        <LoadingButton type="submit" loading={isLoading}>
+                        <LoadingButton type="submit" loading={processing}>
                             Simpan
                         </LoadingButton>
                     </Modal.Footer>
@@ -75,4 +71,4 @@ const Update = ({ showModal, setShowModal, suratJalan, products }) => {
     );
 };
 
-export default Update;
+export default PackageCreate;

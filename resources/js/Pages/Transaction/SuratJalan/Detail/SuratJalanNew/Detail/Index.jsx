@@ -1,11 +1,11 @@
-import MainLayout from '../../../../../Layouts/MainLayout';
+import MainLayout from '../../../../../../Layouts/MainLayout';
 import { useEffect, useMemo, useState } from 'react';
-import Table from '../../../../../Components/Table';
-import Pagination from '../../../../../Components/Pagination';
-import SplitButton from '../../../../../Components/Button/SplitButton';
+import Table from '../../../../../../Components/Table';
+import Pagination from '../../../../../../Components/Pagination';
+import SplitButton from '../../../../../../Components/Button/SplitButton';
 import { FaFile } from 'react-icons/fa';
-import Card from '../../../../../Components/Card';
-import { rupiah } from '../../../../../utils';
+import Card from '../../../../../../Components/Card';
+import { rupiah } from '../../../../../../utils';
 
 const Index = ({ invoice, suratJalan, suratJalanNew }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -139,6 +139,6 @@ const Index = ({ invoice, suratJalan, suratJalanNew }) => {
     );
 };
 
-Index.layout = (page) => <MainLayout children={page} title="Invoice Jual Detail Page" />;
+Index.layout = (page) => <MainLayout children={page} title="Surat Jalan Detail Page" />;
 
 export default Index;

@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fa';
 import { SidebarToggle } from '../../context/SidebarToggleContext';
 import LogoutConfirm from '../Confirm/LogoutConfirm';
+import { ImCross } from 'react-icons/im';
 
 const Sidebar = () => {
     const {
@@ -54,6 +55,7 @@ const Sidebar = () => {
                 <div className="sidebar-brand-icon mx-3">
                     <img src="/img/logo-f.png" alt="Brand Icon" style={{ width: '50px', height: '60px' }} />
                 </div>
+                <ImCross /> 
                 <div className="sidebar-brand-text mx-3">
                     <img src="/img/apple-touch-icon.png" alt="Brand Icon" style={{ width: '70px', height: '70px' }} />
                 </div>
