@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use App\Models\Tax;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Oprasional extends Model
+class Entertaint extends Model
 {
     use HasFactory;
+
+    protected $table = 'oprasionals';
 
     public $timestamps = false;
 
@@ -21,7 +23,7 @@ class Oprasional extends Model
     protected static function booted(): void
     {
         static::addGlobalScope('funding', function (Builder $builder) {
-            $builder->whereNotIn('funding', ['Modal', 'Hutang', 'Piutang', 'Invoice Hutang', 'Entertaint Cost']);
+            $builder->where('funding', 'Entertaint Cost');
         });
     }
 

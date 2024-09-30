@@ -38,15 +38,19 @@ class SuratJalan extends Model
     protected static function boot()
     {
         parent::boot();
-
+    
         static::deleting(function ($suratJalan) {
             $suratJalan->productHistories()
+                ->where('product_id', $suratJalan->product_id)
+                // ->where('kategori', $suratJalan->kategori)  
+                ->where('qty', $suratJalan->qty)
+                ->where('price', $suratJalan->price)
                 ->where('status', 'stok terpakai')
                 ->delete();
         });
     }
-
-
+    
+    
     public function productHistories(): HasMany
     {
         return $this->hasMany(ProductHistory::class, 'product_id', 'product_id');
@@ -55,26 +59,26 @@ class SuratJalan extends Model
     public function getProductNameAttribute()
     {
         if ($this->kategori === 'Produk') {
-            return $this->product ? $this->product->name : null;
+            return $this->product ? $this->product->name : 'Produk tidak ditemukan';
         }
 
         if ($this->kategori === 'Paket') {
-            return $this->productPackage ? $this->productPackage->name : null;
+            return $this->productPackage ? $this->productPackage->name : 'Paket tidak ditemukan';
         }
 
-        return null;
+        return 'Kategori tidak diketahui';
     }
 
     public function getUnitAttribute()
     {
         if ($this->kategori === 'Produk') {
-            return $this->product ? $this->product->unit : null;
+            return $this->product ? $this->product->unit : 'Unit tidak ditemukan';
         }
 
         if ($this->kategori === 'Paket') {
-            return $this->productPackage ? $this->productPackage->unit : null;
+            return $this->productPackage ? $this->productPackage->unit : 'Unit Paket tidak ditemukan';
         }
 
-        return null;
+        return 'Kategori tidak diketahui';
     }
 }

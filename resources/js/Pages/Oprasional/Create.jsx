@@ -10,7 +10,6 @@ const FundingOptions = [
     { value: 'Gaji', label: 'Gaji' },
     { value: 'Fee', label: 'Fee' },
     { value: 'Bayar Pajak', label: 'Bayar Pajak' },
-    { value: 'Entertaint Cost', label: 'Entertaint Cost' }
 ];
 
 const Create = ({ showModal, setShowModal }) => {

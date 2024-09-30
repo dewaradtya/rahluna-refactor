@@ -55,12 +55,26 @@ class MenuSeeder extends Seeder
 
         Menu::create([
             'menu' => 'Oprasional',
-            'url' => '/oprasional',
+            'url' => '-',
             'group_menu' => 'Sales',
             'icon' => 'fa fa-briefcase',
             'is_active' => true,
         ]);
 
+        Menu::create([
+            'menu' => 'Operasional Page',
+            'url' => '/oprasional',
+            'group_menu' => 'Sales',
+            'main_menu' => 6,
+            'is_active' => true,
+        ]);
+        Menu::create([
+            'menu' => 'Entertaint Cost',
+            'url' => '/entertaint',
+            'group_menu' => 'Sales',
+            'main_menu' => 6,
+            'is_active' => true,
+        ]);
         Menu::create([
             'menu' => 'Product',
             'url' => '-',
@@ -73,7 +87,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Product',
             'url' => '/products',
             'group_menu' => 'Sales',
-            'main_menu' => 7,
+            'main_menu' => 9,
             'is_active' => true,
         ]);
 
@@ -81,7 +95,7 @@ class MenuSeeder extends Seeder
             'menu' => 'History',
             'url' => '/products/history',
             'group_menu' => 'Sales',
-            'main_menu' => 7,
+            'main_menu' => 9,
             'is_active' => true,
         ]);
 
@@ -89,7 +103,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Unit',
             'url' => '/units',
             'group_menu' => 'Sales',
-            'main_menu' => 7,
+            'main_menu' => 9,
             'is_active' => true,
         ]);
 
@@ -113,7 +127,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Surat Jalan',
             'url' => '/transaksi/suratJalan',
             'group_menu' => 'Sales',
-            'main_menu' => 12,
+            'main_menu' => 14,
             'is_active' => true,
         ]);
 
@@ -121,7 +135,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Invoice Jual',
             'url' => '/transaksi/invoiceJual',
             'group_menu' => 'Sales',
-            'main_menu' => 12,
+            'main_menu' => 14,
             'is_active' => true,
         ]);
 
@@ -129,7 +143,7 @@ class MenuSeeder extends Seeder
             'menu' => 'Invoice Hutang Beli',
             'url' => '/transaksi/invoiceHutang',
             'group_menu' => 'Sales',
-            'main_menu' => 12,
+            'main_menu' => 14,
             'is_active' => true,
         ]);
 
@@ -144,14 +158,14 @@ class MenuSeeder extends Seeder
             'menu' => 'Tax Page',
             'url' => '/taxes',
             'group_menu' => 'General',
-            'main_menu' => 16,
+            'main_menu' => 18,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Potongan PPN dan PPH',
             'url' => '/tax/ppn',
             'group_menu' => 'General',
-            'main_menu' => 16,
+            'main_menu' => 18,
             'is_active' => true,
         ]);
         Menu::create([
@@ -165,21 +179,21 @@ class MenuSeeder extends Seeder
             'menu' => 'Modal',
             'url' => '/modal',
             'group_menu' => 'General',
-            'main_menu' => 19,
+            'main_menu' => 21,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Hutang',
             'url' => '/hutang',
             'group_menu' => 'General',
-            'main_menu' => 19,
+            'main_menu' => 21,
             'is_active' => true,
         ]);
         Menu::create([
             'menu' => 'Piutang',
             'url' => '/piutang',
             'group_menu' => 'General',
-            'main_menu' => 19,
+            'main_menu' => 21,
             'is_active' => true,
         ]);
     }

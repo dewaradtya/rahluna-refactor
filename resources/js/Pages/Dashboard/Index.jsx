@@ -36,6 +36,7 @@ const Index = ({ chartData }) => {
                         textTitle="Entertainment Cost"
                         text={rupiah(totalEntertaintCost)}
                         icon={<FaCog />}
+                        link="/entertaint"
                     />
                 </div>
 

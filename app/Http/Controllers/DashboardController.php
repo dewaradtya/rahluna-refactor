@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DebtInvoice;
+use App\Models\Entertaint;
 use App\Models\Invoice;
 use App\Models\ManageCapital;
 use App\Models\ManageDebt;
@@ -70,7 +71,7 @@ class DashboardController extends Controller
             'totalInvHutangOvertime' => $this->sumDebtInvoice(true, null, $currentYear),
             'totalInvJualBulan' => $this->sumInvoiceSales($currentMonth, $currentYear),
             'totalInvJualTahun' => $this->sumInvoiceSales(null, $currentYear),
-            'totalEntertaintCost' => $this->sumOprasional('Entertaint Cost'),
+            'totalEntertaintCost' => $this->sumEntertaint(),
             'totalHutang' => $this->sumManageDebt(),
         ]);
     }
@@ -141,6 +142,11 @@ class DashboardController extends Controller
     {
         return ManageCapital::where('cashflow', 1)
             ->sum('amount');
+    }
+
+    private function sumEntertaint()
+    {
+        return Entertaint::sum('amount');
     }
 
     private function sumInvoiceSales($month = null, $year = null)

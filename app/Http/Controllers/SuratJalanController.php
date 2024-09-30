@@ -197,7 +197,7 @@ class SuratJalanController extends Controller
 
     public function destroy(int $suratJalan): RedirectResponse
     {
-        try {
+        // try {
             $suratJalan = SuratJalan::findOrFail($suratJalan);
 
             $product = $suratJalan->product;
@@ -209,10 +209,10 @@ class SuratJalanController extends Controller
             $suratJalan->delete();
 
             return Redirect::back()->with('success', 'Produk berhasil dihapus');
-        } catch (\Exception $e) {
-            Log::error('Error deleting product: ', ['exception' => $e]);
-            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus produk. Silahkan coba lagi.');
-        }
+        // } catch (\Exception $e) {
+        //     Log::error('Error deleting product: ', ['exception' => $e]);
+        //     return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus produk. Silahkan coba lagi.');
+        // }
     }
 
     public function suratJalanNew(SuratJalanNewStoreRequest $request): RedirectResponse

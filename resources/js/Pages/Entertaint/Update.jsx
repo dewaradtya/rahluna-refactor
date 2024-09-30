@@ -5,14 +5,7 @@ import Modal from '../../Components/Modal';
 import LoadingButton from '../../Components/Button/LoadingButton';
 import { rupiah, today } from '../../utils';
 
-const FundingOptions = [
-    { value: 'Oprasional', label: 'Oprasional' },
-    { value: 'Gaji', label: 'Gaji' },
-    { value: 'Fee', label: 'Fee' },
-    { value: 'Bayar Pajak', label: 'Bayar Pajak' },
-];
-
-const Create = ({ showModal, setShowModal, oprasional }) => {
+const Create = ({ showModal, setShowModal, entertaint }) => {
     const {
         additional: { taxs }
     } = usePage().props;
@@ -20,18 +13,17 @@ const Create = ({ showModal, setShowModal, oprasional }) => {
     const TaxOptions = taxs.map(({ id, tax }) => ({ value: id, label: tax + '%' }));
 
     const { setData, data, post, processing, errors, recentlySuccessful } = useForm({
-        date: oprasional.date || today(),
-        description: oprasional.description || '',
-        amount: oprasional.amount || 0,
-        funding: oprasional.funding || '',
+        date: entertaint.date || today(),
+        description: entertaint.description || '',
+        amount: entertaint.amount || 0,
         proof: null,
-        tax_id: oprasional.tax_id || null,
+        tax_id: entertaint.tax_id || null,
         _method: 'put'
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(`/oprasional/${oprasional.id}`, {
+        post(`/entertaint/${entertaint.id}`, {
             preserveScroll: true
         });
     };
@@ -41,7 +33,7 @@ const Create = ({ showModal, setShowModal, oprasional }) => {
     }, [recentlySuccessful]);
 
     return (
-        <Modal title="Edit Oprasional" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title="Edit entertaint" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <InputField
@@ -51,15 +43,6 @@ const Create = ({ showModal, setShowModal, oprasional }) => {
                         value={data.date}
                         error={errors?.date}
                         onChange={(e) => setData('date', e.target.value)}
-                        required
-                    />
-                    <Select
-                        label="Dana"
-                        id="dana-update"
-                        value={FundingOptions.find((option) => option.value === data.funding)}
-                        error={errors?.funding}
-                        onChange={(option) => setData('funding', option ? option.value : null)}
-                        options={FundingOptions}
                         required
                     />
                     <InputNumber

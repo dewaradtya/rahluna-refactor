@@ -6,15 +6,15 @@ import Card from '../../Components/Card';
 import { rupiah } from '../../utils';
 import Modal from '../../Components/Modal';
 
-const Index = ({ invoice }) => {
+const Index = ({ project }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
     const [loadingButton, setLoadingButton] = useState(null);
-    const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, invoice: null });
+    const [showUpdateModal, setShowUpdateModal] = useState({ modal: false, project: null });
     const [imageModal, setImageModal] = useState({ visible: false, src: '' });
 
-    const handleEditButton = (invoice) => {
-        setShowUpdateModal({ modal: true, invoice: invoice });
+    const handleEditButton = (project) => {
+        setShowUpdateModal({ modal: true, project: project });
     };
 
     const handleImageModalOpen = (imageSrc) => {
@@ -25,41 +25,41 @@ const Index = ({ invoice }) => {
         setImageModal({ visible: false, src: '' });
     };
 
-    const filteredInvoice = invoice.data.filter((invoice) =>
-        invoice.nama_invoice.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredProject = project.data.filter((project) =>
+        project.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const columns = useMemo(
         () => [
             {
                 label: 'Project',
-                name: 'tanggal_dibuat',
-                renderCell: (row) => row.tanggal_dibuat
+                name: 'name',
+                renderCell: (row) => row.name
             },
             {
                 label: 'Pajak Masuk',
-                name: 'nama_invoice',
-                renderCell: (row) => row.nama_invoice
+                name: 'nilai_pajakMt',
+                renderCell: (row) => row.nilai_pajakM
             },
             {
                 label: 'Pajak Keluar',
-                name: 'total_nilai',
-                renderCell: (row) => rupiah(row.totalinvoice)
+                name: 'nilai_pajakK',
+                renderCell: (row) => rupiah(row.nilai_pajakK)
             },
             {
                 label: 'Pajak Dibayar',
-                name: 'ppn_pph_customer',
-                renderCell: (row) => rupiah(row.ppn_pph_customer)
+                name: 'pajak',
+                renderCell: (row) => rupiah(row.pajak)
             },
             {
                 label: 'Tanggal Selesai',
-                name: 'ppn',
-                renderCell: (row) => rupiah(row.ppn_customer)
+                name: 'deadline',
+                renderCell: (row) => rupiah(row.deadline)
             },
             {
                 label: 'Proggres',
-                name: 'pph',
-                renderCell: (row) => rupiah(row.pph_customer)
+                name: 'status',
+                renderCell: (row) => rupiah(row.status)
             }
         ],
         [loadingButton]
@@ -77,21 +77,21 @@ const Index = ({ invoice }) => {
                     setEntriesPerPage={setEntriesPerPage}
                 />
 
-                <Table columns={columns} rows={filteredInvoice.slice(0, entriesPerPage)} />
+                <Table columns={columns} rows={filteredProject.slice(0, entriesPerPage)} />
                 <Pagination
-                    links={invoice.links}
-                    currentPage={invoice.current_page}
-                    totalEntries={invoice.total}
-                    perPage={invoice.per_page}
+                    links={project.links}
+                    currentPage={project.current_page}
+                    totalEntries={project.total}
+                    perPage={project.per_page}
                 />
             </Card.CardBody>
 
-            {/* Modal untuk Update Invoice */}
+            {/* Modal untuk Update project */}
             {showUpdateModal.modal && (
                 <Update
                     showModal={showUpdateModal.modal}
-                    setShowModal={() => setShowUpdateModal({ modal: false, invoice: null })}
-                    invoice={showUpdateModal.invoice}
+                    setShowModal={() => setShowUpdateModal({ modal: false, project: null })}
+                    project={showUpdateModal.project}
                 />
             )}
             {imageModal.visible && (

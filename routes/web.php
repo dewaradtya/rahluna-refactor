@@ -11,6 +11,7 @@ use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtInvoiceController;
 use App\Http\Controllers\DebtInvoiceDetailController;
+use App\Http\Controllers\EntertaintController;
 use App\Http\Controllers\ErrorController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceDetailController;
@@ -59,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['menu.access'])->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('entertaint', EntertaintController::class);
         Route::resource('oprasional', OprasionalController::class);
         Route::resource('modal', ManageCapitalController::class);
         Route::resource('hutang', ManageDebtController::class);
@@ -100,6 +102,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('transaksi/suratJalanNew/{suratJalan}', 'show')->name('transaksi.suratJalanNew.show');
             Route::put('transaksi/suratJalanNew/{suratJalan}', 'update')->name('transaksi.suratJalanNew.update');
             Route::delete('transaksi/suratJalanNew/{suratJalan}', 'destroy')->name('transaksi.suratJalanNew.destroy');
+            Route::get('transaksi/suratJalanNew/{suratJalan}/pdf', 'generatePdf')->name('transaksi.suratJalanNew.generatePdf');
         });
 
         Route::controller(ProjectController::class)->group(function () {

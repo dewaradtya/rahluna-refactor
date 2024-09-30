@@ -12,9 +12,9 @@ import { formatDate, rupiah } from '../../utils';
 import { router } from '@inertiajs/react';
 import Confirm from '../../Components/Confirm/Confirm';
 
-const Index = ({ oprasionals }) => {
+const Index = ({ entertaint }) => {
     const [showModalCreate, setShowModalCreate] = useState(false);
-    const [showModalUpdate, setShowModalUpdate] = useState({ modal: false, oprasional: null });
+    const [showModalUpdate, setShowModalUpdate] = useState({ modal: false, entertaint: null });
     const [loadingButton, setLoadingButton] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(200);
@@ -38,7 +38,7 @@ const Index = ({ oprasionals }) => {
 
     const handleConfirmDelete = () => {
         if (itemToDelete) {
-            router.delete(`/oprasional/${itemToDelete}`, {
+            router.delete(`/entertaint/${itemToDelete}`, {
                 preserveScroll: true,
                 onStart: () => setLoadingButton(itemToDelete),
                 onFinish: () => {
@@ -55,15 +55,14 @@ const Index = ({ oprasionals }) => {
         }
     };
 
-    const handleEditButton = (oprasional) => {
-        setShowModalUpdate({ modal: true, oprasional: oprasional });
+    const handleEditButton = (entertaint) => {
+        setShowModalUpdate({ modal: true, entertaint: entertaint });
     };
 
-    const filteredOperasional = oprasionals.data.filter(
-        (operasional) =>
-            operasional.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            operasional.funding.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            operasional.amount.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredEntertaint = entertaint.data.filter(
+        (entertaint) =>
+            entertaint.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            entertaint.amount.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const columns = useMemo(
@@ -140,48 +139,22 @@ const Index = ({ oprasionals }) => {
     );
 
     const totals = useMemo(() => {
-        const totalNilai = oprasionals.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
-        const totalGaji = oprasionals.data
-            .filter((row) => row.funding === 'Gaji')
-            .reduce((total, row) => total + (Number(row.amount) || 0), 0);
-        const totalFee = oprasionals.data
-            .filter((row) => row.funding === 'Fee')
-            .reduce((total, row) => total + (Number(row.amount) || 0), 0);
-        const totalBayarPajak = oprasionals.data
-            .filter((row) => row.funding === 'Bayar Pajak')
-            .reduce((total, row) => total + (Number(row.amount) || 0), 0);
-        const totalPajakMasukan = oprasionals.data.reduce((total, row) => {
-            if (row.tax && row.tax.tax_value) {
-                const taxValue = Number(row.amount) / Number(row.tax.tax_value);
-                return total + taxValue;
-            }
-            return total;
-        }, 0);
+        const totalNilai = entertaint.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
 
         return {
-            totalNilai: rupiah(totalNilai),
-            totalGaji: rupiah(totalGaji),
-            totalFee: rupiah(totalFee),
-            totalBayarPajak: rupiah(totalBayarPajak),
-            totalPajakMasukan: rupiah(totalPajakMasukan)
+            totalNilai: rupiah(totalNilai)
         };
-    }, [oprasionals]);
+    }, [entertaint]);
 
-    const footerColumns = [
-        { key: 'totalNilai', label: 'Total Nilai' },
-        { key: 'totalGaji', label: 'Total Gaji' },
-        { key: 'totalFee', label: 'Total Fee' },
-        { key: 'totalBayarPajak', label: 'Total Bayar Pajak' },
-        { key: 'totalPajakMasukan', label: 'Total Pajak Masukan' }
-    ];
+    const footerColumns = [{ key: 'totalNilai', label: 'Total Nilai' }];
 
     return (
         <Card>
-            <Card.CardHeader titleText="Table Operasional" />
+            <Card.CardHeader titleText="Table Entertaint Cost" />
             <Card.CardBody>
                 <SplitButton
                     color="success"
-                    text="New Operasional"
+                    text="New Entertaint Cost"
                     icon={<FaPlus />}
                     onClick={() => setShowModalCreate(true)}
                     style={{
@@ -200,15 +173,15 @@ const Index = ({ oprasionals }) => {
                 />
                 <Table
                     columns={columns}
-                    rows={filteredOperasional.slice(0, entriesPerPage)}
+                    rows={filteredEntertaint.slice(0, entriesPerPage)}
                     footer={totals}
                     footerColumns={footerColumns}
                 />
                 <Pagination
-                    links={oprasionals.links}
-                    currentPage={oprasionals.current_page}
-                    totalEntries={oprasionals.total}
-                    perPage={oprasionals.per_page}
+                    links={entertaint.links}
+                    currentPage={entertaint.current_page}
+                    totalEntries={entertaint.total}
+                    perPage={entertaint.per_page}
                 />
             </Card.CardBody>
 
@@ -217,19 +190,19 @@ const Index = ({ oprasionals }) => {
                 <Update
                     showModal={showModalUpdate.modal}
                     setShowModal={setShowModalUpdate}
-                    oprasional={showModalUpdate.oprasional}
+                    entertaint={showModalUpdate.entertaint}
                 />
             )}
             <Confirm
                 showModal={showDeleteModal}
                 setShowModal={setShowDeleteModal}
                 onDelete={handleConfirmDelete}
-                dataType="oprasional"
+                dataType="entertaint"
             />
         </Card>
     );
 };
 
-Index.layout = (page) => <MainLayout children={page} title="Oprasional Page" />;
+Index.layout = (page) => <MainLayout children={page} title="Entertaint Page" />;
 
 export default Index;

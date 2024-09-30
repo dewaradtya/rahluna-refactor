@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SuratjalanNewUpdateRequest;
 use App\Models\SuratJalanNew;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -70,6 +71,28 @@ class SuratJalanNewController extends Controller
             Log::error('Error deleting product and returning stock: ', ['exception' => $e]);
 
             return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus produk dan mengembalikan stok. Silahkan coba lagi.');
+        }
+    }
+
+    public function generatePdf($id)
+    {
+        try {
+            $suratJalanNew = SuratJalanNew::with('customer')->findOrFail($id);
+            $suratJalan = $suratJalanNew->suratJalan()->with(['product', 'productPackage'])->get();
+            
+            $data = [
+                'suratJalanNew' => $suratJalanNew,
+                'suratJalan' => $suratJalan,
+            ];
+    
+            $pdf = Pdf::loadView('suratJalanNew.pdf', $data);
+    
+            $filename = "suratJalanNew.pdf";
+    
+            return $pdf->stream($filename);
+        } catch (\Exception $e) {
+            Log::error('Error generating surat jalan new PDF: ', ['exception' => $e]);
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat membuka PDF surat jalan new. Silahkan coba lagi.');
         }
     }
 }

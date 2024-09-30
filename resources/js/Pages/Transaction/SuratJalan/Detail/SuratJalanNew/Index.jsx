@@ -47,6 +47,12 @@ const SuratJalanNewCard = ({ customer, suratJalanNew }) => {
         setShowUpdateSjModal({ modal: true, suratJalanNew });
     };
 
+    const handleDownloadPdf = (id) => {
+        if (id) {
+            window.open(`/transaksi/suratJalanNew/${id}/pdf`, '_blank');
+        }
+    };
+
     const handleLihatButton = (id) => {
         router.get(`/transaksi/suratJalanNew/${id}`);
     };
@@ -103,7 +109,7 @@ const SuratJalanNewCard = ({ customer, suratJalanNew }) => {
                             color="info"
                             disabled={loadingButton !== null}
                         />{' '}
-                        <BadgeButton onClick={() => handleEditButton(row)} text="Print" color="dark" />
+                        <BadgeButton onClick={() => handleDownloadPdf(row.id)} text="Print" color="dark" />
                     </>
                 )
             }
@@ -147,7 +153,7 @@ const SuratJalanNewCard = ({ customer, suratJalanNew }) => {
                     selectedSuratJalanNewRows={selectedSuratJalanNewRows}
                 />
             )}
-              {showUpdateSjModal.modal && (
+            {showUpdateSjModal.modal && (
                 <Update
                     showModal={showUpdateSjModal.modal}
                     setShowModal={setShowUpdateSjModal}

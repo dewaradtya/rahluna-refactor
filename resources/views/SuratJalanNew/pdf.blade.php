@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Invoice</title>
+    <title>Surat Jalan</title>
     <style>
         body {
             font-size: 12px;
@@ -82,12 +82,6 @@
             text-align: right;
             background-color: rgb(241, 245, 249);
         }
-
-        .product-note {
-            font-style: italic;
-            color: #555;
-            font-size: 10px;
-        }
     </style>
 </head>
 
@@ -98,136 +92,80 @@
                 <img src="{{ public_path('/img/kop-atas-pdf.png') }}" alt="kop-atas-pdf" style="width: 90%" />
             </td>
             <td class="w-half">
-                <div><span style="margin-right:28px;">Invoice No </span> : {{ $invoice->referensi }}</div>
+                <div><span style="margin-right:33px;">No. Surat </span> : {{ $suratJalanNew->no_surat }}</div>
                 <div><span style="margin-right:56px;">Page </span> : 1/1</div>
-                <div><span style="margin-right:58px;">Date </span> :
-                    {{ \Carbon\Carbon::parse($invoice->date)->format('d F Y') }}</div>
+                <div><span style="margin-right:15px;">Delivery date </span> :
+                    {{ \Carbon\Carbon::parse($suratJalanNew->tanggal_kirim)->format('d F Y') }}</div>
             </td>
         </tr>
     </table>
 
-    <h1 style="margin-left:40%; margin-top: 30px; margin-bottom:-30px;">INVOICE</h1>
-    <div class="">
+    <h1 style="margin-left:40%; margin-top: 30px; margin-bottom:-30px;">Surat Jalan</h1>
+    <div style="margin-bottom: 40px;">
         <table class="w-full">
             <tr>
                 <td class="left">
                     <div>
                         <h6>Customer :</h6>
                     </div>
-                    <div style="text-decoration: underline;">{{ $invoice->customer->name }}</div>
-                    <div>{{ $invoice->customer->address }}</div>
+                    <div style="text-decoration: underline;">{{ $suratJalanNew->customer->name }}</div>
                 </td>
                 <td class="right">
                     <div>
-                        <h6>Nama Invoice :</h6>
+                        <h6>shipping address :</h6>
                     </div>
-                    <div>{{ $invoice->nama_invoice }}</div>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div class="margin-top" style="margin-bottom: 40px;">
-        <table class="w-full">
-            <tr>
-                <td class="left">
-                    <div>
-                        <h6>Due Date Payment :</h6>
-                    </div>
-                    <div>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d F Y') }}</div>
-                </td>
-                <td class="right">
-                    <div>
-                        <h6>Payment Term :</h6>
-                    </div>
-                    <div>{{ $invoice->payment_term }}</div>
+                    <div>{{ $suratJalanNew->customer->address }}</div>
                 </td>
             </tr>
         </table>
     </div>
 
+    <p class="text">Bersama ini kami kirimkan barang barang tersebut dibawah ini:</p>
     @php
         $subtotal = 0;
-        $ppn = $invoice->ppn;
-        $nilai_ppn = $invoice->nilai_ppn;
-        $pengurang_harga = $invoice->pengurang_harga ?? 0;
-        $discount = $invoice->discount ?? 0;
-        $nilai_discount = ($subtotal * $discount) / 100;
     @endphp
 
     <table class="custom-table">
         <thead>
             <tr class="head-table">
                 <th scope="col">No</th>
-                <th scope="col">Produk / Jasa</th>
+                <th scope="col">Produk / Paket</th>
                 <th scope="col">Qty</th>
                 <th scope="col">Satuan</th>
                 <th scope="col">Harga Satuan</th>
+                <th scope="col">Keterangan</th>
                 <th scope="col">Total Harga</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($invoiceDetail as $row)
+            @forelse ($suratJalan as $row)
                 @php
                     $total = $row->price * $row->qty;
                     $subtotal += $total;
                 @endphp
                 <tr>
                     <th scope="row">{{ $loop->iteration }}</th>
-                    <td>
-                        {{ $row->product->name }}
-                        @if ($row->note)
-                            <div class="product-note">{{ $row->note }}</div>
-                            <!-- Note displayed below the product name -->
-                        @endif
-                    </td>
+                    <td>{{ $row->product_name }}</td>
                     <td>{{ $row->qty }}</td>
-                    <td>{{ $row->product->unit }}</td>
+                    <td>{{ $row->unit }}</td>
                     <td>{{ 'Rp. ' . number_format($row->price, 0, ',', '.') }}</td>
+                    <td>{{ $row->note }}</td>
                     <td>{{ 'Rp. ' . number_format($total, 0, ',', '.') }}</td>
                 </tr>
+
             @empty
                 <tr>
-                    <td colspan="6" style="text-align: center;">Data Kosong</td>
+                    <td colspan="7" style="text-align: center;">Data Kosong</td>
                 </tr>
             @endforelse
 
             <tr>
-                <td colspan="5" class="total">Subtotal</td>
-                <td>{{ 'Rp. ' . number_format($subtotal, 0, ',', '.') }}</td>
-            </tr>
-
-            @if ($discount > 0)
-                <tr>
-                    <td colspan="5" class="total">Discount ({{ $discount }}%)</td>
-                    <td>{{ 'Rp. ' . number_format($nilai_discount, 0, ',', '.') }}</td>
-                </tr>
-            @endif
-
-            <tr>
-                <td colspan="5" class="total">PPN ({{ $ppn }}%)</td>
-                <td>{{ 'Rp. ' . number_format($nilai_ppn, 0, ',', '.') }}</td>
-            </tr>
-
-            <tr>
-                <td colspan="5" class="total">Total + PPN</td>
-                <td>{{ 'Rp. ' . number_format($subtotal - $nilai_discount + $nilai_ppn, 0, ',', '.') }}</td>
-            </tr>
-
-            @if ($pengurang_harga > 0)
-                <tr>
-                    <td colspan="5" class="total">Pengurangan Kode Unik</td>
-                    <td>{{ 'Rp. ' . number_format($pengurang_harga, 0, ',', '.') }}</td>
-                </tr>
-            @endif
-
-            <tr>
-                <td colspan="5" class="total">Total Keseluruhan</td>
-                <td>{{ 'Rp. ' . number_format($subtotal - $nilai_discount + $nilai_ppn - $pengurang_harga, 0, ',', '.') }}
+                <td colspan="6" class="total">Total Keseluruhan</td>
+                <td>{{ 'Rp. ' . number_format($subtotal, 0, ',', '.') }}
                 </td>
             </tr>
         </tbody>
     </table>
-    <div><strong>Note:</strong> {{ $invoice->note }}</div>
 
     <div class="margin-top">
         <table class="w-full" style="text-align: center;">

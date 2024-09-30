@@ -22,8 +22,8 @@ const Index = ({ invoice, suratJalan, suratJalanNew }) => {
     }, []);
 
     const handleDownloadPdf = () => {
-        if (invoice && invoice.id) {
-            window.open(`/transaksi/invoiceJual/detail/${invoice.id}/pdf`, '_blank');
+        if (suratJalanNew && suratJalanNew.id) {
+            window.open(`/transaksi/suratJalanNew/${suratJalanNew.id}/pdf`, '_blank');
         }
     };
 
