@@ -12,14 +12,14 @@ class ProductExport implements FromCollection, WithHeadings, WithTitle
 {
     public function collection()
     {
-        return Product::select('name', 'model_number', 'unit', DB::raw('SUM(stock) as stock'), 'price', 'purchase_price')
-            ->groupBy('name', 'model_number', 'unit', 'price', 'purchase_price')
+        return Product::select('name', 'unit', DB::raw('SUM(stock) as stock'), 'price', 'purchase_price')
+            ->groupBy('name', 'unit', 'price', 'purchase_price')
             ->get();
     }
 
     public function headings(): array
     {
-        return ['Nama Produk', 'Kode Barang', 'Satuan', 'Stock', 'Harga Jual', 'Harga Beli'];
+        return ['Nama Produk', 'Satuan', 'Stock', 'Harga Jual', 'Harga Beli'];
     }
 
     public function title(): string

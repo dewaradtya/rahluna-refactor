@@ -49,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('user/profile/change-pin', [UserController::class, 'updatePin'])->name('user.update-pin');
     Route::post('profile/update', [UserController::class, 'update'])->name('user.update');
 
-    Route::middleware(['role:super-admin'])->group(function () {
+    Route::middleware(['role:admin'])->group(function () {
         Route::controller(UserRoleController::class)->group(function () {
             Route::get('role', 'index')->name('role.index');
             Route::get('role/{role:slug}', 'show')->name('role.show');

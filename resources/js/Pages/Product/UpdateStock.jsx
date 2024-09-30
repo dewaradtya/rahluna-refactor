@@ -6,7 +6,7 @@ import LoadingButton from '../../Components/Button/LoadingButton';
 
 const UpdateStock = ({ showModal, setShowModal, products }) => {
     const options = useMemo(
-        () => products.map((product) => ({ value: product.id, label: `${product.model_number} - ${product.name}` })),
+        () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
         []
     );
 

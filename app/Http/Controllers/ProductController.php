@@ -47,7 +47,8 @@ class ProductController extends Controller
                 'purchase_price' => $product->purchase_price,
                 'product_origin_id' => $product->id,
                 'product_id' => $product->id,
-                'status' => 'stok awal'
+                'status' => 'stok awal',
+                'kategori' => 'Produk'
             ]);
 
             DB::commit();
@@ -103,6 +104,7 @@ class ProductController extends Controller
                 'product_origin_id' => $product->id,
                 'product_id' => $product->id,
                 'status' => $validatedData['stock'] < 0 ? "kurang stok" : "tambah stok",
+                'kategori' => 'Produk'
             ]);
 
             return Redirect::back()->with('success', 'Stok produk berhasil diubah');
@@ -123,7 +125,7 @@ class ProductController extends Controller
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
-        $userId = Auth::id(); // Get the currently authenticated user ID
+        $userId = Auth::id();
 
         Excel::import(new ProductImport($userId), $request->file('file'));
 

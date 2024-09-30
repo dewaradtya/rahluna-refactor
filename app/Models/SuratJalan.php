@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 class SuratJalan extends Model
 {
@@ -38,19 +39,16 @@ class SuratJalan extends Model
     protected static function boot()
     {
         parent::boot();
-    
+
         static::deleting(function ($suratJalan) {
             $suratJalan->productHistories()
-                ->where('product_id', $suratJalan->product_id)
-                // ->where('kategori', $suratJalan->kategori)  
-                ->where('qty', $suratJalan->qty)
-                ->where('price', $suratJalan->price)
+                ->where('kategori', $suratJalan->kategori)
                 ->where('status', 'stok terpakai')
+                ->where('first_create', $suratJalan->first_create)
                 ->delete();
         });
     }
-    
-    
+
     public function productHistories(): HasMany
     {
         return $this->hasMany(ProductHistory::class, 'product_id', 'product_id');

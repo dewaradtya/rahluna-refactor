@@ -140,13 +140,26 @@ const Index = ({ entertaint }) => {
 
     const totals = useMemo(() => {
         const totalNilai = entertaint.data.reduce((total, row) => total + (Number(row.amount) || 0), 0);
+        const totalPajakMasukan = entertaint.data.reduce((total, row) => {
+            if (row.tax && row.tax.tax_value) {
+                const taxValue = Number(row.amount) / Number(row.tax.tax_value);
+                return total + taxValue;
+            }
+            return total;
+        }, 0);
 
         return {
-            totalNilai: rupiah(totalNilai)
+            totalNilai: rupiah(totalNilai),
+            totalPajakMasukan: rupiah(totalPajakMasukan)
+
         };
     }, [entertaint]);
 
-    const footerColumns = [{ key: 'totalNilai', label: 'Total Nilai' }];
+    const footerColumns = [
+        { key: 'totalNilai', label: 'Total Nilai' },
+        { key: 'totalPajakMasukan', label: 'Total Pajak Masukan' }
+
+    ];
 
     return (
         <Card>

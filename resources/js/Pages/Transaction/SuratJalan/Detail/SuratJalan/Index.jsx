@@ -238,6 +238,7 @@ const SuratJalanCard = ({ customer, suratJalan, products, productPackages }) => 
                     showModal={showUpdateModal.modal}
                     setShowModal={setShowUpdateModal}
                     products={products}
+                    productPackages={productPackages}
                     suratJalan={showUpdateModal.suratJalan}
                 />
             )}

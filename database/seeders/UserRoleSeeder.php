@@ -14,12 +14,12 @@ class UserRoleSeeder extends Seeder
     public function run(): void
     {
         UserRole::create([
-            'name' => 'Super Admin',
-            'slug' => 'super-admin',
-        ]);
-        UserRole::create([
             'name' => 'Admin',
             'slug' => 'admin',
+        ]);
+        UserRole::create([
+            'name' => 'Member',
+            'slug' => 'member',
         ]);
     }
 }

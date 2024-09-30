@@ -65,7 +65,11 @@ const Index = ({ histories }) => {
                         )}
                     </span>
                 )
-            }
+            },
+            {
+                label: 'Kategori',
+                name: 'kategori'
+            },
         ],
         [loadingButton]
     );

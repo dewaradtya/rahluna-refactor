@@ -87,7 +87,7 @@ const Topbar = () => {
                             Profile
                         </Link>
                         {auth &&
-                            auth.user.role.slug === 'super-admin' && (
+                            auth.user.role.slug === 'admin' && (
                                 <Link className="dropdown-item" href="/role" onClick={closeDropdowns}>
                                     <i className="mr-2 text-gray-400">
                                         <FaCogs />

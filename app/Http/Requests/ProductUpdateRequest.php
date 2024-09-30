@@ -23,7 +23,6 @@ class ProductUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'model_number' => 'required|string',
             'unit' => 'required',
             'price' => 'required|decimal:0,2',
             'purchase_price' => 'required|decimal:0,2',

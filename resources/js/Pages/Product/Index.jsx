@@ -71,16 +71,11 @@ const Index = ({ products, units }) => {
     const filteredProducts = products.data.filter(
         (product) =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.model_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
             product.price.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const columns = useMemo(
         () => [
-            {
-                label: 'Nomor Model',
-                name: 'model_number'
-            },
             {
                 label: 'Nama Produk',
                 name: 'name'

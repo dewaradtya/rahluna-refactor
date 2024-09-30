@@ -4,12 +4,17 @@ import { useEffect, useMemo, useState } from 'react';
 import Modal from '../../../../../Components/Modal';
 import LoadingButton from '../../../../../Components/Button/LoadingButton';
 
-const Update = ({ showModal, setShowModal, suratJalan, products }) => {
+const Update = ({ showModal, setShowModal, suratJalan, products, productPackages }) => {
     const [isLoading, setIsLoading] = useState(false);
 
-    const options = useMemo(
+    const productOptions = useMemo(
         () => products.map((product) => ({ value: product.id, label: `${product.name} - ${product.unit}` })),
         [products]
+    );
+
+    const packageOptions = useMemo(
+        () => productPackages.map((packageItem) => ({ value: packageItem.id, label: `${packageItem.name} - ${packageItem.unit}` })),
+        [productPackages]
     );
 
     const { data, setData, put, errors, recentlySuccessful } = useForm({
@@ -31,17 +36,19 @@ const Update = ({ showModal, setShowModal, suratJalan, products }) => {
         if (recentlySuccessful) setShowModal(false);
     }, [recentlySuccessful, setShowModal]);
 
+    const isPackage = suratJalan.kategori === 'Paket';
+
     return (
-        <Modal title="Edit Paket" showModal={showModal} setShowModal={setShowModal}>
+        <Modal title={isPackage ? "Edit Paket" : "Edit Produk"} showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
                     <Select
-                        label="Product"
+                        label={isPackage ? "Paket" : "Produk"}
                         id="product-update"
                         error={errors?.product_id}
-                        value={options.find((option) => option.value === data.product_id)}
+                        value={isPackage ? packageOptions.find(option => option.value === data.product_id) : productOptions.find(option => option.value === data.product_id)}
                         onChange={(option) => setData('product_id', option ? option.value : null)}
-                        options={options}
+                        options={isPackage ? packageOptions : productOptions}
                         required
                     />
                     <InputField

@@ -11,7 +11,7 @@ class ProductHistory extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['qty', 'price', 'purchase_price', 'note', 'status', 'product_origin_id', 'product_id'];
+    protected $fillable = ['qty', 'price', 'purchase_price', 'note', 'status', 'product_origin_id', 'product_id', 'kategori'];
 
     public function productOrigin()
     {

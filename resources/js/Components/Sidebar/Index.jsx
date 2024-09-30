@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { useContext } from 'react';
 import {
@@ -45,6 +45,10 @@ const Sidebar = () => {
     const closeLogoutModal = () => {
         setIsLogoutModalOpen(false);
     };
+
+    useEffect(() => {
+        setCollapsedItems({});
+    }, [window.location.pathname]);
 
     return (
         <ul
@@ -119,18 +123,18 @@ const SidebarLink = ({ rows, collapsedItems, handleCollapseClick }) => {
                         <>
                             <button
                                 type="button"
-                                className={`nav-link ${collapsedItems[rowIndex] ? '' : 'collapsed'}`}
+                                className={`nav-link ${collapsedItems[row.menu] ? '' : 'collapsed'}`}
                                 data-toggle="collapse"
-                                aria-expanded={collapsedItems[rowIndex] ? 'true' : 'false'}
+                                aria-expanded={collapsedItems[row.menu] ? 'true' : 'false'}
                                 aria-controls={`collapse${rowIndex}`}
-                                onClick={() => handleCollapseClick(rowIndex)}
+                                onClick={() => handleCollapseClick(row.menu)}
                             >
                                 {iconMapping[row.icon]}
                                 <span>{row.menu}</span>
                             </button>
                             <div
                                 id={`collapse${rowIndex}`}
-                                className={`collapse ${collapsedItems[rowIndex] ? 'show' : ''}`}
+                                className={`collapse ${collapsedItems[row.menu] ? 'show' : ''}`}
                                 aria-labelledby="headingTwo"
                                 data-parent="#accordionSidebar"
                             >

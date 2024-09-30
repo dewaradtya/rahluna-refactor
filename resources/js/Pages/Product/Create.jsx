@@ -10,7 +10,6 @@ const Create = ({ showModal, setShowModal, units }) => {
     const options = useMemo(() => units.map((unit) => ({ value: unit.name, label: unit.name })), [units]);
 
     const { data, setData, post, errors, recentlySuccessful } = useForm({
-        model_number: '',
         name: '',
         stock: 0,
         unit: null,
@@ -47,13 +46,6 @@ const Create = ({ showModal, setShowModal, units }) => {
         <Modal title="Tambah Produk" showModal={showModal} setShowModal={setShowModal}>
             <Modal.Body>
                 <form onSubmit={handleSubmit}>
-                    <InputField
-                        label="Nomor Model"
-                        id="model-number-create"
-                        error={errors?.model_number}
-                        onChange={(e) => setData('model_number', e.target.value)}
-                        required
-                    />
                     <InputField
                         label="Nama Produk"
                         id="name-create"

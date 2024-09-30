@@ -60,39 +60,41 @@ class SuratJalanController extends Controller
                 ->whereNull('surat_jalan_new_id')
                 ->first();
 
-                if ($existingSuratJalan) {
-                    $existingSuratJalan->qty += $validatedData['qty'];
-                    $existingSuratJalan->save();
-    
-                    $existingProductHistory = ProductHistory::where('product_id', $product->id)
-                        ->where('status', 'stok terpakai')
-                        ->first();
-    
-                    if ($existingProductHistory) {
-                        $existingProductHistory->qty += $validatedData['qty'];
-                        $existingProductHistory->save();
-                    } else {
-                        ProductHistory::create([
-                            'qty' => $validatedData['qty'],
-                            'price' => $product->price,
-                            'purchase_price' => $product->purchase_price,
-                            'product_origin_id' => $product->id,
-                            'product_id' => $product->id,
-                            'status' => 'stok terpakai'
-                        ]);
-                    }
+            if ($existingSuratJalan) {
+                $existingSuratJalan->qty += $validatedData['qty'];
+                $existingSuratJalan->save();
+
+                $existingProductHistory = ProductHistory::where('product_id', $product->id)
+                    ->where('status', 'stok terpakai')
+                    ->first();
+
+                if ($existingProductHistory) {
+                    $existingProductHistory->qty += $validatedData['qty'];
+                    $existingProductHistory->save();
                 } else {
-                    SuratJalan::create($validatedData);
-    
                     ProductHistory::create([
                         'qty' => $validatedData['qty'],
                         'price' => $product->price,
                         'purchase_price' => $product->purchase_price,
                         'product_origin_id' => $product->id,
                         'product_id' => $product->id,
-                        'status' => 'stok terpakai'
+                        'kategori' => $validatedData['kategori'],
+                        'status' => 'stok terpakai',
                     ]);
                 }
+            } else {
+                SuratJalan::create($validatedData);
+
+                ProductHistory::create([
+                    'qty' => $validatedData['qty'],
+                    'price' => $product->price,
+                    'purchase_price' => $product->purchase_price,
+                    'product_origin_id' => $product->id,
+                    'product_id' => $product->id,
+                    'kategori' => $validatedData['kategori'],
+                    'status' => 'stok terpakai',
+                ]);
+            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke Surat Jalan.');
@@ -155,7 +157,8 @@ class SuratJalanController extends Controller
                     'purchase_price' => $product->purchase_price,
                     'product_origin_id' => $product->id,
                     'product_id' => $product->id,
-                    'status' => 'stok terpakai'
+                    'kategori' => $validatedData['kategori'],
+                    'status' => 'stok terpakai',
                 ]);
             }
 
@@ -197,7 +200,7 @@ class SuratJalanController extends Controller
 
     public function destroy(int $suratJalan): RedirectResponse
     {
-        // try {
+        try {
             $suratJalan = SuratJalan::findOrFail($suratJalan);
 
             $product = $suratJalan->product;
@@ -209,10 +212,10 @@ class SuratJalanController extends Controller
             $suratJalan->delete();
 
             return Redirect::back()->with('success', 'Produk berhasil dihapus');
-        // } catch (\Exception $e) {
-        //     Log::error('Error deleting product: ', ['exception' => $e]);
-        //     return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus produk. Silahkan coba lagi.');
-        // }
+        } catch (\Exception $e) {
+            Log::error('Error deleting product: ', ['exception' => $e]);
+            return Redirect::back()->with('error', 'Terjadi kesalahan saat menghapus produk. Silahkan coba lagi.');
+        }
     }
 
     public function suratJalanNew(SuratJalanNewStoreRequest $request): RedirectResponse

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('status', 50);
             $table->foreignId('product_origin_id')->constrained('products');
             $table->foreignId('product_id')->nullable()->constrained('products');
+            $table->string('kategori');
             $table->timestamp('first_create')->useCurrent();
             $table->timestamp('last_update')->useCurrent()->useCurrentOnUpdate();
             // $table->timestamps();

@@ -12,7 +12,7 @@ class Product extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['name', 'model_number', 'stock', 'unit', 'price', 'purchase_price', 'user_id'];
+    protected $fillable = ['name', 'stock', 'unit', 'price', 'purchase_price', 'user_id'];
 
     public function histories()
     {

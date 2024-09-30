@@ -19,7 +19,7 @@ class EntertaintController extends Controller
         $perPage = $request->query('perPage', 200);
         $currentPage = $request->query('page', 1);
 
-        $entertaint = Entertaint::paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
+        $entertaint = Entertaint::with(['tax'])->paginate($perPage, ['*'], 'page', $currentPage)->appends($request->query());
 
         return Inertia::render('Entertaint/Index', compact('entertaint'));
     }
