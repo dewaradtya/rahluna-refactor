@@ -203,10 +203,21 @@ class SuratJalanController extends Controller
         try {
             $suratJalan = SuratJalan::findOrFail($suratJalan);
 
-            $product = $suratJalan->product;
-            if ($product) {
-                $product->stock += $suratJalan->qty;
-                $product->save();
+            if ($suratJalan->kategori === 'Produk') {
+                $product = $suratJalan->product;
+                if ($product) {
+                    $product->stock += $suratJalan->qty;
+                    $product->save();
+                }
+            } elseif ($suratJalan->kategori === 'Paket') {
+                $packageDetails = $suratJalan->productPackage->productPackageDetails;
+                foreach ($packageDetails as $detail) {
+                    $product = $detail->product;
+                    if ($product) {
+                        $product->stock += $detail->qty * $suratJalan->qty;
+                        $product->save();
+                    }
+                }
             }
 
             $suratJalan->delete();

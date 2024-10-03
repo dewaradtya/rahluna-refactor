@@ -31,6 +31,12 @@ class SuratJalan extends Model
         return $this->belongsTo(SuratJalanNew::class, 'surat_jalan_new_id');
     }
 
+    public function productPackageDetails()
+    {
+        return $this->hasMany(ProductPackageDetail::class, 'product_package_id', 'product_id');
+    }
+
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id');
@@ -41,11 +47,25 @@ class SuratJalan extends Model
         parent::boot();
 
         static::deleting(function ($suratJalan) {
-            $suratJalan->productHistories()
-                ->where('kategori', $suratJalan->kategori)
-                ->where('status', 'stok terpakai')
-                ->where('first_create', $suratJalan->first_create)
-                ->delete();
+            if ($suratJalan->kategori === 'Produk') {
+                Log::info('Deleting related product histories for Produk');
+                $suratJalan->productHistories()
+                    ->where('kategori', 'Produk')
+                    ->where('status', 'stok terpakai')
+                    ->where('first_create', $suratJalan->first_create)
+                    ->delete();
+            } elseif ($suratJalan->kategori === 'Paket') {
+                Log::info('Deleting related product histories for Paket');
+
+                $productIds = $suratJalan->productPackageDetails->pluck('product_id');
+                Log::info('Product IDs in package: ' . $productIds);
+
+                ProductHistory::whereIn('product_id', $productIds)
+                    ->where('kategori', 'Paket')
+                    ->where('status', 'stok terpakai')
+                    ->where('first_create', $suratJalan->first_create)
+                    ->delete();
+            }
         });
     }
 

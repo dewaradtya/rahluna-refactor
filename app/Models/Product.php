@@ -19,12 +19,18 @@ class Product extends Model
         return $this->hasMany(ProductHistory::class, 'product_id');
     }
 
+    public function packageDetails()
+{
+    return $this->hasMany(ProductPackageDetail::class, 'product_id');
+}
+
     protected static function boot()
     {
         parent::boot();
 
         static::deleting(function ($product) {
             $product->histories()->delete();
+            $product->packageDetails()->delete();
         });
     }
 }
