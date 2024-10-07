@@ -148,7 +148,7 @@ const Index = ({ productPackage, productPackageDetail, products }) => {
                             onClick={() => setShowCreateModal(true)}
                             style={{
                                 position: isSticky ? 'fixed' : 'relative',
-                                top: isSticky ? '10px' : '5px',
+                                top: isSticky ? '10px' : '0px',
                                 right: '0px',
                                 zIndex: 1000,
                                 transition: 'position 0.3s ease, top 0.3s ease'
